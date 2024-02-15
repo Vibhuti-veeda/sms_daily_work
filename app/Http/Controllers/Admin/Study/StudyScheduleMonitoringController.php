@@ -1476,10 +1476,6 @@ class StudyScheduleMonitoringController extends GlobalController
                                                                       ->where('is_delete', 0);
                                                                 }
                                                             ])
-                                                           ->whereHas('controlName', function($q){
-                                                                $q->where('is_active', 1)
-                                                                  ->where('is_delete', 0);
-                                                           })
                                                            ->get();
 
         return view('admin.study.study_schedule_monitoring.study_schedule_actual_start_date_modal',compact('studySheduleStartDate', 'activityMetaDataActualStartDate')) ;      
@@ -1488,7 +1484,6 @@ class StudyScheduleMonitoringController extends GlobalController
     // save saveStudyScheduleActualStartDateModal
     public function saveStudyScheduleActualStartDateModal(Request $request) {
 
-        $scheduleStatus = '';
         $actualStartDate = date('Y/m/d', strtotime($request->actual_start_date));
         $actualEndDate = date('Y/m/d', strtotime($request->actual_end_date));
         $scheduleStartDate = date('Y/m/d', strtotime($request->schedule_start_date));
@@ -1535,7 +1530,7 @@ class StudyScheduleMonitoringController extends GlobalController
                 $saveStartDate->activity_status = "COMPLETED";
             }
             $scheduleStatus = $saveStartDate->activity_status;  
-            $actualstartDate = date('d M Y', strtotime($saveStartDate->actual_start_date));
+            $actualstartDate = date('d M Y', strtotime($saveStartDate->actual_start_date));  
             $saveStartDate->save();
         }
 
@@ -1708,21 +1703,6 @@ class StudyScheduleMonitoringController extends GlobalController
 
             }
         }
-
-        /*return redirect(route('admin.studyScheduleStatus', base64_encode($request->study_id)))->with('messages', [
-            [
-                'type' => 'success',
-                'title' => 'Study Schedule Tracking',
-                'message' => 'Actual start date successfully updated!',
-            ],
-        ]);  */
-
-        /*$response = [
-                'type' => 'success',
-                'title' => 'Study Schedule Tracking',
-                'message' => 'Actual start date successfully updated!',
-            ];
-*/
         return response()->json(['success' => 'true', 'scheduleStatus' => $scheduleStatus, 'actualStartDate' => $actualstartDate]);
     }
 
@@ -1769,6 +1749,7 @@ class StudyScheduleMonitoringController extends GlobalController
         $currentDate = date('Y/m/d');
         $scheduleStatus = '';
         $actualendDate = '';
+        
         $saveActualEndDate = StudySchedule::where('id', $request->id)->where('is_active', 1)->where('is_delete', 0)->first();
 
         if(!is_null($saveActualEndDate)) {
@@ -1807,7 +1788,7 @@ class StudyScheduleMonitoringController extends GlobalController
                 $saveActualEndDate->activity_status = "COMPLETED";
             }
             $scheduleStatus = $saveActualEndDate->activity_status; 
-            $actualendDate = date('d M Y', strtotime($saveActualEndDate->actual_end_date));
+            $actualendDate = date('d M Y', strtotime($saveActualEndDate->actual_end_date)); 
             $saveActualEndDate->save();
         }
 
@@ -1979,14 +1960,6 @@ class StudyScheduleMonitoringController extends GlobalController
 
             }
         }
-
-        /*return redirect(route('admin.studyScheduleStatus', base64_encode($request->study_id)))->with('messages', [
-            [
-                'type' => 'success',
-                'title' => 'Study Schedule Tracking',
-                'message' => 'Actual end date successfully updated!',
-            ],
-        ]);  */
 
         return response()->json(['status' => 'true', 'scheduleStatus' => $scheduleStatus, 'actualEndDate' => $actualendDate]);
     }

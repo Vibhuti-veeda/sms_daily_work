@@ -16,8 +16,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         //$schedule->command('inspire')->hourly();
-        //$schedule->command('make:dailyStudyStatusAnalysis')->daily();
-        //$schedule->command('make:dailyActivityStatusAnalysis')->daily();
+        $schedule->command('make:dailyStudyStatusAnalysis')->daily();
+        $schedule->command('make:dailyActivityStatusAnalysis')->daily();
         //$schedule->command('make:pmDailyActivitiesList')->dailyAt('10:00');
         //$schedule->command('make:pmDailyDelayActivities')->dailyAt('10:05');
         //$schedule->command('make:dailyDepartmentActivities')->dailyAt('10:10');

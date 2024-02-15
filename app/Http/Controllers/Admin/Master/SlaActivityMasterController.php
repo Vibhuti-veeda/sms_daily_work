@@ -27,14 +27,28 @@ class SlaActivityMasterController extends Controller
         *
         * @return to activity master listing page
     **/
-    public function slaActivityMasterList(){
+    public function slaActivityMasterList(Request $request){
         
-        $activities = SlaActivityMaster::where('is_delete', 0)
-                                            ->with([
-                                                'activityName',
-                                                'studyDesign'
-                                            ])
-                                            ->get();
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        $activities = SlaActivityMaster::select('id','activity_id', 'study_design', 'no_from_subject', 'no_to_subject', 'is_cdisc', 'is_active')
+                                        ->where('is_delete', 0)
+                                        ->with([
+                                            'activityName',
+                                            'studyDesign'
+                                        ])
+                                        ->skip($offset)
+                                        ->limit($perPage)
+                                        ->get();
+
+        $recordCount = SlaActivityMaster::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage); 
 
         $admin = '';
         $access = '';
@@ -46,7 +60,7 @@ class SlaActivityMasterController extends Controller
                                       ->first();
         }
 
-        return view('admin.masters.sla_activity.sla_activity_masters_list', compact('activities', 'admin', 'access'));
+        return view('admin.masters.sla_activity.sla_activity_masters_list', compact('activities', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
     public function addSlaActivityMaster(){
 

@@ -94,12 +94,12 @@
                                                                                             <td>
                                                                                                 {{ $srNo++ }}
                                                                                             </td>
-                                                                                            <td>
+                                                                                            <td class="bolfFont">
                                                                                                 {{ $asv->activity_name }} @if($asv->group_no != 1)(G{{ $asv->group_no }}) @endif @if(($asv->group_no != 1) && ($asv->period_no != 1)) - @endif @if($asv->period_no != 1) (P{{ $asv->period_no }}) @endif @if($asv->activity_version_type != '') ({{ $asv->activity_version_type }}-{{ $asv->activity_version }}) @endif
                                                                                             </td>
                                                                                             <!-- <td>{{ $av->group_no }}</td>
                                                                                             <td>{{ $av->period_no }}</td> -->
-                                                                                            <td>
+                                                                                            <td class="bolfFont">
                                                                                                 {{ (!is_null($asv) && $asv->scheduled_start_date != '') ?  date('d M Y', strtotime($asv->scheduled_start_date)) : '' }}
                                                                                             </td>
 
@@ -222,7 +222,7 @@
                                                                                                 @endif
                                                                                             @endif
 
-                                                                                            <td>
+                                                                                            <td class="bolfFont">
                                                                                                 {{ (!is_null($asv) && $asv->scheduled_end_date != '') ?  date('d M Y', strtotime($asv->scheduled_end_date)) : '' }}
                                                                                             </td>
 

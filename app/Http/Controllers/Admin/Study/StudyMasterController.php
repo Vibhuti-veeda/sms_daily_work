@@ -22,6 +22,14 @@ class StudyMasterController extends GlobalController
         $startDate = '';
         $endDate = '';
 
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
         $crLocation = LocationMaster::where('location_type', 'CRSITE')
                                     ->where('is_active', 1)
                                     ->where('is_delete', 0)
@@ -117,8 +125,13 @@ class StudyMasterController extends GlobalController
                                 },
                             ])
                         ->orderBy('global_priority_no', 'ASC')
+                        ->skip($offset)
+                        ->limit($perPage)
                         ->get();
+                                       
+        $recordCount = Study::where('is_active', 1)->where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);
 
-        return view('admin.study.study_master.all_study_master_list', compact('studies', 'crLocation', 'crLocationName', 'filter', 'startDate', 'endDate'));
+        return view('admin.study.study_master.all_study_master_list', compact('studies', 'crLocation', 'crLocationName', 'filter', 'startDate', 'endDate', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 }

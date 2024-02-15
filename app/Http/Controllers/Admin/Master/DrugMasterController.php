@@ -23,9 +23,25 @@ class DrugMasterController extends Controller
         *
         * @return to drug master listing page
     **/
-    public function drugMasterList(){
+    public function drugMasterList(Request $request){
 
-        $drugs = DrugMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        $drugs = DrugMaster::select('id','drug_name', 'drug_type', 'remarks', 'is_active')
+                            ->where('is_delete', 0)
+                            ->orderBy('id', 'DESC')
+                            ->skip($offset)
+                            ->limit($perPage)
+                            ->get();
+
+        $recordCount = DrugMaster::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage); 
 
         $admin = '';
         $access = '';
@@ -37,7 +53,7 @@ class DrugMasterController extends Controller
                                       ->first();
         }
         
-        return view('admin.masters.drug.drug_list', compact('drugs', 'admin', 'access'));
+        return view('admin.masters.drug.drug_list', compact('drugs', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     /**

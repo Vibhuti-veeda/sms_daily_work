@@ -1,5 +1,5 @@
 
-<form class="custom-validation addActualEndDate" action="{{ route('admin.saveStudyScheduleActualEndDateModal') }}" method="post" id="addActualEndDate" enctype="multipart/form-data">
+<form class="custom-validation addActualEndDate" method="post" id="addActualEndDate" enctype="multipart/form-data">
     @csrf
 
     <input type="hidden" name="id" id="id" value="{{ $studyScheduleEndDate->id }}">
@@ -9,6 +9,7 @@
     <input type="hidden" name="schedule_start_date" id="schedule_start_date" value="{{ $studyScheduleEndDate->scheduled_start_date }}">
     <input type="hidden" name="actual_start_date" id="actual_start_date" value="{{ $studyScheduleEndDate->actual_start_date }}">
     <input type="hidden" name="role_id" id="role_id" value="{{ Auth::guard('admin')->user()->role_id }}">
+
     @php
         $isReasonFilled = '';
         $isRemarkFilled = '';
@@ -56,9 +57,9 @@
 	        <label class="col-md-3">Actual End Date<span class="mandatory">*</span></label>
 	        <div class="col-md-9">
 	        	@if(Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 1)
-	            	<input type="date" class="form-control actualEndDate scheduleEndDatepicker" min="{{$studyScheduleEndDate->actual_start_date}}" max="{{date('Y-m-d')}}" name="actual_end_date" id="actual_end_date" autocomplete="off" value="{{ $studyScheduleEndDate->actual_end_date != '' ? date('Y-m-d', strtotime($studyScheduleEndDate->actual_end_date)) : '' }}" required style="width:80%;"> 	           	
+	            	<input type="date" class="form-control actualEndDate scheduleDatepicker" min="{{$studyScheduleEndDate->actual_start_date}}" max="{{date('Y-m-d')}}" name="actual_end_date" id="actual_end_date" autocomplete="off" value="{{ $studyScheduleEndDate->actual_end_date != '' ? date('Y-m-d', strtotime($studyScheduleEndDate->actual_end_date)) : '' }}" required style="width:80%;"> 	           	
 	            @else
-	            	<input type="date" class="form-control actualEndDate scheduleEndDatepicker" min="{{$studyScheduleEndDate->actual_start_date}}" max="{{date('Y-m-d')}}" name="actual_end_date" id="actual_end_date" autocomplete="off" value="{{ $studyScheduleEndDate->actual_end_date != '' ? date('Y-m-d', strtotime($studyScheduleEndDate->actual_end_date)) : '' }}" @if($studyScheduleEndDate->actual_end_date != '') ? disabled : '' @elseif($studyScheduleEndDate->actual_start_date == '') ? disabled : '' @endif required style="width: 80%;">	            	
+	            	<input type="date" class="form-control actualEndDate scheduleDatepicker" min="{{$studyScheduleEndDate->actual_start_date}}" max="{{date('Y-m-d')}}"  name="actual_end_date" id="actual_end_date" autocomplete="off" value="{{ $studyScheduleEndDate->actual_end_date != '' ? date('Y-m-d', strtotime($studyScheduleEndDate->actual_end_date)) : '' }}" @if($studyScheduleEndDate->actual_end_date != '') ? disabled : '' @elseif($studyScheduleEndDate->actual_start_date == '') ? disabled : '' @endif required style="width: 80%;">	            	
 	            @endif
 	        </div>
 	    </div>
@@ -110,10 +111,10 @@
             <label class="col-md-3">End Activity Remark<span class="mandatory">*</span></label>
             <div class="col-md-9">
                 @if(Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 1)
-                    <input type="text" class="form-control endDelayRemark" name="end_delay_remark" id="end_delay_remark"  data-msg="Please enter end activity remark" value="{{ $studyScheduleEndDate->end_delay_remark }}" required autocomplete="off" title="{{ $studyScheduleEndDate->end_delay_remark }}" style="width: 80%;">
+                    <input type="text" class="form-control endDelayRemark" name="end_delay_remark" id="end_delay_remark" value="{{ $studyScheduleEndDate->end_delay_remark }}" required autocomplete="off" title="{{ $studyScheduleEndDate->end_delay_remark }}" style="width: 80%;">
                     <!-- {{ $studyScheduleEndDate->end_delay_remark != '' ? $studyScheduleEndDate->end_delay_remark : '---' }} -->    
                 @else
-                    <input type="text" class="form-control endDelayRemark" name="end_delay_remark" id="end_delay_remark" data-msg="Please enter end activity remark" value="{{ $studyScheduleEndDate->end_delay_remark }}" @if($studyScheduleEndDate->actual_end_date != '') ? disabled : '' @elseif($studyScheduleEndDate->actual_start_date == '') ? disabled : '' @endif required autocomplete="off" title="{{ $studyScheduleEndDate->end_delay_remark }}" style="width: 80%">
+                    <input type="text" class="form-control endDelayRemark" name="end_delay_remark" id="end_delay_remark" value="{{ $studyScheduleEndDate->end_delay_remark }}" @if($studyScheduleEndDate->actual_end_date != '') ? disabled : '' @elseif($studyScheduleEndDate->actual_start_date == '') ? disabled : '' @endif required autocomplete="off" title="{{ $studyScheduleEndDate->end_delay_remark }}" style="width: 80%">
                     <!-- {{ $studyScheduleEndDate->end_delay_remark != '' ? $studyScheduleEndDate->end_delay_remark : '---' }} -->
                 @endif
             </div>
@@ -341,12 +342,7 @@
         }
     });
 
-    $(document).on('click', '.saveActualEndDate', function(e){
-        
-        if($('#addActualEndDate').valid()){
-           $('#addActualEndDate').submit();     
-        }
-    });
+    
 
     $(document).ready(function(){
         $.each($('.metaDataDatepicker'), function() {
@@ -356,7 +352,57 @@
         });
     });
 
-   // validation
+    $(document).ready(function(){
+
+        $("#addActualEndDate").validate({
+            errorElement : 'span',
+            rules: {
+                actual_end_date: {
+                    required: true,
+                    min: false,
+                },
+                end_delay_reason_id: {
+                    required: true,
+                },
+                end_delay_remark: {
+                    required: true,
+                },
+            },
+            messages: {
+                actual_end_date: {
+                    required: 'Please select actual end date',
+                },
+                end_delay_reason_id: {
+                    required: 'Please select end activity reason',
+                },
+                end_delay_remark: {
+                    required: 'Please enter end activity remark',
+                },  
+            }
+        });
+    });
+
+     $(document).ready(function(){
+
+        $(document).on('change', '#actual_end_date', function () {
+            var actualEndDate = $('#actual_end_date').val();
+
+            if (actualEndDate != '') {
+                $('#actual_end_date-error').text('');
+            }
+        });
+
+        $(document).on('change', '#end_delay_reason_id', function () {
+            var actualEndDelayReason = $('#end_delay_reason_id').val();
+
+            if (actualEndDelayReason != '') {
+                $('#end_delay_reason_id-error').text('');
+            }
+        });
+    });
+
+   // metadata error message hide and show and actual end date modal data ajax threw save
+    var endCount = 0;
     $(document).ready(function() {
         // Hide error messages initially
         $('.text-error-message').hide();
@@ -366,157 +412,7 @@
         $('.select-error-message').hide();
         $('.file-error-message').hide();
 
-        // Attach a submit event to the form
-        $('#addActualEndDate').submit(function(event) {
-            var isFormValid = true;
-            // Check if any radio button is checked and it's a mandatory field
-            $('.radio-option').each(function () {
-                const groupName = $(this).data('group');
-                const isMandatory = $(this).data('is-mandatory') === true;
-
-                if (($(`.inlineRadioOptions_${groupName}:checked`).length === 0) && (isMandatory)) {
-                    $(`.radio-error-message[data-group="${groupName}"]`).show();
-                    // event.preventDefault();
-                    isFormValid = false;
-                } else {
-                    $(`.radio-error-message[data-group="${groupName}"]`).hide();
-                }
-            });
-
-            // Check if any checkbox button is checked and it's a mandatory field
-            $('.checkbox-option').each(function () {
-                const groupName = $(this).data('group');
-                const isMandatory = $(this).data('is-mandatory') === true;
-               
-                if (($(`.inlineCheckboxOptions_${groupName}:checked`).length === 0) && (isMandatory)) {
-                    $(`.checkbox-error-message[data-group="${groupName}"]`).show();
-                    // event.preventDefault();
-                    isFormValid = false;
-                } else {
-                    $(`.checkbox-error-message[data-group="${groupName}"]`).hide();
-                }
-            });
-
-            // Loop through each input with name 'text'
-            $('.text').each(function(index) {
-                const isMandatory = $(this).data('is-mandatory') === true;
-
-                if (($(this).val() === "") && (isMandatory)) {
-                    // Show the text box error message for each specific input field
-                    $(this).next('span.text-error-message').show();
-                    // event.preventDefault();
-                    isFormValid = false;
-                } else {
-                    // Hide the text box error message for each specific input field
-                    $(this).next('span.text-error-message').hide();
-                }
-            });
-
-            // Loop through each input with name 'textarea'
-            $('.textArea').each(function(index) {
-                const isMandatory = $(this).data('is-mandatory') === true;
-         
-                if (($(this).val() === "") && (isMandatory)) {
-                    // Show the textarea error message for each specific input field
-                    $(this).next('span.textarea-error-message').show();
-                    // event.preventDefault();
-                    isFormValid = false;
-                } else {
-                    // Hide the textarea error message for each specific input field
-                    $(this).next('span.textarea-error-message').hide();
-                }
-            });
-
-            // Loop through each input with name 'date'
-            $('.date').each(function(index) {
-                const isMandatory = $(this).data('is-mandatory') === true;
-         
-                if (($(this).val() === "") && (isMandatory)) {
-                    // Show the date box error message for each specific input field
-                    $(this).next('span.date-error-message').show();
-                    // event.preventDefault();
-                    isFormValid = false;
-                } else {
-                    // Hide the date box error message for each specific input field
-                    $(this).next('span.date-error-message').hide();
-                }
-            });
-
-            // Loop through each input with name 'datetime'
-            $('.dateTime').each(function(index) {
-                const isMandatory = $(this).data('is-mandatory') === true;
-         
-                if (($(this).val() === "") && (isMandatory)) {        
-                    // Show the datetime box error message for each specific input field
-                    $(this).next('span.datetime-error-message').show();
-                    // event.preventDefault();
-                    isFormValid = false;
-                } else {
-                    // Hide the datetime box error message for each specific input field
-                    $(this).next('span.datetime-error-message').hide();
-                }
-            });
-
-            // Loop through each input with name 'select'
-            $('.select').each(function(index) {
-                const isMandatory = $(this).data('is-mandatory') === true;
-         
-                if (($(this).val() === "") && (isMandatory)) {
-                    // Show the select box error message for each specific input field
-                    $(this).next('span.select-error-message').show();
-                    // event.preventDefault();
-                    isFormValid = false;
-                } else {
-                    // Hide the daselecttetime box error message for each specific input field
-                    $(this).next('span.select-error-message').hide();
-                }
-            });
-
-            if(isFormValid){
-                event.preventDefault();
-                var formData = $(this).serialize();
-                var scheduledId = $('#id').val();
-                var roleId = $('#role_id').val();
-                var endTitle = '';
-                var convertSchedulesStatus = '';
-                var endDelayReasonId = $('#end_delay_reason_id option:selected').val();
-                var endDelayReason = $('#end_delay_reason_id option:selected').text().trim();
-                var endDelayRemark = $('#end_delay_remark').val();
-
-                if($('#endActivityReason').css('display') != 'none'){
-                    if((endDelayReasonId != '') && (endDelayReasonId != 0)){
-                        endTitle = endDelayReason;
-                    } else if((endDelayReasonId != '') && (endDelayReasonId == 0)){
-                        endTitle = endDelayReason + " - " + endDelayRemark;
-                    }
-                }
-
-                $.ajax({
-
-                    method: 'POST',
-                    url: "/sms-admin/study-schedule-monitoring/add/save-study-schedule-actual-end-date-modal",
-                    data: formData,
-                    dataType: 'json',
-                    success: function (response) {
-                        toastr.success('Actual end date successfully updated!');
-                        $('#openEndDateModal').modal('hide');
-                        convertSchedulesStatus = response.scheduleStatus.charAt(0).toUpperCase() + response.scheduleStatus.slice(1).toLowerCase();
-                        $('table tbody tr[data-id = "'+ scheduledId +'"] .actualEnddate').html(response.actualEndDate);
-                        $('table tbody tr[data-id="' + scheduledId + '"] .actualEnddate').prop('title', endTitle);
-                        $('table tbody tr[data-id = "'+ scheduledId +'"] .scheduleStatus').html(convertSchedulesStatus);
-
-                        if((roleId != 2) && (roleId != 1)){
-                            $('table tbody tr td a.saveEndDate[data-id="' + scheduledId +'"]').addClass('disabled');
-                        }
-                    },
-                });
-            } else {
-                event.preventDefault();
-            }
-
-        });
-
-        // Attach change event to the radio buttons
+         // Attach change event to the radio buttons
         $('input[type^="radio"]').on('change', function() {
             // Find the specific group name of the changed input field
             const groupName = $(this).data('group');
@@ -604,7 +500,155 @@
                 $(this).next('span.select-error-message').hide();
             }
         });
-    });
+
+        $(document).on('click', '.saveActualEndDate', function(){
+            endCount++;
+            var isFormValid = true;
+            // Check if any radio button is checked and it's a mandatory field
+            $('.radio-option').each(function () {
+                const groupName = $(this).data('group');
+                const isMandatory = $(this).data('is-mandatory') === true;
+
+                if (($(`.inlineRadioOptions_${groupName}:checked`).length === 0) && (isMandatory)) {
+                    $(`.radio-error-message[data-group="${groupName}"]`).show();
+                    isFormValid = false;
+                } else {
+                    $(`.radio-error-message[data-group="${groupName}"]`).hide();
+                }
+            });
+
+            // Check if any checkbox button is checked and it's a mandatory field
+            $('.checkbox-option').each(function () {
+                const groupName = $(this).data('group');
+                const isMandatory = $(this).data('is-mandatory') === true;
+               
+                if (($(`.inlineCheckboxOptions_${groupName}:checked`).length === 0) && (isMandatory)) {
+                    $(`.checkbox-error-message[data-group="${groupName}"]`).show();
+                    isFormValid = false;
+                } else {
+                    $(`.checkbox-error-message[data-group="${groupName}"]`).hide();
+                }
+            });
+
+            // Loop through each input with name 'text'
+            $('.text').each(function(index) {
+                const isMandatory = $(this).data('is-mandatory') === true;
+
+                if (($(this).val() === "") && (isMandatory)) {
+                    // Show the text box error message for each specific input field
+                    $(this).next('span.text-error-message').show();
+                    isFormValid = false;
+                } else {
+                    // Hide the text box error message for each specific input field
+                    $(this).next('span.text-error-message').hide();
+                }
+            });
+
+            // Loop through each input with name 'textarea'
+            $('.textArea').each(function(index) {
+                const isMandatory = $(this).data('is-mandatory') === true;
+         
+                if (($(this).val() === "") && (isMandatory)) {
+                    // Show the textarea error message for each specific input field
+                    $(this).next('span.textarea-error-message').show();
+                    isFormValid = false;
+                } else {
+                    // Hide the textarea error message for each specific input field
+                    $(this).next('span.textarea-error-message').hide();
+                }
+            });
+
+            // Loop through each input with name 'date'
+            $('.date').each(function(index) {
+                const isMandatory = $(this).data('is-mandatory') === true;
+         
+                if (($(this).val() === "") && (isMandatory)) {
+                    // Show the date box error message for each specific input field
+                    $(this).next('span.date-error-message').show();
+                    isFormValid = false;
+                } else {
+                    // Hide the date box error message for each specific input field
+                    $(this).next('span.date-error-message').hide();
+                }
+            });
+
+            // Loop through each input with name 'datetime'
+            $('.dateTime').each(function(index) {
+                const isMandatory = $(this).data('is-mandatory') === true;
+         
+                if (($(this).val() === "") && (isMandatory)) {        
+                    // Show the datetime box error message for each specific input field
+                    $(this).next('span.datetime-error-message').show();
+                    isFormValid = false;
+                } else {
+                    // Hide the datetime box error message for each specific input field
+                    $(this).next('span.datetime-error-message').hide();
+                }
+            });
+
+            // Loop through each input with name 'select'
+            $('.select').each(function(index) {
+                const isMandatory = $(this).data('is-mandatory') === true;
+         
+                if (($(this).val() === "") && (isMandatory)) {
+                    // Show the select box error message for each specific input field
+                    $(this).next('span.select-error-message').show();
+                    isFormValid = false;
+                } else {
+                    // Hide the daselecttetime box error message for each specific input field
+                    $(this).next('span.select-error-message').hide();
+                }
+            });
+
+            if(!$('#addActualEndDate').valid()){
+               $('#addActualEndDate').validate();
+               isFormValid = false;     
+            }
+
+            if(!isFormValid) {
+                endCount = 0;
+            }
+
+            if((isFormValid == true) && (endCount == 1)){
+                var formData = $('#addActualEndDate').serialize();
+                var scheduledId = $('#id').val();
+                var roleId = $('#role_id').val();
+                var endTitle = '';
+                var convertSchedulesStatus = '';
+                var endDelayReasonId = $('#end_delay_reason_id option:selected').val();
+                var endDelayReason = $('#end_delay_reason_id option:selected').text().trim();
+                var endDelayRemark = $('#end_delay_remark').val();
+
+                if($('#endActivityReason').css('display') != 'none'){
+                    if((endDelayReasonId != '') && (endDelayReasonId != 0)){
+                        endTitle = endDelayReason;
+                    } else if((endDelayReasonId != '') && (endDelayReasonId == 0)){
+                        endTitle = endDelayReason + " - " + endDelayRemark;
+                    }
+                }
+
+                $.ajax({
+
+                    method: 'POST',
+                    url: "/sms-admin/study-schedule-monitoring/add/save-study-schedule-actual-end-date-modal",
+                    data: formData,
+                    dataType: 'json',
+                    success: function (response) {
+                        toastr.success('Actual end date successfully updated!');
+                        $('#openEndDateModal').modal('hide');
+                        convertSchedulesStatus = response.scheduleStatus.charAt(0).toUpperCase() + response.scheduleStatus.slice(1).toLowerCase();
+                        $('table tbody tr[data-id = "'+ scheduledId +'"] .actualEnddate').html(response.actualEndDate);
+                        $('table tbody tr[data-id="' + scheduledId + '"] .actualEnddate').prop('title', endTitle);
+                        $('table tbody tr[data-id = "'+ scheduledId +'"] .scheduleStatus').html(convertSchedulesStatus);
+
+                        if((roleId != 2) && (roleId != 1)){
+                            $('table tbody tr td a.saveEndDate[data-id="' + scheduledId +'"]').addClass('disabled');
+                        }
+                    },
+                });
+            }
+        });
+    }); 
 
     // validation For file
     $(document).ready(function() {
@@ -647,51 +691,7 @@
         });
     });
 
-    $(document).ready(function(){
 
-        $("#addActualEndDate").validate({
-            errorElement : 'span',
-            rules: {
-                actual_end_date: {
-                    required: true,
-                },
-                end_delay_reason_id: {
-                    required: true,
-                },
-                end_delay_remark: {
-                    required: true,
-                },
-            },
-            messages: {
-                actual_end_date: {
-                    required: 'Please select actual end date',
-                },
-                end_delay_reason_id: {
-                    required: 'Please select end activity reason',
-                },
-                end_delay_remark: {
-                    required: 'Please enter end activity remark',
-                },  
-            }
-        });
-    });    
 
-    $(document).ready(function(){
-
-        $(document).on('change', '#actual_end_date', function () {
-            var actualEndDate = $('#actual_end_date').val();
-
-            if (actualEndDate != '') {
-                $('#actual_end_date-error').text('');
-            }
-        });
-
-        $(document).on('change', '#end_delay_reason_id', function () {
-            var actualEndDelayReason = $('#end_delay_reason_id').val();
-
-            if (actualEndDelayReason != '') {
-                $('#end_delay_reason_id-error').text('');
-            }
-        });
-    });
+   
 </script>

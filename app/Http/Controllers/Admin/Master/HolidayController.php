@@ -17,9 +17,25 @@ class HolidayController extends GlobalController
         $this->middleware('checkpermission');
     }
 	
-    public function holidayMasterList(){
+    public function holidayMasterList(Request $request){
 
-        $holidaylist = HolidayMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        $holidaylist = HolidayMaster::select('id', 'holiday_year', 'holiday_name', 'holiday_type', 'holiday_date', 'is_active')
+                                    ->where('is_delete', 0)
+                                    ->orderBy('id', 'DESC')
+                                    ->skip($offset)
+                                    ->limit($perPage)
+                                    ->get();
+
+        $recordCount = HolidayMaster::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);  
 
         $admin = '';
         $access = '';
@@ -31,7 +47,7 @@ class HolidayController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.holiday_master.holiday_master_list',compact('holidaylist', 'admin', 'access'));
+        return view('admin.masters.holiday_master.holiday_master_list',compact('holidaylist', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     public function addHolidayMaster(){

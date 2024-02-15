@@ -23,9 +23,24 @@ class SponsorMasterController extends Controller
         *
         * @return to sponsor master listing page
     **/
-    public function sponsorMasterList(){
+    public function sponsorMasterList(Request $request){
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
 
-        $sponsors = SponsorMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
+        $sponsors = SponsorMaster::select('id','sponsor_name', 'sponsor_type', 'is_active')
+                                ->where('is_delete', 0)
+                                ->orderBy('id', 'DESC')
+                                ->skip($offset)
+                                ->limit($perPage)
+                                ->get();
+        
+        $recordCount = SponsorMaster::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);                         
 
         $admin = '';
         $access = '';
@@ -37,7 +52,7 @@ class SponsorMasterController extends Controller
                                       ->first();
         }
 
-        return view('admin.masters.sponsor_master.sponsor_master_list', compact('sponsors', 'admin', 'access'));
+        return view('admin.masters.sponsor_master.sponsor_master_list', compact('sponsors', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     /**

@@ -23,6 +23,14 @@ class ActivityMetadataController extends Controller
     // Activity Metadata List
     public function activityMetadataList(Request $request){
 
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
         $activityMetadataList = ActivityMetadata::select('id', 'activity_id', 'control_id', 'source_value', 'source_question', 'is_mandatory', 'input_validation', 'is_activity', 'is_active')
                                                 ->where('is_delete', 0)
                                                 ->with([
@@ -35,12 +43,13 @@ class ActivityMetadataController extends Controller
                                                         $q->select('id', 'control_name');
                                                     }
                                                 ])
-                                                ->whereHas('controlName', function($q){
-                                                    $q->where('is_active', 1)
-                                                      ->where('is_delete', 0);
-                                                })
                                                 ->orderBy('id', 'DESC')
+                                                ->skip($offset)
+                                                ->limit($perPage)
                                                 ->get();
+
+        $recordCount = ActivityMetadata::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -53,7 +62,7 @@ class ActivityMetadataController extends Controller
                                       ->first();
         }
 
-        return view('admin.masters.activity_metadata.activity_metadata_list', compact('admin', 'access', 'activityMetadataList'));
+        return view('admin.masters.activity_metadata.activity_metadata_list', compact('admin', 'access', 'activityMetadataList', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     // Add ActivityMetadata

@@ -15,6 +15,7 @@ use App\Models\Role;
 use App\Models\DrugMaster;
 use App\Models\StudyDrugDetails;
 use App\Models\ClinicalWardMaster;
+use Hash;
 use Auth;
 use App\Models\StudyTrail;
 use App\Models\StudyDrugDetailsTrail;
@@ -87,6 +88,14 @@ class StudyController extends GlobalController
         $uomName = '';
         $drugType = '';
         $studyStatusName = '';
+
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
 
         $projectManagers = Admin::whereIn('role_id', ['2', '3'])
                                 ->where('is_active', 1)
@@ -258,7 +267,8 @@ class StudyController extends GlobalController
         
         $drugs = DrugMaster::where('is_active', 1)->where('is_delete', 0)->get();
 
-        $query = Study::where('is_delete', 0)
+        $query = Study::select('id', 'study_result', 'study_status', 'study_slotted', 'tentative_clinical_date', 'projection_status', 'study_no', 'sponsor', 'project_manager', 'is_active')
+                      ->where('is_delete', 0)
                       ->whereHas('projectManager', function($q){
                             $q->where('is_active',1);
                       })
@@ -541,6 +551,8 @@ class StudyController extends GlobalController
                                         ]);
                                     }
                                 ])
+                            ->skip($offset)
+                            ->limit($perPage)
                             ->get();
         } else {
             $studies = $query->with([
@@ -574,9 +586,13 @@ class StudyController extends GlobalController
                                         ]);
                                     }
                                 ])
+                            ->skip($offset)
+                            ->limit($perPage)
                             ->get();
-
         }
+
+        $recordCount = Study::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -588,7 +604,7 @@ class StudyController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.study.study.study_list', compact('studies', 'admin', 'access', 'projectManagers', 'filter', 'projectManagerName','complexityName','complexity','studyDesign','studyDesignName', 'studySubType', 'studySubTypeName', 'studyType', 'studyTypeName', 'studyConditionName', 'studyCondition','subjectTypeName','subjectType', 'priority', 'priorityName', 'blindingStatusName', 'blindingStatus', 'regulatorySubmissionName', 'regulatorySubmission','sponsors','sponsorName', 'crLocation', 'crLocationName', 'brLocation', 'brLocationName','scopeName','scope','principleName','principle','bioanalytical','bioanalyticalName','studyName','studies', 'specialNotesName','specialNotes','noOfSubject','noOfMaleSubject', 'maleStudies', 'subject', 'femaleSubject', 'noOfFemaleSubject', 'studyResult', 'sponsorStudyName', 'totalWashoutPeriod', 'washoutPeriod', 'clinicalWardMaster', 'clinicalWardLocation', 'totalGroups', 'noOfGroup', 'totalPeriods', 'noOfPeriod', 'totalHousing', 'noOfHousing', 'preHousing', 'noOfPreHousing', 'noOfPostHousing', 'postHousing', 'startAllocationDate', 'endAllocationDate', 'startTentativeDate', 'endTentativeDate', 'startEndTentativeDate', 'endEndTentativeDate', 'startImpDate', 'endImpDate', 'drugs', 'drugName', 'dosageForms', 'dosageFormName', 'uoms', 'uomName', 'drugType', 'studyStatus','studyStatusName','sponsorStudy'));
+        return view('admin.study.study.study_list', compact('studies', 'admin', 'access', 'projectManagers', 'filter', 'projectManagerName','complexityName','complexity','studyDesign','studyDesignName', 'studySubType', 'studySubTypeName', 'studyType', 'studyTypeName', 'studyConditionName', 'studyCondition','subjectTypeName','subjectType', 'priority', 'priorityName', 'blindingStatusName', 'blindingStatus', 'regulatorySubmissionName', 'regulatorySubmission','sponsors','sponsorName', 'crLocation', 'crLocationName', 'brLocation', 'brLocationName','scopeName','scope','principleName','principle','bioanalytical','bioanalyticalName','studyName','studies', 'specialNotesName','specialNotes','noOfSubject','noOfMaleSubject', 'maleStudies', 'subject', 'femaleSubject', 'noOfFemaleSubject', 'studyResult', 'sponsorStudyName', 'totalWashoutPeriod', 'washoutPeriod', 'clinicalWardMaster', 'clinicalWardLocation', 'totalGroups', 'noOfGroup', 'totalPeriods', 'noOfPeriod', 'totalHousing', 'noOfHousing', 'preHousing', 'noOfPreHousing', 'noOfPostHousing', 'postHousing', 'startAllocationDate', 'endAllocationDate', 'startTentativeDate', 'endTentativeDate', 'startEndTentativeDate', 'endEndTentativeDate', 'startImpDate', 'endImpDate', 'drugs', 'drugName', 'dosageForms', 'dosageFormName', 'uoms', 'uomName', 'drugType', 'studyStatus','studyStatusName','sponsorStudy', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     /**

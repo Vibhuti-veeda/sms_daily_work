@@ -27,9 +27,18 @@ class ActivityMasterController extends Controller
         *
         * @return to activity master listing page
     **/
-    public function activityMasterList(){
+    public function activityMasterList(Request $request){
         
-        $activities = ActivityMaster::where('is_delete', 0)
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        $activities = ActivityMaster::select('id', 'activity_name', 'days_required', 'next_activity', 'buffer_days', 'responsibility', 'activity_type', 'activity_days', 'sequence_no', 'previous_activity', 'is_milestone', 'parent_activity', 'is_active')
+                                    ->where('is_delete', 0)
                                     ->with([
                                             'responsible', 
                                             'nextActivity', 
@@ -37,7 +46,12 @@ class ActivityMasterController extends Controller
                                             'parentActivity',
                                             'activityType'
                                         ])
+                                    ->skip($offset)
+                                    ->limit($perPage)
                                     ->get();
+
+        $recordCount = ActivityMaster::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -49,7 +63,7 @@ class ActivityMasterController extends Controller
                                       ->first();
         }
 
-        return view('admin.masters.activity.activity_masters_list', compact('activities', 'admin', 'access'));
+        return view('admin.masters.activity.activity_masters_list', compact('activities', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     /**

@@ -37,14 +37,21 @@ class StudyScheduleController extends GlobalController
         *
         * @return to study schedule listing page
     **/
-    public function studyScheduleList(){
+    public function studyScheduleList(Request $request){
+
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
 
         $studyNo = Study::where('is_delete', 0)
                         ->whereHas('projectManager', function($q){
                             $q->where('is_active',1);
                         })
-                        ->pluck('id');
-
+                        ->pluck('id');               
         if (Auth::guard('admin')->user()->role_id == 3) {
 
             $studies = StudySchedule::where('is_delete', 0)
@@ -82,6 +89,19 @@ class StudyScheduleController extends GlobalController
                                     ->whereIn('study_id',$studyNo)
                                     ->groupBy('study_id')
                                     ->orderBy('id', 'DESC')
+                                    ->skip($offset)
+                                    ->limit($perPage)
+                                    ->get();
+                                 
+        $studiesCount = StudySchedule::where('is_delete', 0)
+                                    ->whereIn('study_id',$studyNo)
+                                    ->whereHas(
+                                        'studyNo', function($q) { 
+                                            $q->select('id','study_no', 'sponsor')
+                                              ->where('project_manager',Auth::guard('admin')->user()->id);
+                                        }
+                                    )
+                                    ->groupBy('study_id')
                                     ->get();
 
         } else {
@@ -114,8 +134,18 @@ class StudyScheduleController extends GlobalController
                                     ->whereIn('study_id',$studyNo)
                                     ->groupBy('study_id')
                                     ->orderBy('id', 'DESC')
+                                    ->skip($offset)
+                                    ->limit($perPage)
                                     ->get();
+
+            $studiesCount = StudySchedule::where('is_delete', 0)
+                                        ->whereIn('study_id',$studyNo)
+                                        ->groupBy('study_id')
+                                        ->get();  
         }
+
+        $recordCount = $studiesCount->count();
+        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -127,7 +157,7 @@ class StudyScheduleController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.study.study_schedule.study_schedule_list', compact('studies', 'admin', 'access'));
+        return view('admin.study.study_schedule.study_schedule_list', compact('studies', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     /**

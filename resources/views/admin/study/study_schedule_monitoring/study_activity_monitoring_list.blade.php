@@ -263,18 +263,18 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             
-                                            <td>
+                                            <td class="bolfFont">
                                                 <a id="myModal" data-id="{{ $av->study_id }}" data-toggle="modal" data-target="#openScheduleDelayModal" href="Javascript:void(0)">
                                                     {{ ((!is_null($av->studyNo)) && ($av->studyNo->study_no != '')) ? $av->studyNo->study_no : '---' }}
                                                 </a> 
                                             </td>
                                             
                                             @if(Auth::guard('admin')->user()->role_id == 6)
-                                                <td>
+                                                <td class="bolfFont">
                                                     {{ $av->activity_name }} @if($av->group_no != 1)(G{{ $av->group_no }}) @endif @if(($av->group_no != 1) && ($av->period_no != 1)) - @endif @if($av->period_no != 1) (P{{ $av->period_no }}) @endif @if($av->activity_version_type != '') ({{ $av->activity_version_type }}-{{ $av->activity_version }}) @endif
                                                 </td>
                                             @elseif(in_array($av->id, $projectManagerActivities) || Auth::guard('admin')->user()->role_id == 1)
-                                                <td>
+                                                <td class="bolfFont">
                                                     <a href="{{ route('admin.studyScheduleStatus', base64_encode($av->study_id)) }}">
                                                         {{ $av->activity_name }} @if($av->group_no != 1)(G{{ $av->group_no }}) @endif @if(($av->group_no != 1) && ($av->period_no != 1)) - @endif @if($av->period_no != 1) (P{{ $av->period_no }}) @endif @if($av->activity_version_type != '') ({{ $av->activity_version_type }}-{{ $av->activity_version }}) @endif
                                                     </a>

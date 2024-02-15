@@ -25,6 +25,14 @@ class StudyActivityMetadataController extends GlobalController
         $fromDate = '';
         $toDate = '';
 
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
         $studyNo = StudyActivityMetadata::select('id', 'study_schedule_id')
                                         ->with([
                                             'studySchedule' => function($q) {
@@ -41,10 +49,6 @@ class StudyActivityMetadataController extends GlobalController
                                                 ->where('is_delete', 0);
                                             }
                                         ])
-                                        ->whereHas('activityMetadata', function($q){
-                                            $q->where('is_active', 1)
-                                              ->where('is_delete', 0);
-                                        })
                                         ->where('is_active', 1)
                                         ->where('is_delete', 0)
                                         ->groupBy('study_schedule_id')
@@ -67,10 +71,6 @@ class StudyActivityMetadataController extends GlobalController
                                                         ->where('is_delete', 0);
                                                     }
                                                 ])
-                                                ->whereHas('activityMetadata', function($q){
-                                                    $q->where('is_active', 1)
-                                                      ->where('is_delete', 0);
-                                                })
                                                ->where('is_active', 1)
                                                ->where('is_delete', 0)
                                                ->groupBy('study_schedule_id')
@@ -99,7 +99,9 @@ class StudyActivityMetadataController extends GlobalController
             $filter = 1;
             $fromDate = $request->from_date;
             $toDate = $request->to_date;
-            $query->whereBetween('created_at',array($this->convertDateTime($fromDate),$this->convertDateTime($toDate)));
+            $query->whereHas('studySchedule', function($q) use ($request,$fromDate,$toDate) {
+                $q->whereBetween('actual_end_date',array($this->convertDateTime($fromDate),$this->convertDateTime($toDate)));
+            });
         }
 
         $allActivityMetadataList = $query->with([
@@ -112,10 +114,6 @@ class StudyActivityMetadataController extends GlobalController
                                                               ->where('is_delete', 0);
                                                         },
                                                     ])
-                                                    ->whereHas('controlName', function($q){
-                                                        $q->where('is_active', 1)
-                                                          ->where('is_delete', 0);
-                                                    })
                                                     ->where('is_active', 1)
                                                     ->where('is_delete', 0);
                                             },
@@ -132,16 +130,17 @@ class StudyActivityMetadataController extends GlobalController
                                                 ->where('is_delete', 0);
                                             },
                                         ])
-                                        ->whereHas('activityMetadata', function($q){
-                                            $q->where('is_active', 1)
-                                              ->where('is_delete', 0);
-                                        })
                                       ->where('is_active', 1)
                                       ->where('is_delete', 0)
                                       ->orderBy('id', 'DESC')
+                                      ->skip($offset)
+                                      ->limit($perPage)
                                       ->get();
 
-        return view('admin.study.study_metadata.all_studies_activity_metadata_list', compact('allActivityMetadataList', 'filter', 'studyNo', 'activityNames', 'studyId', 'activityId' , 'fromDate','toDate'));
+        $recordCount = StudyActivityMetadata::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);  
+
+        return view('admin.study.study_metadata.all_studies_activity_metadata_list', compact('allActivityMetadataList', 'filter', 'studyNo', 'activityNames', 'studyId', 'activityId' , 'fromDate','toDate', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
 }

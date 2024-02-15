@@ -229,7 +229,7 @@ $(document).ready(function(){
 $(document).ready(function(){
 
     $(document).on('change', '.actualStartDate', function(e){
-        // alert('hi');
+
         e.preventDefault();
         var schedule_start_date = $('#schedule_start_date').val();
         var actualStartDate = $('.actualStartDate').val();
@@ -776,27 +776,6 @@ $(document).on('click', '#myCopyActivityModal', function(){
     });    
 });
 
-// Function to initialize start datepickers
-/*function initializeStartDatepickers() {
-    $('.scheduleStartDatepicker').datepicker({
-        dateFormat: "dd M yy",
-        maxDate: new Date(),
-    });
-}
-
-// Function to initialize end datepickers
-function initializeEndDatepickers() {
-    $('.scheduleEndDatepicker').each(function() {
-        var mindate = $(this).data('startdate');
-        $(this).datepicker({
-            dateFormat: "dd M yy",
-            minDate: new Date(mindate),
-            maxDate: new Date(),
-        });
-    });
-}*/
-
-
 // Start Date Model open
 $(document).ready(function(){
     $(document).on('click','.saveStartDate',function(){
@@ -829,11 +808,5 @@ $(document).ready(function(){
         });         
     });
 });
-
-// Initial start datepicker initialization
-/*initializeStartDatepickers();
-initializeEndDatepickers();*/
-
-
 
 

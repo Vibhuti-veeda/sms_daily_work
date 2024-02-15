@@ -20,14 +20,28 @@ class ReasonMasterController extends Controller
     }
 
     // Reason Master List
-    public function reasonMasterList(){
+    public function reasonMasterList(Request $request){
 
-        $reasonMaster = ReasonMaster::where('is_delete', 0)
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        $reasonMaster = ReasonMaster::select('id', 'activity_type_id', 'activity_id', 'start_delay_remark', 'end_delay_remark', 'is_active')
+                                    ->where('is_delete', 0)
                                     ->orderBy('id', 'DESC')
                                     ->with([
                                         'activityType'
                                     ])
+                                    ->skip($offset)
+                                    ->limit($perPage)
                                     ->get();
+
+        $recordCount = ReasonMaster::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -39,7 +53,7 @@ class ReasonMasterController extends Controller
                                       ->first();
         }
 
-        return view('admin.masters.reason_master.reason_master_list',compact('reasonMaster','admin', 'access'));
+        return view('admin.masters.reason_master.reason_master_list',compact('reasonMaster','admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     // Add Reason Master

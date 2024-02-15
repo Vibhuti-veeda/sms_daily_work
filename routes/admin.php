@@ -36,6 +36,7 @@
 		Route::post('/view/module-access-change', 'RoleController@moduleAccessChange')->name('admin.moduleAccessChange');
 		Route::post('/view/session-store', 'RoleController@sessionStore')->name('admin.sessionStore');
 		Route::post('/view/get-removed-temp-array', 'RoleController@removeTempArray')->name('admin.removeTempArray');
+		Route::get('/view/export-roles', 'RoleController@exportRoles')->name('admin.exportRoles');
 	});
 
 	// Team Member Route
@@ -52,7 +53,7 @@
 
 	// Activity Master Route
 	Route::group(['prefix' => 'activity-master'], function () {
-		Route::get('/view/activity-master-list', 'Master\ActivityMasterController@activityMasterList')->name('admin.activityMasterList');
+		Route::match(['get', 'post'], '/view/activity-master-list', 'Master\ActivityMasterController@activityMasterList')->name('admin.activityMasterList');
 		Route::get('/add/add-activity-master', 'Master\ActivityMasterController@addActivityMaster')->name('admin.addActivityMaster');
 		Route::post('/add/save-activity-master', 'Master\ActivityMasterController@saveActivityMaster')->name('admin.saveActivityMaster');
 		Route::get('/edit/edit-activity-master/{id}', 'Master\ActivityMasterController@editActivityMaster')->name('admin.editActivityMaster');
@@ -192,7 +193,7 @@
 	});
 
 	Route::group(['prefix' => 'sla-activity-master'], function () {
-	    Route::get('/view/sla-activity-master-list', 'Master\SlaActivityMasterController@slaActivityMasterList')->name('admin.slaActivityMasterList');
+	    Route::get( '/view/sla-activity-master-list', 'Master\SlaActivityMasterController@slaActivityMasterList')->name('admin.slaActivityMasterList');
 	    Route::get('/add/add-sla-activity-master', 'Master\SlaActivityMasterController@addSlaActivityMaster')->name('admin.addSlaActivityMaster');
 	    Route::post('/add/save-sla-activity-master', 'Master\SlaActivityMasterController@saveSlaActivityMaster')->name('admin.saveSlaActivityMaster');
 	    Route::get('/edit/edit-sla-activity-master/{id}', 'Master\SlaActivityMasterController@editSlaActivityMaster')->name('admin.editSlaActivityMaster');

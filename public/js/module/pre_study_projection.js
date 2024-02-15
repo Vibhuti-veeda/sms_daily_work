@@ -291,7 +291,7 @@ $(function() {
     });
 });
 
-$(function() {
+$(document).on('click','#accordionExample',function(){
     
     $.ajax({
         url: "/sms-admin/pre-study-projection-data/view/get-post-study-projection-list",

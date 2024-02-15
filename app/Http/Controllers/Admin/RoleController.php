@@ -12,6 +12,8 @@ use App\Models\RoleDefinedDashboardElement;
 use App\Models\RoleDefinedModule;
 use Session;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\RoleExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RoleController extends Controller
 {
@@ -20,23 +22,30 @@ class RoleController extends Controller
     }
 
     // Role List
-    public function roleList(){
+    public function roleList(Request $request){
 
-        $data = Role::where('is_delete',0)
-                    ->with([
-                        'defined_module' => function($q){ 
-                            $q->with([
-                                'module_name'
-                            ]);
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        $data = Role::select('id', 'name', 'is_active')
+                    ->where('is_delete', 0)
+                    ->with(['defined_module' => function($q) { 
+                            $q->with(['module_name']);
                         },
-                        'defined_elements' => function($q){ 
-                            $q->with([
-                                'elementName'
-                            ]);
-                        }
-                    ])
+                        'defined_elements' => function($q) { 
+                            $q->with(['elementName']);
+                        }])
+                    ->skip($offset)
+                    ->limit($perPage)
                     ->get();
-
+        $recordCount = Role::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage); 
+                    
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){
@@ -47,7 +56,7 @@ class RoleController extends Controller
                                       ->first();
         }
 
-        return view('admin.masters.role.role_list',compact('data','admin','access'));
+        return view('admin.masters.role.role_list',compact('data','admin','access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     // Add Role
@@ -387,8 +396,7 @@ class RoleController extends Controller
     }
 
     // Check role exists or not
-    public function checkRoleExist(Request $request)
-    {   
+    public function checkRoleExist(Request $request){   
 
         $query = Role::where('is_delete',0)->where('name', $request->role_name);
         if(isset($request->role_name)) {
@@ -397,6 +405,10 @@ class RoleController extends Controller
         $role = $query->first();
 
         return $role ? 'false' : 'true';
+    }
+
+    public function exportRoles(){
+        return Excel::download(new RoleExport, 'roles.xlsx');
     }
 
 }

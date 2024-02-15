@@ -18,9 +18,25 @@ class ParaMasterController extends Controller
         $this->middleware('checkpermission');
     }
 
-    public function paraMasterList(){
+    public function paraMasterList(Request $request){
         
-        $paras = ParaMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        $paras = ParaMaster::select('id', 'para_code', 'para_description', 'is_active')
+                            ->where('is_delete', 0)
+                            ->orderBy('id', 'DESC')
+                            ->skip($offset)
+                            ->limit($perPage)
+                            ->get();
+
+        $recordCount = ParaMaster::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -33,7 +49,7 @@ class ParaMasterController extends Controller
                                       ->first();
         }
 
-        return view('admin.masters.para_master.para_master_list', compact('paras', 'admin', 'access'));
+        return view('admin.masters.para_master.para_master_list', compact('paras', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     public function addParaMaster(){
@@ -139,9 +155,25 @@ class ParaMasterController extends Controller
         return $status ? 'true' : 'false';
     }
 
-    public function paraCodeMasterList($id){
+    public function paraCodeMasterList($id, Request $request){
+
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
         
-        $paraCodes = ParaCode::where('para_master_id', base64_decode($id))->where('is_delete', 0)->get();
+        $paraCodes = ParaCode::select('id', 'para_master_id', 'para_value', 'is_active')
+                            ->where('para_master_id', base64_decode($id))
+                            ->where('is_delete', 0)
+                            ->skip($offset)
+                            ->limit($perPage)
+                            ->get();
+                      
+        $recordCount = ParaCode::where('para_master_id', base64_decode($id))->where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -153,7 +185,7 @@ class ParaMasterController extends Controller
                                       ->first();
         }
 
-        return view('admin.masters.para_code.para_code_master_list', compact('paraCodes', 'id', 'admin', 'access'));
+        return view('admin.masters.para_code.para_code_master_list', compact('paraCodes', 'id', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     public function addParaCodeMaster($id){

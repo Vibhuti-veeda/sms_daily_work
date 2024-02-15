@@ -87,7 +87,7 @@
                 <div class="card">
                     <div class="card-body">
 
-                        <table id="datatable-buttons" class="table table-striped table-bordered nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="tableList" class="table table-striped table-bordered nowrap display" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Sr. No</th>
@@ -107,9 +107,12 @@
                             </thead>
                             <tbody>
                                 @if(!is_null($members))
+                                    @php
+                                        $count = (($offset == 0) ? 1 : $offset+1); 
+                                    @endphp
                                     @foreach($members as $mk => $mv)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $count++ }}</td>
                                             <td>{{ $mv->name }}</td>
                                             <td>
                                                 {{ (!is_null($mv->role) && $mv->role->name != '') ? $mv->role->name : '---' }}
@@ -159,8 +162,39 @@
                                     @endforeach
                                 @endif
                             </tbody>
-                        </table>
-                        
+                        </table> 
+                        <div class="mt-2">
+                            Showing {{ (($page - 1) * $perPage) + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
+                        </div>
+                        <div style="float:right;">
+                            @if ($pageCount >= 1)
+                                <nav aria-label="...">
+                                    <ul class="pagination">
+                                        <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
+                                            <a class="page-link" href="{{ route('admin.teamMemberList', ['page' => base64_encode(1)]) }}">First</a>
+                                        </li>
+                                        <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
+                                            <a class="page-link h5" href="{{ route('admin.teamMemberList', ['page' => base64_encode($page - 1)]) }}">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        @for ($i = max(1, $page - 2); $i <= min($page + 4, $pageCount); $i++)
+                                            <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
+                                                <a class="page-link" href="{{ route('admin.teamMemberList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
+                                            </li>
+                                        @endfor
+                                        <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
+                                            <a class="page-link h5" href="{{ route('admin.teamMemberList', ['page' => base64_encode($page + 1)]) }}">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
+                                            <a class="page-link" href="{{ route('admin.teamMemberList', ['page' => base64_encode($pageCount)]) }}">Last</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            @endif
+                        </div>         
                     </div>
                 </div>
             </div>

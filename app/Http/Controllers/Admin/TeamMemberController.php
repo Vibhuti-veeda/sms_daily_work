@@ -32,9 +32,17 @@ class TeamMemberController extends Controller
         $status = '';
         $roleId = '';
 
-        $roles = Role::where('is_active', 1)->where('is_delete',0)->get();
-        $query = Admin::where('is_delete', 0);
+        $perPage = 10;
+        if($request->page != ''){
+            $page = base64_decode($request->query('page', base64_decode(1)));
+        } else{
+            $page = 1;
+        }
+        $offset = ($page - 1) * $perPage;
 
+        $roles = Role::where('is_active', 1)->where('is_delete',0)->get();
+        $query = Admin::select('id', 'name', 'role_id', 'email', 'location_id', 'is_active')->where('is_delete', 0);
+        
         if(isset($request->status) && $request->status != ''){
             $filter = 1;
             $status = $request->status;
@@ -47,7 +55,13 @@ class TeamMemberController extends Controller
             $query->where('role_id',$roleId);
         }
 
-        $members = $query->with(['role', 'location'])->get();
+        $members = $query->with(['role', 'location'])
+                        ->skip($offset)
+                        ->limit($perPage)
+                        ->get();
+
+        $recordCount = Admin::where('is_delete', 0)->count();
+        $pageCount = ceil($recordCount / $perPage);                
 
         $admin = '';
         $access = '';
@@ -57,7 +71,7 @@ class TeamMemberController extends Controller
             $access = RoleModuleAccess::where('role_id', Auth::guard('admin')->user()->role_id)->where('module_name','team-member')->first();
         }
 
-        return view('admin.masters.team.team_member_list', compact('members', 'filter', 'status', 'roles', 'roleId', 'admin', 'access'));
+        return view('admin.masters.team.team_member_list', compact('members', 'filter', 'status', 'roles', 'roleId', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 
     /**
