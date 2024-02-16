@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command('make:dailyDepartmentActivities')->dailyAt('10:10');
         //$schedule->command('make:weeklyPreStudyPlannedData')->mondays()->at('09:00');
         //$schedule->command('make:hodDailyDelayActivitiesList')->mondays()->at('09:05');
-        //$schedule->command('make:checkCronosData')->everyMinute();
+        //$schedule->command('make:checkCronosData')->everyTwoHours();
     }
 
     /**

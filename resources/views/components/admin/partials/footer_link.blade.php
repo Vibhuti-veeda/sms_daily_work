@@ -142,9 +142,6 @@
     <script type="text/javascript" src="{{ asset('js/module/activity_metadata.js') }}"></script>
 @endif
 
-
-
-
 <script type="text/javascript">
 	$(".datepickerStyle").datepicker({
         dateFormat: "dd-mm-yy",

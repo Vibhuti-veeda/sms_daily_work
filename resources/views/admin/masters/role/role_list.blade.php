@@ -34,9 +34,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div style="margin-top: -40px; transform: translate(137px, 52px); width: fit-content;">
-                            <a href="{{ route('admin.exportRoles')}}" class="btn btn-secondary">Export</a>    
-                        </div>
+
                         <table id="tableList" class="table table-striped table-bordered tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -117,11 +115,11 @@
                             </tbody>
                         </table>
                         <div class="mt-2">
-                            Showing {{ (($page - 1) * $perPage) + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
+                            Showing {{ $offset + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
                         </div>
                         <div style="float:right;">
                             @if ($pageCount >= 1)
-                                <nav aria-label="...">
+                                <nav id="pagination" aria-label="...">
                                     <ul class="pagination">
                                         <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
                                             <a class="page-link" href="{{ route('admin.roleList', ['page' => base64_encode(1)]) }}">First</a>

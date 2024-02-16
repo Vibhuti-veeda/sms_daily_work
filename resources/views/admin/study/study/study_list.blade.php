@@ -42,12 +42,12 @@
                     <div class="accordion-body collapse show">
                         <form method="post" action="{{ route('admin.studyList') }}">
                             @csrf
-
+                            <input type="hidden" name="page" id="page" value="{{$page}}">
                             <div class="row">
 
                                 <div class="col-md-2">
                                     <label class="control-label">Study No</label>
-                                    <select class="form-control select2" name="study_no" style="width: 100%;">
+                                    <select class="form-control select2" name="study_no" id="study_no" style="width: 100%;">
                                         <option value="">Select Study No</option>
                                         @if(!is_null($studies))
                                             @foreach($studies as $sk => $sv)
@@ -59,7 +59,7 @@
 
                                 <div class="col-md-2">
                                     <label class="control-label">Project Managers</label>
-                                    <select class="form-control select2" name="project_manager" style="width: 100%;">
+                                    <select class="form-control select2" name="project_manager" id="project_manager" style="width: 100%;">
                                         <option value="">Select Project Managers</option>
                                         @if(!is_null($projectManagers))
                                             @foreach($projectManagers as $pk => $pv)
@@ -73,7 +73,7 @@
 
                                 <div class="col-md-2">
                                     <label class="control-label">Drug Name</label>
-                                    <select class="form-control select2" name="drug_name" style="width: 100%;">
+                                    <select class="form-control select2" name="drug_name" id="drug_name" style="width: 100%;">
                                         <option value="">Select Drug Name</option>
                                         @if(!is_null($drugs))
                                             @foreach($drugs as $dk => $dv)
@@ -87,7 +87,7 @@
 
                                 <div class="col-md-2">
                                     <label class="control-label">Dosage Form</label>
-                                    <select class="form-control select2" name="dosage_form_id" style="width: 100%;">
+                                    <select class="form-control select2" name="dosage_form_id" id="dosage_form_id" style="width: 100%;">
                                         <option value="">Select Dosage Form</option>
                                         @if(!is_null($dosageForms->paraCode))
                                             @foreach($dosageForms->paraCode as $dk => $dv)
@@ -101,7 +101,7 @@
                                 
                                 <div class="col-md-2">
                                     <label class="control-label">UOM</label>
-                                    <select class="form-control select2" name="uom_id" style="width: 100%;">
+                                    <select class="form-control select2" name="uom_id" id="uom_id" style="width: 100%;">
                                         <option value="">Select UOM</option>
                                         @if(!is_null($uoms->paraCode))
                                             @foreach($uoms->paraCode as $uk => $uv)
@@ -115,7 +115,7 @@
 
                                 <div class="col-md-2">
                                     <label class="control-label">Drug Type</label>
-                                    <select class="form-control select2" name="drug_type" style="width: 100%;">
+                                    <select class="form-control select2" name="drug_type" id="drug_type" style="width: 100%;">
                                         <option value="">Select Drug Type</option>
                                         <option @if($drugType == 'TEST') selected @endif value="TEST">Test</option>
                                         <option @if($drugType == 'REFERENCE') selected @endif value="REFERENCE">Reference</option>
@@ -124,7 +124,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Complexity</label>
-                                    <select class="form-control select2" name="complexity" style="width: 100%;">
+                                    <select class="form-control select2" name="complexity" id="complexity" style="width: 100%;">
                                         <option value="">Select Complexity</option>
                                         @if(!is_null($complexity->paraCode))
                                             @foreach($complexity->paraCode as $ck => $cv)
@@ -138,7 +138,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Study Design</label>
-                                    <select class="form-control select2" name="study_design" style="width: 100%;">
+                                    <select class="form-control select2" name="study_design" id="study_design" style="width: 100%;">
                                         <option value="">Select Study Design</option>
                                         @if(!is_null($studyDesign->paraCode))
                                             @foreach($studyDesign->paraCode as $sk => $sv)
@@ -152,7 +152,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Study Sub Type</label>
-                                    <select class="form-control select2" name="study_sub_type" style="width: 100%;">
+                                    <select class="form-control select2" name="study_sub_type" id="study_sub_type" style="width: 100%;">
                                         <option value="">Select Study Sub Type</option>
                                         @if(!is_null($studySubType->paraCode))
                                             @foreach($studySubType->paraCode as $ssk => $ssv)
@@ -166,7 +166,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Study Type</label>
-                                    <select class="form-control select2" name="study_type" style="width: 100%;">
+                                    <select class="form-control select2" name="study_type" id="study_type" style="width: 100%;">
                                         <option value="">Select Study Type</option>
                                         @if(!is_null($studyType->paraCode))
                                             @foreach($studyType->paraCode as $sk => $sv)
@@ -180,7 +180,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Study Condition</label>
-                                    <select class="form-control select2" name="study_condition" style="width: 100%;">
+                                    <select class="form-control select2" name="study_condition" id="study_condition" style="width: 100%;">
                                         <option value="">Select Study Condition</option>
                                         @if(!is_null($studyCondition->paraCode))
                                             @foreach($studyCondition->paraCode as $sk => $sv)
@@ -194,7 +194,7 @@
                         
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Subject Type</label>
-                                    <select class="form-control select2" name="subject_type" style="width: 100%;">
+                                    <select class="form-control select2" name="subject_type" id="subject_type" style="width: 100%;">
                                         <option value="">Select Subject Type</option>
                                         @if(!is_null($subjectType->paraCode))
                                             @foreach($subjectType->paraCode as $sk => $sv)
@@ -208,7 +208,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Priority</label>
-                                    <select class="form-control select2" name="priority" style="width: 100%;">
+                                    <select class="form-control select2" name="priority" id="priority" style="width: 100%;">
                                         <option value="">Select Priority</option>
                                         @if(!is_null($priority->paraCode))
                                             @foreach($priority->paraCode as $sk => $sv)
@@ -222,7 +222,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Blinding Status</label>
-                                    <select class="form-control select2" name="blinding_status" style="width: 100%;">
+                                    <select class="form-control select2" name="blinding_status" id="blinding_status" style="width: 100%;">
                                         <option value="">Select Blinding Status</option>
                                         @if(!is_null($blindingStatus->paraCode))
                                             @foreach($blindingStatus->paraCode as $sk => $sv)
@@ -236,7 +236,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Regulatory Submission</label>
-                                    <select class="form-control select2" name="regulatory_submission" style="width: 100%;">
+                                    <select class="form-control select2" name="regulatory_submission" id="regulatory_submission" style="width: 100%;">
                                         <option value="">Select Regulatory Submission</option>
                                         @if(!is_null($regulatorySubmission->paraCode))
                                             @foreach($regulatorySubmission->paraCode as $sk => $sv)
@@ -250,7 +250,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Sponsor Name</label>
-                                    <select class="form-control select2" name="sponsor_id" style="width: 100%;">
+                                    <select class="form-control select2" name="sponsor_id" id="sponsor_id" style="width: 100%;">
                                         <option value="">Select Sponsor Name</option>
                                         @if(!is_null($sponsors))
                                             @foreach($sponsors as $sk => $sv)
@@ -264,7 +264,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">CR Location</label>
-                                    <select class="form-control select2" name="cr_location" style="width: 100%;">
+                                    <select class="form-control select2" name="cr_location" id="cr_location" style="width: 100%;">
                                         <option value="">Select CR Location</option>
                                         @if(!is_null($crLocation))
                                             @foreach($crLocation as $ck => $cv)
@@ -278,7 +278,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">BR Location</label>
-                                    <select class="form-control select2" name="br_location" style="width: 100%;">
+                                    <select class="form-control select2" name="br_location" id="br_location" style="width: 100%;">
                                         <option value="">Select BR Location</option>
                                         @if(!is_null($brLocation))
                                             @foreach($brLocation as $bk => $bv)
@@ -292,7 +292,7 @@
 
                                  <div class="col-md-2 mt-4">
                                     <label class="control-label">Scope</label>
-                                    <select class="form-control select2" name="scope" style="width: 100%;">
+                                    <select class="form-control select2" name="scope" id="scope" style="width: 100%;">
                                         <option value="">Select Scope</option>
                                         @if(!is_null($scope->paraCode))
                                             @foreach($scope->paraCode as $sk => $sv)
@@ -306,7 +306,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Principle Investigator</label>
-                                    <select class="form-control select2" name="principle_investigator" style="width: 100%;">
+                                    <select class="form-control select2" name="principle_investigator" id="principle_investigator" style="width: 100%;">
                                         <option value="">Select Principle Investigator</option>
                                         @if(!is_null($principle->principleInvestigator))
                                         @foreach($principle->principleInvestigator as $pk => $pv)
@@ -320,7 +320,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Bioanalytical Investigator</label>
-                                    <select class="form-control select2" name="bioanalytical_investigator" style="width: 100%;">
+                                    <select class="form-control select2" name="bioanalytical_investigator" id="bioanalytical_investigator" style="width: 100%;">
                                         <option value="">Select Bioanalytical Investigator</option>
                                         @if(!is_null($bioanalytical->bioanalyticalInvestigator))
                                         @foreach($bioanalytical->bioanalyticalInvestigator as $pk => $pv)
@@ -333,7 +333,7 @@
                                 </div>
 
                                 <div class="col-md-2 mt-4"><label class="control-label">Special Notes</label>
-                                    <select class="form-control select2" name="special_notes" style="width: 100%;">
+                                    <select class="form-control select2" name="special_notes" id="special_notes" style="width: 100%;">
                                         <option value="">Select Special Notes</option>
                                         @if(!is_null($specialNotes->paraCode))
                                             @foreach($specialNotes->paraCode as $sk => $sv)
@@ -346,7 +346,7 @@
                                 </div>
 
                                 <div class="col-md-2 mt-4"><label class="control-label">No of Subject</label>
-                                    <select class="form-control select2" name="no_of_subject" style="width: 100%;">
+                                    <select class="form-control select2" name="no_of_subject" id="no_of_subject" style="width: 100%;">
                                         <option value="">Select No of Subject</option>
                                         @if(!is_null($subject))
                                             @foreach($subject as $sk => $sv)
@@ -360,7 +360,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Study Result</label>
-                                    <select class="form-control select2" name="study_result" style="width: 100%;">
+                                    <select class="form-control select2" name="study_result" id="study_result" style="width: 100%;">
                                         <option value="">Select Study Result</option>
                                         <option @if($studyResult == 'NA') selected @endif value="NA">
                                             NA
@@ -376,7 +376,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Study Status</label>
-                                    <select class="form-control select2" name="study_status" style="width: 100%;">
+                                    <select class="form-control select2" name="study_status" id="study_status" style="width: 100%;">
                                     <option value="">Select Study Status</option>
                                         @if(!is_null($studyStatus))
                                             @foreach($studyStatus as $sk => $sv)
@@ -390,7 +390,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Sponsor Study No</label>
-                                    <select class="form-control select2" name="sponsor_study_no" style="width: 100%;">
+                                    <select class="form-control select2" name="sponsor_study_no" id="sponsor_study_no" style="width: 100%;">
                                         <option value="">Select Sponsor Study No</option>
                                         @if(!is_null($sponsorStudy))
                                             @foreach($sponsorStudy as $sk => $sv)
@@ -404,7 +404,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Clinical Ward Location</label>
-                                    <select class="form-control select2" name="clinical_ward_location" style="width: 100%;">
+                                    <select class="form-control select2" name="clinical_ward_location" id="clinical_ward_location" style="width: 100%;">
                                         <option value="">Select Clinical Ward Location</option>
                                         @if(!is_null($clinicalWardMaster))
                                             @foreach($clinicalWardMaster as $cwk => $cwv)
@@ -418,7 +418,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Total Groups</label>
-                                    <select class="form-control select2" name="total_group" style="width: 100%;">
+                                    <select class="form-control select2" name="total_group" id="total_group" style="width: 100%;">
                                         <option value="">Select Total Groups</option>
                                         @if(!is_null($totalGroups))
                                             @foreach($totalGroups as $gk => $gv)
@@ -432,7 +432,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Total Periods</label>
-                                    <select class="form-control select2" name="no_of_periods" style="width: 100%;">
+                                    <select class="form-control select2" name="no_of_periods" id="no_of_periods" style="width: 100%;">
                                         <option value="">Select Total Periods</option>
                                         @if(!is_null($totalPeriods))
                                             @foreach($totalPeriods as $pk => $pv)
@@ -446,7 +446,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Total Pre Housing</label>
-                                    <select class="form-control select2" name="pre_housing" style="width: 100%;">
+                                    <select class="form-control select2" name="pre_housing" id="pre_housing" style="width: 100%;">
                                         <option value="">Select Pre Housing</option>
                                         @if(!is_null($preHousing))
                                             @foreach($preHousing as $pk => $pv)
@@ -460,7 +460,7 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">Total Post Housing</label>
-                                    <select class="form-control select2" name="post_housing" style="width: 100%;">
+                                    <select class="form-control select2" name="post_housing" id="post_housing" style="width: 100%;">
                                         <option value="">Select Post Housing</option>
                                         @if(!is_null($postHousing))
                                             @foreach($postHousing as $pk => $pv)
@@ -496,7 +496,7 @@
                 <div class="card">
                     <div class="card-body">
 
-                        <table id="tableList" class="table table-striped table-bordered nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Sr. No</th>
@@ -806,34 +806,33 @@
                                 @endif
                             </tbody>
                         </table>
-                        
                         <div class="mt-2">
-                            Showing {{ (($page - 1) * $perPage) + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
+                            Showing {{ $offset + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
                         </div>
                         <div style="float:right;">
                             @if ($pageCount >= 1)
                                 <nav aria-label="...">
                                     <ul class="pagination">
                                         <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ route('admin.studyList', ['page' => base64_encode(1)]) }}">First</a>
+                                            <a class="page-link" data-page= "{{1}}" href="javascript:void(0)">First</a>
                                         </li>
                                         <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" href="{{ route('admin.studyList', ['page' => base64_encode($page - 1)]) }}">
+                                            <a class="page-link h5" data-page= "{{ ($page - 1) }}" href="javascript:void(0)">
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
                                         @for ($i = max(1, $page - 2); $i <= min($page + 4, $pageCount); $i++)
                                             <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
-                                                <a class="page-link" href="{{ route('admin.studyList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
+                                                <a class="page-link" data-page= "{{ $i }}" href="javascript:void(0)">{{ $i }}</a>
                                             </li>
                                         @endfor
                                         <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" href="{{ route('admin.studyList', ['page' => base64_encode($page + 1)]) }}">
+                                            <a class="page-link h5" data-page= "{{ ($page + 1) }}" href="javascript:void(0)">
                                                 <span aria-hidden="true">&raquo;</span>
                                             </a>
                                         </li>
                                         <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ route('admin.studyList', ['page' => base64_encode($pageCount)]) }}">Last</a>
+                                            <a class="page-link" data-page="{{ $pageCount }}" href="javascript:void(0)">Last</a>
                                         </li>
                                     </ul>
                                 </nav>

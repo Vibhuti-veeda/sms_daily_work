@@ -39,7 +39,7 @@ class StudyScheduleController extends GlobalController
     **/
     public function studyScheduleList(Request $request){
 
-        $perPage = 10;
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -51,7 +51,8 @@ class StudyScheduleController extends GlobalController
                         ->whereHas('projectManager', function($q){
                             $q->where('is_active',1);
                         })
-                        ->pluck('id');               
+                        ->pluck('id');
+
         if (Auth::guard('admin')->user()->role_id == 3) {
 
             $studies = StudySchedule::where('is_delete', 0)
@@ -92,8 +93,8 @@ class StudyScheduleController extends GlobalController
                                     ->skip($offset)
                                     ->limit($perPage)
                                     ->get();
-                                 
-        $studiesCount = StudySchedule::where('is_delete', 0)
+
+            $studiesCount = StudySchedule::where('is_delete', 0)
                                     ->whereIn('study_id',$studyNo)
                                     ->whereHas(
                                         'studyNo', function($q) { 
@@ -141,7 +142,7 @@ class StudyScheduleController extends GlobalController
             $studiesCount = StudySchedule::where('is_delete', 0)
                                         ->whereIn('study_id',$studyNo)
                                         ->groupBy('study_id')
-                                        ->get();  
+                                        ->get();
         }
 
         $recordCount = $studiesCount->count();

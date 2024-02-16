@@ -13,14 +13,14 @@ use Auth;
 class LocationMasterController extends GlobalController
 {
     
-    public function __construct(Request $request){
+    public function __construct(){
         $this->middleware('admin');
         $this->middleware('checkpermission');
     }
 
     public function locationMasterList(Request $request){
-
-        $perPage = 10;
+        
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -29,13 +29,15 @@ class LocationMasterController extends GlobalController
         $offset = ($page - 1) * $perPage;
 
     	$locationlist = LocationMaster::select('id', 'location_name', 'location_type', 'location_address', 'is_active')
-                                    ->where('is_delete', 0)
-                                    ->orderBy('id', 'DESC')
-                                    ->get();
-
+                                        ->where('is_delete', 0)
+                                        ->orderBy('id', 'DESC')
+                                        ->skip($offset)
+                                        ->limit($perPage)
+                                        ->get();
+                                        
         $recordCount = LocationMaster::where('is_delete', 0)->count();
         $pageCount = ceil($recordCount / $perPage);
-
+                                        
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){

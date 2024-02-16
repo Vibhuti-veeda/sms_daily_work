@@ -29,7 +29,7 @@ class ActivityMasterController extends Controller
     **/
     public function activityMasterList(Request $request){
         
-        $perPage = 10;
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{

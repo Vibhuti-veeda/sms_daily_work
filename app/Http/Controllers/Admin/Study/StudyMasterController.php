@@ -22,7 +22,7 @@ class StudyMasterController extends GlobalController
         $startDate = '';
         $endDate = '';
 
-        $perPage = 10;
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -128,7 +128,7 @@ class StudyMasterController extends GlobalController
                         ->skip($offset)
                         ->limit($perPage)
                         ->get();
-                                       
+
         $recordCount = Study::where('is_active', 1)->where('is_delete', 0)->count();
         $pageCount = ceil($recordCount / $perPage);
 

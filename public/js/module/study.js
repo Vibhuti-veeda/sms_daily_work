@@ -535,3 +535,133 @@ $(document).on('change','.projectionStatus',function(){
         }
     });
 });
+
+$(document).on('click', '.page-link', function(){
+    var pageNo = $(this).data('page');
+    $('#page').val(pageNo);
+    $('.save_button').trigger('click');
+});
+
+$(document).on('change', '#study_no', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#project_manager', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#drug_name', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#dosage_form_id', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#uom_id', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#drug_type', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#complexity', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#study_design', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#study_sub_type', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#study_type', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#study_condition', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#subject_type', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#priority', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#blinding_status', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#regulatory_submission', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#sponsor_id', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#cr_location', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#br_location', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#scope', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#principle_investigator', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#bioanalytical_investigator', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#special_notes', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#no_of_subject', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#study_result', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#study_status', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#sponsor_study_no', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#clinical_ward_location', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#total_group', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#no_of_periods', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#pre_housing', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#post_housing', function(){
+    $('#page').val(1);
+})

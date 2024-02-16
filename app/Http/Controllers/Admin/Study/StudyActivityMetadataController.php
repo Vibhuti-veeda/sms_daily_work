@@ -25,7 +25,7 @@ class StudyActivityMetadataController extends GlobalController
         $fromDate = '';
         $toDate = '';
 
-        $perPage = 10;
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -138,8 +138,8 @@ class StudyActivityMetadataController extends GlobalController
                                       ->get();
 
         $recordCount = StudyActivityMetadata::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);  
-
+        $pageCount = ceil($recordCount / $perPage);
+                                      
         return view('admin.study.study_metadata.all_studies_activity_metadata_list', compact('allActivityMetadataList', 'filter', 'studyNo', 'activityNames', 'studyId', 'activityId' , 'fromDate','toDate', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
     }
 

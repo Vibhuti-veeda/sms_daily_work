@@ -23,7 +23,7 @@ class ActivityMetadataController extends Controller
     // Activity Metadata List
     public function activityMetadataList(Request $request){
 
-        $perPage = 10;
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -40,17 +40,17 @@ class ActivityMetadataController extends Controller
                                                           ->where('is_delete', 0);
                                                     },
                                                     'controlName' => function($q){
-                                                        $q->select('id', 'control_name');
+                                                        $q->select('id', 'control_name')
+                                                        ->where('is_active', 1)
+                                                        ->where('is_delete', 0);
                                                     }
                                                 ])
                                                 ->orderBy('id', 'DESC')
-                                                ->skip($offset)
-                                                ->limit($perPage)
                                                 ->get();
 
         $recordCount = ActivityMetadata::where('is_delete', 0)->count();
         $pageCount = ceil($recordCount / $perPage);
-
+                                                
         $admin = '';
         $access = '';
 

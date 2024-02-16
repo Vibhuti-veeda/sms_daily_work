@@ -24,7 +24,8 @@ class SponsorMasterController extends Controller
         * @return to sponsor master listing page
     **/
     public function sponsorMasterList(Request $request){
-        $perPage = 10;
+
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -33,14 +34,14 @@ class SponsorMasterController extends Controller
         $offset = ($page - 1) * $perPage;
 
         $sponsors = SponsorMaster::select('id','sponsor_name', 'sponsor_type', 'is_active')
-                                ->where('is_delete', 0)
-                                ->orderBy('id', 'DESC')
-                                ->skip($offset)
-                                ->limit($perPage)
-                                ->get();
-        
+                                   ->where('is_delete', 0)
+                                   ->orderBy('id', 'DESC')
+                                   ->skip($offset)
+                                    ->limit($perPage)
+                                   ->get();
+
         $recordCount = SponsorMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);                         
+        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';

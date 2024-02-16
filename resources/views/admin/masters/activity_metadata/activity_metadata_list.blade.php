@@ -132,7 +132,7 @@
                             </tbody>
                         </table> 
                         <div class="mt-2">
-                            Showing {{ (($page - 1) * $perPage) + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
+                            Showing {{ $offset + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
                         </div>
                         <div style="float:right;">
                             @if ($pageCount >= 1)
@@ -162,7 +162,7 @@
                                     </ul>
                                 </nav>
                             @endif
-                        </div>                              
+                        </div>                           
                     </div>
                 </div>
             </div>

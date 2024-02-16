@@ -19,8 +19,8 @@ class ParaMasterController extends Controller
     }
 
     public function paraMasterList(Request $request){
-        
-        $perPage = 10;
+
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -157,21 +157,21 @@ class ParaMasterController extends Controller
 
     public function paraCodeMasterList($id, Request $request){
 
-        $perPage = 10;
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
             $page = 1;
         }
         $offset = ($page - 1) * $perPage;
-        
+
         $paraCodes = ParaCode::select('id', 'para_master_id', 'para_value', 'is_active')
-                            ->where('para_master_id', base64_decode($id))
-                            ->where('is_delete', 0)
-                            ->skip($offset)
-                            ->limit($perPage)
-                            ->get();
-                      
+                               ->where('para_master_id', base64_decode($id))
+                               ->where('is_delete', 0)
+                               ->skip($offset)
+                                ->limit($perPage)
+                               ->get();
+
         $recordCount = ParaCode::where('para_master_id', base64_decode($id))->where('is_delete', 0)->count();
         $pageCount = ceil($recordCount / $perPage);
 

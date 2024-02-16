@@ -227,7 +227,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <table id="datatable-activitylist" class="table table-striped table-bordered nowrap datatable-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="datatable-activitylist" class="table table-striped table-bordered nowrap datatable-searches" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Sr. No</th>

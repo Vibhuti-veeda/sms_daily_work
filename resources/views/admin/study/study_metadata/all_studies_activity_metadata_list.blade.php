@@ -101,7 +101,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">    
-                        <table id="tableList" class="table table-striped table-bordered datatable-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="tableList" class="table table-striped table-bordered tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Sr. No</th>
@@ -141,7 +141,7 @@
                             </tbody>
                         </table>
                         <div class="mt-2">
-                            Showing {{ (($page - 1) * $perPage) + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
+                            Showing {{ $offset + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
                         </div>
                         <div style="float:right;">
                             @if ($pageCount >= 1)
@@ -171,7 +171,7 @@
                                     </ul>
                                 </nav>
                             @endif
-                        </div>                               
+                        </div>                                
                     </div>
                 </div>
             </div>

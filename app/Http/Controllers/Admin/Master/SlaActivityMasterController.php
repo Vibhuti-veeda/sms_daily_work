@@ -28,8 +28,8 @@ class SlaActivityMasterController extends Controller
         * @return to activity master listing page
     **/
     public function slaActivityMasterList(Request $request){
-        
-        $perPage = 10;
+
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -48,8 +48,8 @@ class SlaActivityMasterController extends Controller
                                         ->get();
 
         $recordCount = SlaActivityMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage); 
-
+        $pageCount = ceil($recordCount / $perPage);
+                                            
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){

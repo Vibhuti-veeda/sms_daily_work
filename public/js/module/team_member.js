@@ -48,3 +48,18 @@ $(document).on('change', '#location_id', function(){
         $('#location_id-error').text('');
     }
 });
+
+// filter for pagination
+$(document).on('click', '.page-link', function(){
+    var pageNo = $(this).data('page');
+    $('#page').val(pageNo);
+    $('.save_button').trigger('click');
+});
+
+$(document).on('change', '#statusId', function(){
+    $('#page').val(1);
+});
+
+$(document).on('change', '#role', function(){
+    $('#page').val(1);
+});

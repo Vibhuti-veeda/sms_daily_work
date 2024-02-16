@@ -180,6 +180,3 @@ $(document).on('change','.add_func',function(){
     });
 
 });
-
-
-

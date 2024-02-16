@@ -36,7 +36,7 @@
                 <div class="card">
                     <div class="card-body">
 
-                        <table id="tableList" class="table table-striped table-bordered nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Sr. No</th>
@@ -60,7 +60,7 @@
                                 @if(!is_null($holidaylist))
                                     @php
                                         $count = (($offset == 0) ? 1 : $offset+1); 
-                                    @endphp    
+                                    @endphp 
                                     @foreach ($holidaylist as $hk=>$hv)
                                             <tr>
                                                 <td>{{ $count++ }}</td>
@@ -113,7 +113,7 @@
                             </tbody>
                         </table>
                         <div class="mt-2">
-                            Showing {{ (($page - 1) * $perPage) + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
+                            Showing {{ $offset + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
                         </div>
                         <div style="float:right;">
                             @if ($pageCount >= 1)

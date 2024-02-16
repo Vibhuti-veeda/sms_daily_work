@@ -12,7 +12,7 @@ $(document).ready(function() {
             }
         });
     });
-    var table = $('#datatable-buttons').DataTable({
+    var table = $('#datatable-buttons').removeAttr('width').DataTable({
         
         "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
         orderCellsTop: true,
@@ -30,6 +30,22 @@ $(document).ready(function() {
                 'colvis'
             ],
     });
+});
+$(document).ready(function() {
+    $('.datatable-searches thead tr').clone(true).appendTo( '.datatable-searches thead' );
+    $('.datatable-searches thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+        $(this).html( '<input type="text"  placeholder=" '+title+'" />' );
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( table.column(i).search() !== this.value ) {
+                table
+                    .column(i)
+                    .search( this.value )
+                    .draw();
+            }
+        });
+    });
+
     var table = $('#datatable-activitylist').removeAttr('width').DataTable({
         "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
         "columnDefs" : [{"targets":[3,4,5,6], "type":"date"}],
@@ -49,7 +65,6 @@ $(document).ready(function() {
             'colvis'
         ],
     });
-
 });
 
 var table = $('#datatable-buttons-schedule').DataTable({
@@ -127,21 +142,7 @@ $(document).ready(function() {
     table.columns(1).search( "Lili" ).draw();
 });
 
-/*$(document).ready(function(){
-    var table6 = $('#tableList').DataTable({
-       "paging": false,
-       "info": false,
-       "sScrollX": "100%",
-        "sScrollXInner": "110%",
-        "bScrollCollapse": true,
-        buttons: ['excel', 'colvis'],
-        dom: 'Bfrtip',
-        fixedColumns: {
-            left: 2
-        },
-    });
-});*/
-
+// datatable intialize and individual search
 $(document).ready(function () {
     // Setup - add a text input to each footer cell
     $('#tableList thead tr')
@@ -151,8 +152,8 @@ $(document).ready(function () {
  
     var tabl = $('#tableList').DataTable({
         "paging": false,
-       "info": false,
-       "sScrollX": "100%",
+        "info": false,
+        "sScrollX": "100%",
         "sScrollXInner": "110%",
         "bScrollCollapse": true,
         buttons: ['colvis'],
@@ -182,36 +183,34 @@ $(document).ready(function () {
                         'input',
                         $('.filters th').eq($(api.column(colIdx).header()).index())
                     )
-                        .off('keyup change')
-                        .on('change', function (e) {
-                            // Get the search value
-                            $(this).attr('title', $(this).val());
-                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
- 
-                            var cursorPosition = this.selectionStart;
-                            // Search the column for that value
-                            api
-                                .column(colIdx)
-                                .search(
-                                    this.value != ''
-                                        ? regexr.replace('{search}', '(((' + this.value + ')))')
-                                        : '',
-                                    this.value != '',
-                                    this.value == ''
-                                )
-                                .draw();
-                        })
-                        .on('keyup', function (e) {
-                            e.stopPropagation();
- 
-                            $(this).trigger('change');
-                            $(this)
-                                .focus()[0]
-                                .setSelectionRange(cursorPosition, cursorPosition);
-                        });
+                    .off('keyup change')
+                    .on('change', function (e) {
+                        // Get the search value
+                        $(this).attr('title', $(this).val());
+                        var regexr = '({search})'; //$(this).parents('th').find('select').val();
+
+                        var cursorPosition = this.selectionStart;
+                        // Search the column for that value
+                        api
+                            .column(colIdx)
+                            .search(
+                                this.value != ''
+                                    ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                    : '',
+                                this.value != '',
+                                this.value == ''
+                            )
+                            .draw();
+                    })
+                    .on('keyup', function (e) {
+                        e.stopPropagation();
+
+                        $(this).trigger('change');
+                        $(this)
+                            .focus()[0]
+                            .setSelectionRange(cursorPosition, cursorPosition);
+                    });
                 });
         },
     });
 });
-
-

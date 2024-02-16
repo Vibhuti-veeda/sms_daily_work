@@ -32,27 +32,31 @@ class TeamMemberController extends Controller
         $status = '';
         $roleId = '';
 
-        $perPage = 10;
+        $perPage = 25;
         if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
+            $page = $request->page;
         } else{
             $page = 1;
         }
         $offset = ($page - 1) * $perPage;
 
         $roles = Role::where('is_active', 1)->where('is_delete',0)->get();
-        $query = Admin::select('id', 'name', 'role_id', 'email', 'location_id', 'is_active')->where('is_delete', 0);
-        
+        $query = Admin::select('id', 'name', 'role_id', 'email', 'location_id', 'is_active')
+                      ->where('is_delete', 0);
+
+        $queryCount = Admin::where('is_delete', 0);              
         if(isset($request->status) && $request->status != ''){
             $filter = 1;
             $status = $request->status;
             $query->where('is_active',$status);
+            $queryCount->where('is_active',$status);
         }
 
         if(isset($request->role) && $request->role != ''){
             $filter = 1;
             $roleId = $request->role;
             $query->where('role_id',$roleId);
+            $queryCount->where('role_id', $roleId);
         }
 
         $members = $query->with(['role', 'location'])
@@ -60,9 +64,9 @@ class TeamMemberController extends Controller
                         ->limit($perPage)
                         ->get();
 
-        $recordCount = Admin::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);                
-
+        $recordCount = $queryCount->count();
+        $pageCount = ceil($recordCount / $perPage);
+        
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){

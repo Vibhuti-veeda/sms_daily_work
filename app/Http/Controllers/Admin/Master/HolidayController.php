@@ -19,7 +19,7 @@ class HolidayController extends GlobalController
 	
     public function holidayMasterList(Request $request){
 
-        $perPage = 10;
+        $perPage = 25;
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -35,8 +35,8 @@ class HolidayController extends GlobalController
                                     ->get();
 
         $recordCount = HolidayMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);  
-
+        $pageCount = ceil($recordCount / $perPage);
+                                    
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){
