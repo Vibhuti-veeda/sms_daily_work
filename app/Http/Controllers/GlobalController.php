@@ -75,4 +75,10 @@ class GlobalController extends Controller
         return $fileName;
     }
 
+    //set limit page
+    public function perPageLimit() {
+        $limit = 25;
+        return $limit;
+    }
+
 }

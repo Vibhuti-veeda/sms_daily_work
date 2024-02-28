@@ -36,7 +36,9 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-
+                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
+                            <a href="{{ route('admin.exportReasonMaster')}}" class="btn btn-secondary">Export</a>    
+                        </div>
                         <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -64,11 +66,11 @@
                                     @endphp
                                     @foreach($reasonMaster as $rmk=>$rmv)
                                         <tr>
-                                            <td>{{ $count++ }}</td>
-                                            <td>{{ $rmv->activityType->para_value }}</td>
-                                            <td>{{ $rmv->activityName->activity_name }}</td>
-                                            <td>{{ $rmv->start_delay_remark == '' ? '-' : $rmv->start_delay_remark }}</td>
-                                            <td>{{ $rmv->end_delay_remark == '' ? '-' : $rmv->end_delay_remark }}</td>
+                                            <td>{{ $count++ }}</td>   
+                                            <td> {{ (!is_null($rmv->activityType) && $rmv->activityType->para_value != '') ? $rmv->activityType->para_value : '---' }} </td>
+                                            <td>{{ (!is_null($rmv->activityName) && $rmv->activityName->activity_name != '') ? $rmv->activityName->activity_name : '---' }}</td>
+                                            <td>{{ ($rmv->start_delay_remark == '') ? '-' : $rmv->start_delay_remark }}</td>
+                                            <td>{{ ($rmv->end_delay_remark == '') ? '-' : $rmv->end_delay_remark }}</td>
 
                                             @if($access->delete != '')
                                                 @php $checked = ''; @endphp
@@ -128,7 +130,7 @@
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
-                                        @for ($i = max(1, $page - 2); $i <= min($page + 4, $pageCount); $i++)
+                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
                                             <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
                                                 <a class="page-link" href="{{ route('admin.reasonMasterList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
                                             </li>

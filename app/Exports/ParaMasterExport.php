@@ -3,7 +3,7 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
-use App\Models\Role;
+use App\Models\ParaMaster;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -14,23 +14,23 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use \Maatwebsite\Excel\Sheet;
 
-class RoleExport implements FromCollection, WithHeadings, WithStyles, WithCustomStartCell, WithEvents
+class ParaMasterExport implements FromCollection, WithHeadings, WithStyles, WithCustomStartCell, WithEvents
 {
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
-    {
-        $roles = Role::with(['defined_module.module_name'])
-                    ->where('is_delete', 0)
-                    ->get();
-        
-        $data = $roles->map(function ($role, $index) {
-            return [
+    public function collection() {
+        $paraMasters = ParaMaster::select('id', 'para_code', 'para_description', 'is_active')
+                            ->where('is_delete', 0)
+                            ->orderBy('id', 'DESC')
+                            ->get();
+
+        $data = $paraMasters->map(function ($paraMaster, $index){
+            return[
                 'Sr. No.' => $index +1,
-                'Name' => $role->name ? $role->name : '---',
-                'Modules' => $role->defined_module ? $role->defined_module->implode('module_name.name', ' | ') : '---',
-                'Status' => $role->is_active ? '1' : '0' 
+                'Para Code' => $paraMaster->para_code ? $paraMaster->para_code : '---',
+                'Para Description' => $paraMaster->para_description ? $paraMaster->para_description : '---',
+                'Status' => $paraMaster->is_active ? '1' : '0'
             ];
         });
 
@@ -42,14 +42,14 @@ class RoleExport implements FromCollection, WithHeadings, WithStyles, WithCustom
     }
 
     public function registerEvents(): array {
-        
+
         return [
             AfterSheet::class => function(AfterSheet $event) {
                 /** @var Sheet $sheet */
                 $sheet = $event->sheet;
 
                 $sheet->mergeCells('A1:D1');
-                $sheet->setCellValue('A1', "All Roles | Study Management System");
+                $sheet->setCellValue('A1', "All Para Master | Study Management System");
                 
                 $styleArray = [
                     'alignment' => [
@@ -63,30 +63,20 @@ class RoleExport implements FromCollection, WithHeadings, WithStyles, WithCustom
         ];
     }
 
-    public function headings(): array
-    {
+    public function headings(): array {
         return [
             'Sr. No.',
-            'Name',
-            'Modules', // Assuming this is the name of the module
-            'Status',
+            'Para Code',
+            'Para Description',
+            'Status'
         ];
     }
 
-    /**
-     * @param Worksheet $sheet
-     * @return array
-     */
-    public function styles(Worksheet $sheet): array
-    {
+    public function styles(Worksheet $sheet): array {
         // Define custom styles for the first row (heading row)
         return [
             1 => ['font' => ['bold' => true]],
             2 => ['font' => ['bold' => true]],
         ];
     }
-
-     /**
-     * @param Worksheet $sheet
-     */
 }

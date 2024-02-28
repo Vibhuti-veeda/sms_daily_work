@@ -35,7 +35,9 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-
+                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
+                            <a href="{{ route('admin.exportSlaActivityMaster')}}" class="btn btn-secondary">Export</a>    
+                        </div>
                         <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -67,19 +69,19 @@
                                         <tr>
                                             <td>{{ $count++ }}</td>
                                             <td>
-                                                {{ $av->activityName->activity_name }}
+                                                {{ ((!is_null($av->activityName)) && ($av->activityName->activity_name != '')) ? $av->activityName->activity_name : '---' }}
                                             </td>
                                             <td>
-                                                {{ $av->studyDesign->para_value}}
+                                                {{ ((!is_null($av->studyDesign)) && ($av->studyDesign->para_value != '')) ? $av->studyDesign->para_value : '---' }}
                                             </td>
                                             <td>
-                                                {{ $av->no_from_subject}}
+                                                {{ ($av->no_from_subject != '') ? $av->no_from_subject : '---'}}
                                            </td>
                                             <td>
-                                                {{ $av->no_to_subject}}
+                                                {{ ($av->no_to_subject != '') ? $av->no_to_subject : '---'}}
                                             </td>
                                             <td>
-                                                {{ $av->no_of_days}}
+                                                {{ ($av->no_of_days) ? $$av->no_of_days : '---'}}
                                             </td>
                                             <td>
                                                 @if($av->is_cdisc == 0)
@@ -146,7 +148,7 @@
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
-                                        @for ($i = max(1, $page - 2); $i <= min($page + 4, $pageCount); $i++)
+                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
                                             <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
                                                 <a class="page-link" href="{{ route('admin.slaActivityMasterList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
                                             </li>

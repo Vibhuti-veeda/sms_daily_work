@@ -41,7 +41,7 @@ class PreStudyPlannedData extends Command
     public function handle()
     {
         $thisWeekRange = [date('Y-m-d'), date('Y-m-d', strtotime('+6 day'))];
-        $nextWeekRange = [date('Y-m-d', strtotime('+7 day')), date('Y-m-d', strtotime('+14 day'))];
+        $nextWeekRange = [date('Y-m-d', strtotime('+7 day')), date('Y-m-d', strtotime('+13 day'))];
         
         $preStudyCurrentWeek = VwPreStudyProjection::with([
                                                         'studyNo'=> function($q) use($thisWeekRange){

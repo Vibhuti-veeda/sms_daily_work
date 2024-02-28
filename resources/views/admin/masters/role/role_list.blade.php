@@ -34,7 +34,9 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-
+                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
+                            <a href="{{ route('admin.exportRoles')}}" class="btn btn-secondary">Export</a>    
+                        </div>
                         <table id="tableList" class="table table-striped table-bordered tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -59,7 +61,7 @@
                                 @foreach($data as $gk => $gv)
                                     <tr>
                                         <td>{{ $count++ }}</td>
-                                        <td>{{ $gv->name }}</td>
+                                        <td>{{ ($gv->name != '---') ? $gv->name : '---' }}</td>
                                         <td>
                                             @if(!is_null($gv->defined_module)) 
                                                 @php $modules = []; @endphp
@@ -129,7 +131,7 @@
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
-                                        @for ($i = max(1, $page - 2); $i <= min($page + 4, $pageCount); $i++)
+                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
                                             <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
                                                 <a class="page-link" href="{{ route('admin.roleList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
                                             </li>

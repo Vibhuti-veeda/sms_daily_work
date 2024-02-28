@@ -9,6 +9,8 @@ use App\Http\Controllers\GlobalController;
 use App\Models\RoleModuleAccess;
 use Auth;
 use App\Models\HolidayMasterTrail;
+use App\Exports\HolidayMasterExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HolidayController extends GlobalController
 {
@@ -19,7 +21,7 @@ class HolidayController extends GlobalController
 	
     public function holidayMasterList(Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -178,4 +180,8 @@ class HolidayController extends GlobalController
         return $date ? 'false' : 'true';
     }
 
+    // excel export and download
+    public function exportHolidayMaster(){
+        return Excel::download(new HolidayMasterExport, 'All Holiday Masters  Study Management System.xlsx');
+    }
 }

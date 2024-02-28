@@ -33,12 +33,12 @@
                     <div class="accordion-body collapse show">
                         <form method="post" action="{{ route('admin.studyMasterList') }}">
                             @csrf
-
+                            <input type="hidden" name="page" id="page" value="{{ $page }}">
                             <div class="row">
 
                                 <div class="col-md-2">
                                     <label class="control-label">CR Location</label>
-                                    <select class="form-control select2" name="cr_location" style="width: 100%;">
+                                    <select class="form-control select2" name="cr_location" id="cr_location" style="width: 100%;">
                                         <option value="">Select CR Location</option>
                                         @if(!is_null($crLocation))
                                             @foreach($crLocation as $ck => $cv)
@@ -55,8 +55,8 @@
                                         <label>Date Filter</label>
                                         <div>
                                             <div class="input-daterange input-group" data-date-format="dd/mm/yyyy"data-date-autoclose="true" data-provide="datepickerStyle" autocomplete="off">
-                                                <input type="text" class="form-control datepickerStyle" name="start_date" value="{{ $startDate }}" autocomplete="off" placeholder="From Date">
-                                                <input type="text" class="form-control datepickerStyle" name="end_date" value="{{ $endDate }}" autocomplete="off" placeholder="To Date">
+                                                <input type="text" class="form-control datepickerStyle" name="start_date" id="start_date" value="{{ $startDate }}" autocomplete="off" placeholder="From Date">
+                                                <input type="text" class="form-control datepickerStyle" name="end_date" id="end_date" value="{{ $endDate }}" autocomplete="off" placeholder="To Date">
                                             </div>
                                         </div>
                                     </div>
@@ -84,7 +84,9 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-
+                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
+                            <a href="{{ route('admin.exportStudyMaster')}}" class="btn btn-secondary">Export</a>    
+                        </div>
                         <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -254,25 +256,25 @@
                                 <nav aria-label="...">
                                     <ul class="pagination">
                                         <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ route('admin.studyMasterList', ['page' => base64_encode(1)]) }}">First</a>
+                                            <a class="page-link" data-page="{{1}}" href="javascript:void(0)">First</a>
                                         </li>
                                         <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" href="{{ route('admin.studyMasterList', ['page' => base64_encode($page - 1)]) }}">
+                                            <a class="page-link h5" data-page= "{{ ($page - 1) }}" href="javascript:void(0)">
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
-                                        @for ($i = max(1, $page - 2); $i <= min($page + 4, $pageCount); $i++)
+                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
                                             <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
-                                                <a class="page-link" href="{{ route('admin.studyMasterList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
+                                                <a class="page-link" data-page= "{{ $i }}" href="javascript:void(0)">{{ $i }}</a>
                                             </li>
                                         @endfor
                                         <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" href="{{ route('admin.studyMasterList', ['page' => base64_encode($page + 1)]) }}">
+                                            <a class="page-link h5" data-page= "{{ ($page + 1) }}" href="javascript:void(0)">
                                                 <span aria-hidden="true">&raquo;</span>
                                             </a>
                                         </li>
                                         <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ route('admin.studyMasterList', ['page' => base64_encode($pageCount)]) }}">Last</a>
+                                            <a class="page-link" data-page= "{{ $pageCount }}" href="javascript:void(0)">Last</a>
                                         </li>
                                     </ul>
                                 </nav>

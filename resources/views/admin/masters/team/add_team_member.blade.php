@@ -68,8 +68,8 @@
                             </div>
 
                             <div class="mb-3">
-                                <label>Assign Role<span class="mandatory">*</span></label>
-                                <select class="form-select select2" name="role_id" id="role_id" required>
+                                <label>Assign Role</label>
+                                <select class="form-select select2" name="role_id" id="role_id">
                                     <option value="">Select Role</option>
                                     @if(!is_null($roles))
                                         @foreach($roles as $rk => $rv)
@@ -77,7 +77,6 @@
                                         @endforeach
                                     @endif
                                 </select>
-                                <span id="role"></span>
                             </div>
 
                             <!-- <div class="form-group mb-3">
@@ -103,16 +102,6 @@
                                     @endif
                                 </select>
                                 <!-- <span id="location"></span> -->
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label>Password<span class="mandatory">*</span></label>
-                                <input type="password" class="form-control" id="password" name="password" required placeholder="Password" />
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label>Confirm Password<span class="mandatory">*</span></label>
-                                <input type="password" class="form-control" name="confirm_password" id="confirm_password" required placeholder="Confirm Password"/>
                             </div>
 
                             <div class="button-items">

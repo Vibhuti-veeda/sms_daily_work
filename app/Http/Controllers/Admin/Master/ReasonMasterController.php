@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GlobalController;
 use Illuminate\Http\Request;
 use App\Models\ParaCode;
 use App\Models\ParaMaster;
@@ -11,8 +12,10 @@ use App\Models\ReasonMaster;
 use App\Models\ReasonMasterTrail;
 use App\Models\RoleModuleAccess;
 use Auth;
+use App\Exports\ReasonMasterExport;
+use Maatwebsite\Excel\Facades\Excel;
 
-class ReasonMasterController extends Controller
+class ReasonMasterController extends GlobalController
 {   
     public function __construct(){
         $this->middleware('admin');
@@ -22,7 +25,7 @@ class ReasonMasterController extends Controller
     // Reason Master List
     public function reasonMasterList(Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -34,7 +37,8 @@ class ReasonMasterController extends Controller
                                     ->where('is_delete', 0)
                                     ->orderBy('id', 'DESC')
                                     ->with([
-                                        'activityType'
+                                        'activityType',
+                                        'activityName'
                                     ])
                                     ->skip($offset)
                                     ->limit($perPage)
@@ -219,5 +223,10 @@ class ReasonMasterController extends Controller
         $reasonMasterTrail->save();
 
         return $reasonMaster ? 'true' : 'false';
+    }
+
+    // excel export and download
+    public function exportReasonMaster(){
+        return Excel::download(new ReasonMasterExport, 'All Reason Master  Study Management System.xlsx');
     }
 }

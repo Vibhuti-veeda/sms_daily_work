@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Master;
 
 use Illuminate\Http\Request;
 use App\Models\ControlMaster;
+use App\Http\Controllers\GlobalController;
 use App\Models\StudySchedule;
 use App\Models\ActivityMaster;
 use App\Models\ActivityMetadata;
@@ -12,8 +13,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\StudyActivityMetadata;
 use App\Models\ActivityMetadataTrail; 
+use App\Exports\ActivityMetadataExport;
+use Maatwebsite\Excel\Facades\Excel;
 
-class ActivityMetadataController extends Controller
+class ActivityMetadataController extends GlobalController
 {
     public function __construct(){
         $this->middleware('admin');
@@ -23,7 +26,7 @@ class ActivityMetadataController extends Controller
     // Activity Metadata List
     public function activityMetadataList(Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -46,6 +49,8 @@ class ActivityMetadataController extends Controller
                                                     }
                                                 ])
                                                 ->orderBy('id', 'DESC')
+                                                ->skip($offset)
+                                                ->limit($perPage)
                                                 ->get();
 
         $recordCount = ActivityMetadata::where('is_delete', 0)->count();
@@ -166,4 +171,8 @@ class ActivityMetadataController extends Controller
         return $status ? 'true' : 'false';
     }
 
+    // excel export and download
+    public function exportActivityMetadata(){
+        return Excel::download(new ActivityMetadataExport, 'All Team members  Study Management System.xlsx');
+    }
 }

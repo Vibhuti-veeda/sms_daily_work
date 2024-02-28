@@ -106,16 +106,6 @@
                                 <!-- <span id="location"></span> -->
                             </div>
 
-                            <div class="form-group mb-3">
-                                <label>Password</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" />
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label>Confirm Password</label>
-                                <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Confirm Password"/>
-                            </div>
-
                             <div class="button-items">
                                 <center>
                                     <button type="submit" class="btn btn-primary waves-effect waves-light mr-1" name="btn_submit" value="save">

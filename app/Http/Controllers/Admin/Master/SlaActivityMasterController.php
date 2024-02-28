@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GlobalController;
 use App\Models\SlaActivityMasterTrail;
 use Illuminate\Http\Request;
 use App\Models\SlaActivityMaster;
@@ -11,9 +12,10 @@ use App\Models\ActivityMaster;
 use App\Models\ParaMaster;
 use App\Models\RoleModuleAccess;
 use Auth;
+use App\Exports\SlaActivityMasterExport;
+use Maatwebsite\Excel\Facades\Excel;
 
-
-class SlaActivityMasterController extends Controller
+class SlaActivityMasterController extends GlobalController
 {
     public function __construct(){
         $this->middleware('admin');
@@ -29,7 +31,7 @@ class SlaActivityMasterController extends Controller
     **/
     public function slaActivityMasterList(Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -216,5 +218,10 @@ class SlaActivityMasterController extends Controller
         $status = SlaActivityMaster::where('id',$request->id)->update(['is_active' => $request->option]);
 
         return $status ? 'true' : 'false';
+    }
+
+    // excel export and download
+    public function exportSlaActivityMaster(){
+        return Excel::download(new SlaActivityMasterExport, 'All Sla Activity Master Study Management System.xlsx');
     }
 }

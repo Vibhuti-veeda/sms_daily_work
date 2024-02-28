@@ -3,7 +3,7 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
-use App\Models\Role;
+use App\Models\ParaCode;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -14,27 +14,33 @@ use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use \Maatwebsite\Excel\Sheet;
 
-class RoleExport implements FromCollection, WithHeadings, WithStyles, WithCustomStartCell, WithEvents
+class ParaCodeExport implements FromCollection, WithHeadings, WithStyles, WithCustomStartCell, WithEvents
 {
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
-    {
-        $roles = Role::with(['defined_module.module_name'])
-                    ->where('is_delete', 0)
-                    ->get();
-        
-        $data = $roles->map(function ($role, $index) {
-            return [
-                'Sr. No.' => $index +1,
-                'Name' => $role->name ? $role->name : '---',
-                'Modules' => $role->defined_module ? $role->defined_module->implode('module_name.name', ' | ') : '---',
-                'Status' => $role->is_active ? '1' : '0' 
+
+    protected $id;
+
+    public function __construct($id) {
+       $this->id = $id;
+    }
+
+    public function collection() {
+        $paraCodes = ParaCode::select('id', 'para_master_id', 'para_value', 'is_active')
+                               ->where('para_master_id', base64_decode($this->id))
+                               ->where('is_delete', 0)
+                               ->get();
+
+        $data = $paraCodes->map(function ($paraCode, $index){
+            return[
+                'Sr. No' => $index +1,
+                'Para Value' => $paraCode->para_value ? $paraCode->para_value : '---',
+                'Status' => $paraCode->is_active ? '1' : '0' 
             ];
         });
 
-        return $data;
+        return $data;                       
     }
 
     public function startCell(): string {
@@ -42,14 +48,14 @@ class RoleExport implements FromCollection, WithHeadings, WithStyles, WithCustom
     }
 
     public function registerEvents(): array {
-        
+
         return [
             AfterSheet::class => function(AfterSheet $event) {
                 /** @var Sheet $sheet */
                 $sheet = $event->sheet;
 
-                $sheet->mergeCells('A1:D1');
-                $sheet->setCellValue('A1', "All Roles | Study Management System");
+                $sheet->mergeCells('A1:C1');
+                $sheet->setCellValue('A1', "All Para Code | Study Management System");
                 
                 $styleArray = [
                     'alignment' => [
@@ -57,36 +63,25 @@ class RoleExport implements FromCollection, WithHeadings, WithStyles, WithCustom
                     ],
                 ];
                 
-                $cellRange = 'A1:D1'; // All headers
+                $cellRange = 'A1:C1'; // All headers
                 $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);
             },
         ];
     }
 
-    public function headings(): array
-    {
+    public function headings(): array {
         return [
-            'Sr. No.',
-            'Name',
-            'Modules', // Assuming this is the name of the module
-            'Status',
+            'Sr. No',
+            'Para Value',
+            'Status'
         ];
     }
 
-    /**
-     * @param Worksheet $sheet
-     * @return array
-     */
-    public function styles(Worksheet $sheet): array
-    {
+    public function styles(Worksheet $sheet): array {
         // Define custom styles for the first row (heading row)
         return [
             1 => ['font' => ['bold' => true]],
             2 => ['font' => ['bold' => true]],
         ];
     }
-
-     /**
-     * @param Worksheet $sheet
-     */
 }

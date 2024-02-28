@@ -264,6 +264,13 @@
                                     </a>
                                 </li>
                             @endif
+                            @if(in_array('study-tracking',$module))
+                                <li>
+                                    <a href="{{ route('admin.studyTrackingList') }}">
+                                        Study Tracking List
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                 @endif

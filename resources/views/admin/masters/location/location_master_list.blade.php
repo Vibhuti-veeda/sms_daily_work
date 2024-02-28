@@ -35,7 +35,9 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-
+                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
+                            <a href="{{ route('admin.exportLocationMaster')}}" class="btn btn-secondary">Export</a>    
+                        </div>
                         <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -63,9 +65,9 @@
                                     @foreach ($locationlist as $lk=>$lv)
                                         <tr>
                                             <td>{{ $count++ }}</td>
-                                            <td>{{ $lv->location_name }}</td>
-                                            <td>{{ $lv->location_type }}</td>
-                                            <td>{{ $lv->location_address != '' ? $lv->location_address : '---' }}</td>
+                                            <td>{{ ($lv->location_name != '') ? $lv->location_name : '---' }}</td>
+                                            <td>{{ ($lv->location_type != '') ? $lv->location_type : '---' }}</td>
+                                            <td>{{ ($lv->location_address != '') ? $lv->location_address : '---' }}</td>
                                         
                                             @if($access->delete != '')
                                                 @php $checked = ''; @endphp
@@ -125,7 +127,7 @@
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
-                                        @for ($i = max(1, $page - 2); $i <= min($page + 4, $pageCount); $i++)
+                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
                                             <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
                                                 <a class="page-link" href="{{ route('admin.locationMasterList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
                                             </li>

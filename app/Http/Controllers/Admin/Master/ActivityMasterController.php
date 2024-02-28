@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GlobalController;
 use App\Models\StudySchedule;
 use Illuminate\Http\Request;
 use App\Models\ActivityMaster;
@@ -12,8 +13,10 @@ use Auth;
 use App\Models\ActivityMasterTrail;
 use App\Models\RoleModuleAccess;
 use App\Models\ParaCode;
+use App\Exports\ActivityMasterExport;
+use Maatwebsite\Excel\Facades\Excel;
 
-class ActivityMasterController extends Controller
+class ActivityMasterController extends GlobalController
 {
     public function __construct(){
         $this->middleware('admin');
@@ -29,7 +32,7 @@ class ActivityMasterController extends Controller
     **/
     public function activityMasterList(Request $request){
         
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -478,6 +481,11 @@ class ActivityMasterController extends Controller
         $status = ActivityMaster::where('id',$request->id)->update(['is_active' => $request->option]);
 
         return $status ? 'true' : 'false';
+    }
+
+    // excel export and download
+    public function exportActivityMaster(){
+        return Excel::download(new ActivityMasterExport, 'All Team members  Study Management System.xlsx');
     }
 
 }

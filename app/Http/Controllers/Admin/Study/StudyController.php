@@ -26,6 +26,8 @@ use App\Models\RoleModuleAccess;
 use App\Models\Admin;
 use DB;
 use App\View\VwPreStudyProjection;
+use App\Exports\StudyExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudyController extends GlobalController
 {
@@ -88,7 +90,7 @@ class StudyController extends GlobalController
         $drugType = '';
         $studyStatusName = '';
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = $request->page;
         } else{
@@ -591,6 +593,7 @@ class StudyController extends GlobalController
                             ->skip($offset)
                             ->limit($perPage)
                             ->get();
+            $recordCount = $queryCount->where('project_manager', Auth::guard('admin')->user()->id)->count();
         } else {
             $studies = $query->with([
                                     'sponsorName',
@@ -626,10 +629,9 @@ class StudyController extends GlobalController
                             ->skip($offset)
                             ->limit($perPage)
                             ->get();
-
+            $recordCount = $queryCount->count();
         }
 
-        $recordCount = $queryCount->count();
         $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
@@ -2368,4 +2370,8 @@ class StudyController extends GlobalController
         return $status ? 'true' : 'false';
     }
 
+    // excel export and download
+    public function exportStudy(){
+        return Excel::download(new StudyExport, 'All Studies  Study Management System.xlsx');
+    }
 }

@@ -22,6 +22,8 @@ use App\Models\ParaCode;
 use DB;
 use App\Jobs\SendEmailOnStudyScheduleCreated;
 use DateTime;
+use App\Exports\StudyScheduleExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudyScheduleController extends GlobalController
 {
@@ -39,7 +41,7 @@ class StudyScheduleController extends GlobalController
     **/
     public function studyScheduleList(Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -2060,6 +2062,11 @@ class StudyScheduleController extends GlobalController
         }
 
         return 'true';
+    }
+
+    // excel export and download
+    public function exportStudySchedule(){
+        return Excel::download(new StudyScheduleExport, 'All Schedule Study  Study Management System.xlsx');
     }
 
 }

@@ -59,7 +59,7 @@
                                     <th>Dosage<span class="mandatory">*</span></th>
                                     <th>Drug Strength</th>
                                     <th>UOM<span class="mandatory">*</span></th>
-                                    <th>Reference Type<span class="mandatory">*</span></th>
+                                    <th>Treatment type<span class="mandatory">*</span></th>
                                     <th>Manufacture / Distribution By<span class="mandatory">*</span></th>
                                     <th>Action</th>
                                 </tr>

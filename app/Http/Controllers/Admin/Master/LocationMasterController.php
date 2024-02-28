@@ -9,6 +9,8 @@ use App\Models\LocationMaster;
 use App\Http\Controllers\GlobalController;
 use App\Models\RoleModuleAccess;
 use Auth;
+use App\Exports\LocationMasterExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LocationMasterController extends GlobalController
 {
@@ -20,7 +22,7 @@ class LocationMasterController extends GlobalController
 
     public function locationMasterList(Request $request){
         
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -194,4 +196,8 @@ class LocationMasterController extends GlobalController
         return $status ? 'true' : 'false';
     }
     
+    // excel export and download
+    public function exportLocationMaster(){
+        return Excel::download(new LocationMasterExport, 'All Location Master  Study Management System.xlsx');
+    }
 }

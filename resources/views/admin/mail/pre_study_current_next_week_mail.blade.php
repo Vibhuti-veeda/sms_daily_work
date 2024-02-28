@@ -44,8 +44,10 @@
                 @foreach($currentWeek as $pwk => $pcv)
                     <center>
                         <tr style="border: 1px solid;">
-                            <td style="border: 1px solid; width: 4%;">
-                                <?php echo $loop->iteration; ?>
+                            <td style="border: 1px solid; width: 2%;">
+                                <center>
+                                    <?php echo $loop->iteration; ?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 5%;">
                                 <?php echo $pcv->studyNo->crLocationName->location_name; ?>
@@ -54,7 +56,7 @@
                                 <?php echo $pcv->studyNo->study_no; ?>
                             </td>
 
-                            <td style="border: 1px solid; width: 17%;">
+                            <td style="border: 1px solid; width: 24%;">
                                 @if(!is_null($pcv->studyNo) && ($pcv->studyNo->drugDetails)) 
                                     @php $drug = ''; @endphp
                                     @foreach($pcv->studyNo->drugDetails as $ddk => $ddv)
@@ -71,52 +73,78 @@
                                 <?php echo $pcv->studyNo->sponsorName->sponsor_name; ?>
                             </td>
                             <td style="border: 1px solid; width: 2%;">
-                                <?php echo $pcv->studyNo->no_of_subject; ?>
+                                <center>
+                                    <?php echo $pcv->studyNo->no_of_subject; ?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 2%;">
-                                <?php echo $pcv->studyNo->no_of_male_subjects; ?>
+                                <center>
+                                    <?php echo $pcv->studyNo->no_of_male_subjects; ?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 2%;">
-                                <?php echo $pcv->studyNo->no_of_female_subjects; ?>
+                                <center>
+                                    <?php echo $pcv->studyNo->no_of_female_subjects; ?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 8%;">
-                                <?php echo ((!is_null($pcv->studyNo)) && ($pcv->studyNo->tentative_clinical_date != '')) ? date('d M Y', strtotime($pcv->studyNo->tentative_clinical_date)) : '---' ;?>
+                                <center>
+                                    <?php echo ((!is_null($pcv->studyNo)) && ($pcv->studyNo->tentative_clinical_date != '')) ? date('d M Y', strtotime($pcv->studyNo->tentative_clinical_date)) : '---' ;?>
+                                </center>
                             </td>
                             @if($pcv->dcgi_approval_noc_tl != '')
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo (($pcv->dcgi_approval_noc_tl != '')) ? $pcv->dcgi_approval_noc_tl : '---' ;?>
+                                    <center>
+                                        <?php echo (($pcv->dcgi_approval_noc_tl != '')) ? $pcv->dcgi_approval_noc_tl : '---' ;?>
+                                    </center>
                                 </td>
                             @else
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo (($pcv->dcgi_approval_only_tl != '')) ? $pcv->dcgi_approval_only_tl : '---' ;?>
+                                    <center>
+                                        <?php echo (($pcv->dcgi_approval_only_tl != '')) ? $pcv->dcgi_approval_only_tl : '---' ;?>
+                                    </center>
                                 </td>
                             @endif
                             <td style="border: 1px solid; width: 10%;">
-                                <?php echo (($pcv->imp_availibility != '')) ? $pcv->imp_availibility : '---' ;?>
+                                <center>
+                                    <?php echo (($pcv->imp_availibility != '')) ? $pcv->imp_availibility : '---' ;?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 10%;">
-                                <?php echo (($pcv->iec_approval != '')) ? $pcv->iec_approval : '---' ;?> 
+                                <center>
+                                    <?php echo (($pcv->iec_approval != '')) ? $pcv->iec_approval : '---' ;?>
+                                </center>
                             </td>
 
                             @if(($pcv->dcgi_submission_only_tl_stage != '' && $pcv->dcgi_submission_only_tl_stage == 'Red') || ($pcv->dcgi_approval_only_tl_stage != '' && $pcv->dcgi_approval_only_tl_stage == 'Red') || ($pcv->protocol_finalization_stage == 'Red') || ($pcv->md_mv_stage != '' && $pcv->md_mv_stage == 'Red') || ($pcv->iec_submission_stage == 'Red') || ($pcv->iec_approval_stage == 'Red') || ($pcv->imp_availibility_stage == 'Red') || ($pcv->md_mv_stage == 'Red'))
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Red';?>
+                                    <center>
+                                        <?php echo 'Red';?>
+                                    </center>
                                 </td>
-                            @elseif(($pcv->dcgi_submission_noc_tl_stage != '' && $pcv->dcgi_submission_noc_tl_stage == 'Red') || ($pcv->dcgi_approval_noc_tl_stage != '' && $pcv->dcgi_approval_noc_tl_stage == 'Red') || ($pcv->md_mv_stage != '' && $pcv->md_mv_stage == 'Red') || ($pcv->protocol_finalization_stage == 'Red') || ($pcv->iec_submission_stage == 'Red') || ($pcv->iec_approval_stage == 'Red') || ($pcv->imp_availibility_stage == 'Red'))
+                           @elseif(($pcv->dcgi_submission_noc_tl_stage != '' && $pcv->dcgi_submission_noc_tl_stage == 'Red') || ($pcv->dcgi_approval_noc_tl_stage != '' && $pcv->dcgi_approval_noc_tl_stage == 'Red') || ($pcv->md_mv_stage != '' && $pcv->md_mv_stage == 'Red') || ($pcv->protocol_finalization_stage == 'Red') || ($pcv->iec_submission_stage == 'Red') || ($pcv->iec_approval_stage == 'Red') || ($pcv->imp_availibility_stage == 'Red'))
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Red';?>
+                                    <center>
+                                        <?php echo 'Red';?>
+                                    </center>
                                 </td>
                             @elseif(($pcv->dcgi_submission_only_tl_stage != '' && $pcv->dcgi_submission_only_tl_stage == 'Yellow') || ($pcv->dcgi_approval_only_tl_stage != '' && $pcv->dcgi_approval_only_tl_stage == 'Yellow') || ($pcv->protocol_finalization_stage == 'Yellow') || ($pcv->md_mv_stage != '' && $pcv->md_mv_stage == 'Yellow') || ($pcv->iec_submission_stage == 'Yellow') || ($pcv->iec_approval_stage == 'Yellow') || ($pcv->imp_availibility_stage == 'Yellow') || ($pcv->md_mv_stage == 'Yellow'))
-                                <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Yellow';?>
+                                <td style="border: 1px solid; width: 10%;">\
+                                    <center>
+                                        <?php echo 'Yellow';?>
+                                    </center>
                                 </td>
                             @elseif(($pcv->dcgi_submission_noc_tl_stage != '' && $pcv->dcgi_submission_noc_tl_stage == 'Yellow') || ($pcv->dcgi_approval_noc_tl_stage != '' && $pcv->dcgi_approval_noc_tl_stage == 'Yellow') || ($pcv->md_mv_stage != '' && $pcv->md_mv_stage == 'Yellow') || ($pcv->protocol_finalization_stage == 'Yellow') || ($pcv->iec_submission_stage == 'Yellow') || ($pcv->iec_approval_stage == 'Yellow') || ($pcv->imp_availibility_stage == 'Yellow'))
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Yellow' ;?>
+                                    <center>
+                                        <?php echo 'Yellow' ;?>
+                                    </center>
                                 </td>
                             @else
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Green';?>
+                                    <center>
+                                        <?php echo 'Green';?>
+                                    </center>
                                 </td>
                             @endif
 
@@ -216,8 +244,10 @@
                 @foreach($nextWeek as $pnk => $pnv)
                     <center>
                         <tr style="border: 1px solid;">
-                            <td style="border: 1px solid; width: 4%;">
-                                <?php echo $loop->iteration; ?>
+                            <td style="border: 1px solid; width: 2%;">
+                                <center>
+                                    <?php echo $loop->iteration; ?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 5%;">
                                 <?php echo $pnv->studyNo->crLocationName->location_name; ?>
@@ -226,7 +256,7 @@
                                 <?php echo $pnv->studyNo->study_no; ?>
                             </td>
 
-                            <td style="border: 1px solid; width: 17%;">
+                            <td style="border: 1px solid; width: 24%;">
                                 @if(!is_null($pnv->studyNo) && ($pnv->studyNo->drugDetails)) 
                                     @php $drug = ''; @endphp
                                     @foreach($pnv->studyNo->drugDetails as $ddk => $ddv)
@@ -243,52 +273,79 @@
                                 <?php echo $pnv->studyNo->sponsorName->sponsor_name; ?>
                             </td>
                             <td style="border: 1px solid; width: 2%;">
-                                <?php echo $pnv->studyNo->no_of_subject; ?>
+                                <center>
+                                    <?php echo $pnv->studyNo->no_of_subject; ?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 2%;">
-                                <?php echo $pnv->studyNo->no_of_male_subjects; ?>
+                                <center>
+                                    <?php echo $pnv->studyNo->no_of_male_subjects; ?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 2%;">
-                                <?php echo $pnv->studyNo->no_of_female_subjects; ?>
+                                <center>
+                                    <?php echo $pnv->studyNo->no_of_female_subjects; ?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 8%;">
-                                <?php echo ((!is_null($pnv->studyNo)) && ($pnv->studyNo->tentative_clinical_date != '')) ? date('d M Y', strtotime($pnv->studyNo->tentative_clinical_date)) : '---' ;?>
+                                <center>
+                                    <?php echo ((!is_null($pnv->studyNo)) && ($pnv->studyNo->tentative_clinical_date != '')) ? date('d M Y', strtotime($pnv->studyNo->tentative_clinical_date)) : '---' ;
+                                    ?>
+                                </center>
                             </td>
                             @if($pnv->dcgi_approval_noc_tl != '')
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo (($pnv->dcgi_approval_noc_tl != '')) ? $pnv->dcgi_approval_noc_tl : '---' ;?>
+                                    <center>
+                                        <?php echo (($pnv->dcgi_approval_noc_tl != '')) ? $pnv->dcgi_approval_noc_tl : '---' ;?>
+                                    </center>
                                 </td>
                             @else
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo (($pnv->dcgi_approval_only_tl != '')) ? $pnv->dcgi_approval_only_tl : '---' ;?>
+                                    <center>
+                                        <?php echo (($pnv->dcgi_approval_only_tl != '')) ? $pnv->dcgi_approval_only_tl : '---' ;?>
+                                    </center>
                                 </td>
                             @endif
                             <td style="border: 1px solid; width: 10%;">
-                                <?php echo (($pnv->imp_availibility != '')) ? $pnv->imp_availibility : '---' ;?>
+                                <center>
+                                    <?php echo (($pnv->imp_availibility != '')) ? $pnv->imp_availibility : '---' ;?>
+                                </center>
                             </td>
                             <td style="border: 1px solid; width: 10%;">
-                                <?php echo (($pnv->iec_approval != '')) ? $pnv->iec_approval : '---' ;?> 
+                                <center>
+                                    <?php echo (($pnv->iec_approval != '')) ? $pnv->iec_approval : '---' ;?>
+                                </center>
                             </td>
 
                             @if(($pnv->dcgi_submission_only_tl_stage != '' && $pnv->dcgi_submission_only_tl_stage == 'Red') || ($pnv->dcgi_approval_only_tl_stage != '' && $pnv->dcgi_approval_only_tl_stage == 'Red') || ($pnv->protocol_finalization_stage == 'Red') || ($pnv->md_mv_stage != '' && $pnv->md_mv_stage == 'Red') || ($pnv->iec_submission_stage == 'Red') || ($pnv->iec_approval_stage == 'Red') || ($pnv->imp_availibility_stage == 'Red') || ($pnv->md_mv_stage == 'Red'))
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Red';?>
+                                    <center>
+                                        <?php echo 'Red';?>
+                                    </center>
                                 </td>
                             @elseif(($pnv->dcgi_submission_noc_tl_stage != '' && $pnv->dcgi_submission_noc_tl_stage == 'Red') || ($pnv->dcgi_approval_noc_tl_stage != '' && $pnv->dcgi_approval_noc_tl_stage == 'Red') || ($pnv->md_mv_stage != '' && $pnv->md_mv_stage == 'Red') || ($pnv->protocol_finalization_stage == 'Red') || ($pnv->iec_submission_stage == 'Red') || ($pnv->iec_approval_stage == 'Red') || ($pnv->imp_availibility_stage == 'Red'))
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Red';?>
+                                    <center>
+                                        <?php echo 'Red';?>
+                                    </center>
                                 </td>
                             @elseif(($pnv->dcgi_submission_only_tl_stage != '' && $pnv->dcgi_submission_only_tl_stage == 'Yellow') || ($pnv->dcgi_approval_only_tl_stage != '' && $pnv->dcgi_approval_only_tl_stage == 'Yellow') || ($pnv->protocol_finalization_stage == 'Yellow') || ($pnv->md_mv_stage != '' && $pnv->md_mv_stage == 'Yellow') || ($pnv->iec_submission_stage == 'Yellow') || ($pnv->iec_approval_stage == 'Yellow') || ($pnv->imp_availibility_stage == 'Yellow') || ($pnv->md_mv_stage == 'Yellow'))
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Yellow';?>
+                                    <center>
+                                        <?php echo 'Yellow';?>
+                                    </center>
                                 </td>
                             @elseif(($pnv->dcgi_submission_noc_tl_stage != '' && $pnv->dcgi_submission_noc_tl_stage == 'Yellow') || ($pnv->dcgi_approval_noc_tl_stage != '' && $pnv->dcgi_approval_noc_tl_stage == 'Yellow') || ($pnv->md_mv_stage != '' && $pnv->md_mv_stage == 'Yellow') || ($pnv->protocol_finalization_stage == 'Yellow') || ($pnv->iec_submission_stage == 'Yellow') || ($pnv->iec_approval_stage == 'Yellow') || ($pnv->imp_availibility_stage == 'Yellow'))
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Yellow' ;?>
+                                    <center>
+                                        <?php echo 'Yellow' ;?>
+                                    </center>
                                 </td>
                             @else
                                 <td style="border: 1px solid; width: 10%;">
-                                    <?php echo 'Green';?>
+                                    <center>
+                                        <?php echo 'Green';?>
+                                    </center>
                                 </td>
                             @endif
 

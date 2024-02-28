@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GlobalController;
 use Illuminate\Http\Request;
 use App\Models\RoleModule;
 use App\Models\Role;
@@ -12,8 +13,10 @@ use App\Models\RoleDefinedDashboardElement;
 use App\Models\RoleDefinedModule;
 use Session;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\RoleExport;
+use Maatwebsite\Excel\Facades\Excel;
 
-class RoleController extends Controller
+class RoleController extends GlobalController
 {
     public function __construct(){
        $this->middleware('admin');
@@ -22,7 +25,7 @@ class RoleController extends Controller
     // Role List
     public function roleList(Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -411,6 +414,11 @@ class RoleController extends Controller
         $role = $query->first();
 
         return $role ? 'false' : 'true';
+    }
+    
+    // excel export and download
+    public function exportRoles(){
+        return Excel::download(new RoleExport, 'All Roles  Study Management System.xlsx');
     }
 
 }

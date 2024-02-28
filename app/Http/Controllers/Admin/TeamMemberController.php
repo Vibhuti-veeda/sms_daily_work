@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GlobalController;
 use App\Models\LocationMaster;
 use App\Models\Location;
 use Illuminate\Http\Request;
@@ -11,8 +12,10 @@ use App\Models\Role;
 use Hash;
 use Auth;
 use App\Models\RoleModuleAccess;
+use App\Exports\TeamMemberExport;
+use Maatwebsite\Excel\Facades\Excel;
 
-class TeamMemberController extends Controller
+class TeamMemberController extends GlobalController
 {
     public function __construct(){
         $this->middleware('admin');
@@ -32,7 +35,7 @@ class TeamMemberController extends Controller
         $status = '';
         $roleId = '';
 
-        $perPage = 25;
+        $perPage =  $this->perPageLimit();
         if($request->page != ''){
             $page = $request->page;
         } else{
@@ -113,13 +116,16 @@ class TeamMemberController extends Controller
         $member->designation_no = $request->designation_no;
         $member->mobile = $request->mobile;
         $member->email = $request->email;
-        $member->role_id = $request->role_id;
+        if($request->role_id != ''){
+            $member->role_id = $request->role_id;
+        } else {
+            $member->role_id = Null;
+        }
         if (isset($request->location_id) && $request->location_id != '') {
             $member->location_id = $request->location_id;
         } else {
             $member->location_id = 0;
         }
-        $member->password = Hash::make($request->password);
         $member->save();
 
         $route = $request->btn_submit == 'save_and_update' ? 'admin.addTeamMember' : 'admin.teamMemberList';
@@ -174,9 +180,6 @@ class TeamMemberController extends Controller
         }
         $member->mobile = $request->mobile;
         $member->email = $request->email;
-        if ($request->password != '') {
-            $member->password = Hash::make($request->password);
-        }
         if (isset($request->location_id) && $request->location_id != '') {
             $member->location_id = $request->location_id;
         } else {
@@ -246,5 +249,10 @@ class TeamMemberController extends Controller
         $email = $query->first();
 
         return $email ? 'false' : 'true';
+    }
+
+    // excel export and download
+    public function exportTeamMembers(){
+        return Excel::download(new TeamMemberExport, 'All Team members  Study Management System.xlsx');
     }
 }

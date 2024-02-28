@@ -33,13 +33,6 @@ $(document).on('change', '.teamMemberStatus', function(){
     });
 });
 
-// Remove error message for select role
-$(document).on('change', '#role_id', function(){
-    var value = $('#role_id').val();
-    if(value != ''){
-        $('#role_id-error').text('');
-    }
-});
 
 // Remove error message for select location
 $(document).on('change', '#location_id', function(){

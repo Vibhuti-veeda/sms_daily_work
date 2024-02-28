@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GlobalController;
 use Illuminate\Http\Request;
 use App\Models\DrugMaster;
 use App\Models\DrugMasterTrail;
 use App\Models\RoleModuleAccess;
 use Auth;
+use App\Exports\DrugMasterExport;
+use Maatwebsite\Excel\Facades\Excel;
 
-class DrugMasterController extends Controller
+class DrugMasterController extends GlobalController
 {
     public function __construct(){
         $this->middleware('admin');
@@ -25,7 +28,7 @@ class DrugMasterController extends Controller
     **/
     public function drugMasterList(Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -184,5 +187,10 @@ class DrugMasterController extends Controller
         $status = DrugMaster::where('id',$request->id)->update(['is_active' => $request->option]);
 
         return $status ? 'true' : 'false';
+    }
+
+    // excel export and download
+    public function exportDrugMaster(){
+        return Excel::download(new DrugMasterExport, 'All Drugs  Study Management System.xlsx');
     }
 }

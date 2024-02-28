@@ -223,12 +223,12 @@ $(document).ready(function() {
         errorElement: 'span',
         rules: {
             full_name: {
+               required: true,
+            },
+            /*role_id: {
                 required: true,
             },
-            role_id: {
-                required: true,
-            },
-            /*location_id: {
+            location_id: {
                 required: true,
             },
             mobile: {
@@ -245,15 +245,6 @@ $(document).ready(function() {
                     url: "/sms-admin/team-member/view/check-team-member-email-exists",
                     method: "post"
                 },
-            },
-            password: {
-                required: true,
-                minlength: 8
-            },
-            confirm_password : {
-                required: true,
-                minlength: 8,
-                equalTo: "#password"
             },
             login_id: {
                 required: true,
@@ -276,9 +267,7 @@ $(document).ready(function() {
         },
         errorPlacement: function(error, element) {
             
-            if(element.attr("name") == 'role_id'){ 
-                error.insertAfter('#role');
-            } else if(element.attr("name") == 'location_id'){ 
+            if(element.attr("name") == 'location_id'){ 
                 error.insertAfter('#location');
             } else {
                 error.insertAfter( element );
@@ -288,10 +277,10 @@ $(document).ready(function() {
             full_name: {
                 required: 'Please enter full name',
             },
-            role_id: {
+            /*role_id: {
                 required: 'Please select role',
             },
-            /*location_id: {
+            location_id: {
                 required: 'Please select location'
             },
             mobile: {
@@ -303,15 +292,6 @@ $(document).ready(function() {
                 required: 'Please enter email id',
                 email: 'Please enter valid email id',
                 remote:'Email id already exists'
-            },
-            password:{
-                required: "Please enter password",
-                minlength: "Your password must be at least 8 characters long",
-            },
-            confirm_password:{
-                required: "Please enter confirm password",
-                minlength: "Your password must be at least 8 characters long",
-                equalTo: "Confirm password does not match with password"
             },
             login_id: {
                 required: "Please enter login id"
@@ -362,13 +342,6 @@ $(document).ready(function() {
                     method: "post"
                 },
             },
-            password: {
-                minlength: 8
-            },
-            confirm_password : {
-                minlength: 8,
-                equalTo: "#password"
-            },
             login_id: {
                 required: true,
             },
@@ -390,9 +363,7 @@ $(document).ready(function() {
         },
         errorPlacement: function(error, element) {
             
-            if(element.attr("name") == 'role_id'){ 
-                error.insertAfter('#role');
-            } else if(element.attr("name") == 'location_id'){ 
+            if(element.attr("name") == 'location_id'){ 
                 error.insertAfter('#location');
             } else {
                 error.insertAfter( element );
@@ -417,13 +388,6 @@ $(document).ready(function() {
                 required: 'Please enter email id',
                 email: 'Please enter valid email id',
                 remote:'Email id already exists'
-            },
-            password:{
-                minlength: "Your password must be at least 8 characters long",
-            },
-            confirm_password:{
-                minlength: "Your password must be at least 8 characters long",
-                equalTo: "Confirm password does not match with password"
             },
             login_id: {
                 required: "Please enter login id"
@@ -1200,7 +1164,7 @@ $(document).ready(function() {
                 error.insertAfter(element);
             }
         },
-        messages: {
+       messages: {
             activity_id: {
                 required: 'Please select activity'
             },
@@ -1223,3 +1187,5 @@ $(document).ready(function() {
     });
 
 });
+
+

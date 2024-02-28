@@ -156,6 +156,7 @@ $(document).ready(function () {
         "sScrollX": "100%",
         "sScrollXInner": "110%",
         "bScrollCollapse": true,
+        // buttons: ['excel', 'colvis'],
         buttons: ['colvis'],
         dom: 'Bfrtip',
         fixedColumns: {

@@ -35,7 +35,16 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-
+                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
+                            <a href="{{ route('admin.exportActivityMaster')}}" class="btn btn-secondary">Export</a>    
+                        </div>
+                        <div>
+                            <select id="perPage">
+                                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
+                                <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
+                                <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
+                            </select>
+                        </div>    
                         <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -73,12 +82,12 @@
                                     @foreach($activities as $ak => $av)
                                         <tr>
                                             <td>{{ $count++ }}</td>
-                                            <td>{{ $av->activity_name }}</td>
-                                            <td>{{ $av->days_required }}</td>
+                                            <td>{{ ($av->activity_name != '') ? $av->activity_name : '---' }}</td>
+                                            <td>{{ ($av->days_required != '') ? $av->days_required : '---'}}</td>
                                             <td>
                                                 {{ (!is_null($av->nextActivity) && $av->nextActivity->activity_name != '' ) ? $av->nextActivity->activity_name : '---' }}
                                             </td>
-                                            <td>{{ $av->buffer_days }}</td>
+                                            <td>{{ ($av->buffer_days != '') ? $av->buffer_days : '---' }}</td>
                                             <td>
                                                 {{ (!is_null($av->responsible) && $av->responsible->name != '') ? $av->responsible->name : '' }}
                                             </td>
@@ -86,9 +95,9 @@
                                                 {{ (!is_null($av->activityType) && $av->activityType->para_value != '') ? $av->activityType->para_value : '---' }}
                                             </td>
                                             <td>
-                                                {{ $av->activity_days }}
+                                                {{ ($av->activity_days != '') ? $av->activity_days : '---' }}
                                             </td>
-                                            <td>{{ $av->sequence_no }}</td>
+                                            <td>{{ ($av->sequence_no != '') ? $av->sequence_no : '---'}}</td>
                                             <td>
                                                 {{ (!is_null($av->previousActivity) && $av->previousActivity->activity_name != '') ? $av->previousActivity->activity_name : '---' }}
                                             </td>
@@ -162,7 +171,7 @@
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
-                                        @for ($i = max(1, $page - 2); $i <= min($page + 4, $pageCount); $i++)
+                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
                                             <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
                                                 <a class="page-link" href="{{ route('admin.activityMasterList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
                                             </li>

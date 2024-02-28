@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GlobalController;
 use App\Models\ParaCodesTrail;
 use Illuminate\Http\Request;
 use App\Models\ParaMaster;
@@ -10,8 +11,11 @@ use Auth;
 use App\Models\ParaMasterTrail;
 use App\Models\ParaCode;
 use App\Models\RoleModuleAccess;
+use App\Exports\ParaMasterExport;
+use App\Exports\ParaCodeExport;
+use Maatwebsite\Excel\Facades\Excel;
 
-class ParaMasterController extends Controller
+class ParaMasterController extends GlobalController
 {
     public function __construct(){
         $this->middleware('admin');
@@ -20,7 +24,7 @@ class ParaMasterController extends Controller
 
     public function paraMasterList(Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -157,7 +161,7 @@ class ParaMasterController extends Controller
 
     public function paraCodeMasterList($id, Request $request){
 
-        $perPage = 25;
+        $perPage = $this->perPageLimit();
         if($request->page != ''){
             $page = base64_decode($request->query('page', base64_decode(1)));
         } else{
@@ -301,4 +305,16 @@ class ParaMasterController extends Controller
         return $status ? 'true' : 'false';
     }
 
+    // excel export and download
+    public function exportParaMaster(){
+        return Excel::download(new ParaMasterExport, 'All Para Master  Study Management System.xlsx');
+    }
+
+     // excel export and download
+    public function exportParaCode(Request $request){
+        $id = $request->id;
+        $export = new ParaCodeExport($id);
+
+        return Excel::download($export, 'All Para Master  Study Management System.xlsx');
+    }
 }
