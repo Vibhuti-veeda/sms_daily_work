@@ -44,7 +44,7 @@ class TeamMemberController extends GlobalController
         $offset = ($page - 1) * $perPage;
 
         $roles = Role::where('is_active', 1)->where('is_delete',0)->get();
-        $query = Admin::select('id', 'name', 'role_id', 'email', 'location_id', 'is_active')
+        $query = Admin::select('id', 'name', 'role_id', 'email', 'location_id', 'multi_location_id','is_active')
                       ->where('is_delete', 0);
 
         $queryCount = Admin::where('is_delete', 0);              
@@ -62,11 +62,34 @@ class TeamMemberController extends GlobalController
             $queryCount->where('role_id', $roleId);
         }
 
-        $members = $query->with(['role', 'location'])
+        $members = $query->with(['role', 'location', 'multiLocation'])
                         ->skip($offset)
                         ->limit($perPage)
                         ->get();
+        
+        // Fetch multi-location names for each member
+        if(!is_null($members)){  
+            foreach ($members as $mk => $mv) {
+                if (($mv->multi_location_id != '') && ($mv->multi_location_id != 0)) {
+                    $locationIds = explode(',', $mv->multi_location_id);
+                    $locations = LocationMaster::whereIn('id', $locationIds)->get();
 
+                    // Concatenate location names and types
+                    $multiLocationNames = '';
+                    if(!is_null($locations)){
+                        foreach ($locations as $location) {
+                            $multiLocationNames .= $location->location_name . '-' . $location->location_type . ' | ';
+                        }
+                    }
+
+                    // Remove the trailing pipe and space from the concatenated string
+                    $mv->multiLocationNames = rtrim($multiLocationNames, ' | ');
+                } else {
+                    $mv->multiLocationNames = '---';
+                }
+            }
+        }
+                
         $recordCount = $queryCount->count();
         $pageCount = ceil($recordCount / $perPage);
         
@@ -106,6 +129,8 @@ class TeamMemberController extends GlobalController
     **/
     public function saveTeamMember(Request $request){
 
+        // dd(implode(',', $request->multi_location_id));
+
         $member = new Admin;
         $member->name = $request->full_name;
         $member->login_id = $request->login_id;
@@ -125,6 +150,11 @@ class TeamMemberController extends GlobalController
             $member->location_id = $request->location_id;
         } else {
             $member->location_id = 0;
+        }
+        if (isset($request->multi_location_id) && $request->multi_location_id != '') {
+            $member->multi_location_id = implode(',', $request->multi_location_id);
+        } else {
+            $member->multi_location_id = 0;
         }
         $member->save();
 
@@ -184,6 +214,11 @@ class TeamMemberController extends GlobalController
             $member->location_id = $request->location_id;
         } else {
             $member->location_id = 0;
+        }
+        if (isset($request->multi_location_id) && $request->multi_location_id != '') {
+            $member->multi_location_id = implode(',', $request->multi_location_id);
+        } else {
+            $member->multi_location_id = 0;
         }
         $member->save();
 

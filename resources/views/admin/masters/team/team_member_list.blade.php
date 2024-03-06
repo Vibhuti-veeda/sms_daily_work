@@ -98,6 +98,7 @@
                                     <th>Role</th>
                                     <th>Email</th>
                                     <th>Location</th>
+                                    <th>Multi Location</th>
                                     <th>Status</th>
                                     @if($admin == 'yes')
                                         <th class='notexport'>Actions</th>
@@ -123,6 +124,9 @@
                                             <td>{{ $mv->email }}</td>
                                             <td>
                                                 {{ (!is_null($mv->location) && (($mv->location->location_name != '') && ($mv->location->location_type != '')) ) ? $mv->location->location_name.' - '.$mv->location->location_type : '---' }}
+                                            </td>
+                                            <td>
+                                                {{ $mv->multiLocationNames }}
                                             </td>
 
                                             @php $checked = ''; @endphp

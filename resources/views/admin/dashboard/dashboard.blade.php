@@ -357,7 +357,7 @@
                         <div class="col-xl-12">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=COMPLETED&crLocationName={{base64_encode(Auth::guard('admin')->user()->location_id)}}" title="Completed">
+                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=COMPLETED&crLocationName={{base64_encode(Auth::guard('admin')->user()->multi_location_id)}}" title="Completed">
                                         <div class="card mini-stats-wid">
                                             <div class="card-body">
                                                 <div class="d-flex">
@@ -381,7 +381,7 @@
                                     </a>
                                 </div>
                                 <div class="col-md-3">
-                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=ONGOING&crLocationName={{base64_encode(Auth::guard('admin')->user()->location_id)}}" title="Started on time, but not completed"   >
+                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=ONGOING&crLocationName={{base64_encode(Auth::guard('admin')->user()->multi_location_id)}}" title="Started on time, but not completed"   >
                                         <div class="card mini-stats-wid">
                                             <div class="card-body">
                                                 <div class="d-flex">
@@ -405,7 +405,7 @@
                                     </a>
                                 </div>
                                <div class="col-md-3">
-                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=UPCOMING&crLocationName={{base64_encode(Auth::guard('admin')->user()->location_id)}}" title="Upcoming">
+                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=UPCOMING&crLocationName={{base64_encode(Auth::guard('admin')->user()->multi_location_id)}}" title="Upcoming">
                                         <div class="card mini-stats-wid">
                                             <div class="card-body">
                                                 <div class="d-flex">
@@ -430,7 +430,7 @@
                                 </div>
 
                                <div class="col-md-3">
-                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=DELAY&crLocationName={{base64_encode(Auth::guard('admin')->user()->location_id)}}" title="Not started as per scheduled start date">
+                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=DELAY&crLocationName={{base64_encode(Auth::guard('admin')->user()->multi_location_id)}}" title="Not started as per scheduled start date">
                                         <div class="card mini-stats-wid">
                                             <div class="card-body">
                                                 <div class="d-flex">
@@ -468,7 +468,7 @@
                         <div class="col-xl-12">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=COMPLETED&brLocationName={{base64_encode(Auth::guard('admin')->user()->location_id)}}" title="Started on time, completed on time">
+                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=COMPLETED&brLocationName={{base64_encode(Auth::guard('admin')->user()->multi_location_id)}}" title="Started on time, completed on time">
                                         <div class="card mini-stats-wid">
                                             <div class="card-body">
                                                 <div class="d-flex">
@@ -492,7 +492,7 @@
                                     </a>
                                 </div>
                                 <div class="col-md-3">
-                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=ONGOING&brLocationName={{base64_encode(Auth::guard('admin')->user()->location_id)}}" title="Started on time, but not completed"   >
+                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=ONGOING&brLocationName={{base64_encode(Auth::guard('admin')->user()->multi_location_id)}}" title="Started on time, but not completed"   >
                                         <div class="card mini-stats-wid">
                                             <div class="card-body">
                                                 <div class="d-flex">
@@ -516,7 +516,7 @@
                                     </a>
                                 </div>
                                 <div class="col-md-3">
-                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=UPCOMING&brLocationName={{base64_encode(Auth::guard('admin')->user()->location_id)}}" title="Upcoming">
+                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=UPCOMING&brLocationName={{base64_encode(Auth::guard('admin')->user()->multi_location_id)}}" title="Upcoming">
                                        <div class="card mini-stats-wid">
                                             <div class="card-body">
                                                 <div class="d-flex">
@@ -541,7 +541,7 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=DELAY&brLocationName={{base64_encode(Auth::guard('admin')->user()->location_id)}}" title="Not started as per scheduled start date">
+                                    <a href="{{ route('admin.studyActivityMonitoringList') }}?refPostStatus=DELAY&brLocationName={{base64_encode(Auth::guard('admin')->user()->multi_location_id)}}" title="Not started as per scheduled start date">
                                         <div class="card mini-stats-wid">
                                             <div class="card-body">
                                                 <div class="d-flex">

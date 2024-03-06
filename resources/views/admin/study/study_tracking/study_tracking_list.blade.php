@@ -70,6 +70,17 @@
                                     </select>
                                 </div>
                                 
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Last Sample Date Range</label>
+                                        <div>
+                                            <div class="input-daterange input-group" data-date-format="dd/mm/yyyy" data-date-autoclose="true" data-provide="datepickerStyle" autocomplete="off">
+                                                <input type="text" class="form-control datepickerStyle" name="start_date" value="{{ $startDate }}" autocomplete="off" placeholder="From Date">
+                                                <input type="text" class="form-control datepickerStyle" name="end_date" value="{{ $endDate }}" autocomplete="off" placeholder="To Date">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="col-md-1 pt-1">
                                     <button type="submit" class="btn btn-primary vendors save_button mt-4">Submit</button>

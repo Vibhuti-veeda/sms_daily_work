@@ -157,8 +157,13 @@ class AdminController extends GlobalController
         }
 
         // Activity nos queries
-        $crlocation = Study::where('cr_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();
-        $brlocation = Study::where('br_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();
+        $authLocation = explode(',',Auth::guard('admin')->user()->multi_location_id);
+        
+        /*$crlocation = Study::where('cr_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();*/
+        $crlocation = Study::where('is_active', 1)->where('is_delete', 0)->whereIn('cr_location',$authLocation)->get('id')->toArray();
+        /*$brlocation = Study::where('br_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();*/ 
+   
+        $brlocation = Study::where('is_active', 1)->where('is_delete', 0)->whereIn('br_location',$authLocation)->get('id')->toArray(); 
 
         $totalPreCompleted = 0;
         $totalPreUpcoming = 0;
@@ -248,7 +253,7 @@ class AdminController extends GlobalController
                                                 }
                                             })
                                             ->count();
-
+          
             $totalUpcoming = StudySchedule::where('is_active', 1)
                                           ->where('is_delete', 0)
                                           ->where('activity_status', 'UPCOMING')
