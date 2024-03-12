@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\GlobalController;
 use App\Models\SlaActivityMasterTrail;
 use Illuminate\Http\Request;
 use App\Models\SlaActivityMaster;
@@ -12,10 +11,9 @@ use App\Models\ActivityMaster;
 use App\Models\ParaMaster;
 use App\Models\RoleModuleAccess;
 use Auth;
-use App\Exports\SlaActivityMasterExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class SlaActivityMasterController extends GlobalController
+
+class SlaActivityMasterController extends Controller
 {
     public function __construct(){
         $this->middleware('admin');
@@ -29,29 +27,15 @@ class SlaActivityMasterController extends GlobalController
         *
         * @return to activity master listing page
     **/
-    public function slaActivityMasterList(Request $request){
+    public function slaActivityMasterList(){
+        
+        $activities = SlaActivityMaster::where('is_delete', 0)
+                                            ->with([
+                                                'activityName',
+                                                'studyDesign'
+                                            ])
+                                            ->get();
 
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
-        $activities = SlaActivityMaster::select('id','activity_id', 'study_design', 'no_from_subject', 'no_to_subject', 'is_cdisc', 'is_active')
-                                        ->where('is_delete', 0)
-                                        ->with([
-                                            'activityName',
-                                            'studyDesign'
-                                        ])
-                                        ->skip($offset)
-                                        ->limit($perPage)
-                                        ->get();
-
-        $recordCount = SlaActivityMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
-                                            
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){
@@ -62,7 +46,7 @@ class SlaActivityMasterController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.sla_activity.sla_activity_masters_list', compact('activities', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.sla_activity.sla_activity_masters_list', compact('activities', 'admin', 'access'));
     }
     public function addSlaActivityMaster(){
 
@@ -218,10 +202,5 @@ class SlaActivityMasterController extends GlobalController
         $status = SlaActivityMaster::where('id',$request->id)->update(['is_active' => $request->option]);
 
         return $status ? 'true' : 'false';
-    }
-
-    // excel export and download
-    public function exportSlaActivityMaster(){
-        return Excel::download(new SlaActivityMasterExport, 'All Sla Activity Master Study Management System.xlsx');
     }
 }

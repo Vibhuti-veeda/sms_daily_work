@@ -43,8 +43,4 @@ class Admin extends Authenticatable
         return $this->hasOne('App\Models\LocationMaster','id','location_id');
     }
 
-    public function multiLocation(){
-        return $this->hasMany('App\Models\LocationMaster','id','multi_location_id');
-    }
-
 }

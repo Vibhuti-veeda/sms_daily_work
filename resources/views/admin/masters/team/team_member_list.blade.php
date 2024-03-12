@@ -43,12 +43,11 @@
                     <div class="accordion-body collapse show">
                         <form method="post" action="{{ route('admin.teamMemberList') }}">
                             @csrf
-                            <input type="hidden" name="page" id="page" value="{{$page}}">
                             <div class="row">  
 
                                 <div class="col-md-4">
                                     <label class="control-label">Status</label>
-                                    <select class="form-select" name="status" id="statusId" style="width: 100%;">
+                                    <select class="form-select" name="status" style="width: 100%;">
                                         <option value="">All</option>
                                         <option value="1" @if($status == 1) selected="selected" @endif>Active</option>
                                         <option value="0" @if($status == 0 && $status != '') selected="selected" @endif>Inactive</option>
@@ -57,7 +56,7 @@
 
                                 <div class="col-md-4">
                                     <label class="control-label">Role</label>
-                                    <select class="form-select select2" name="role" id="role" style="width: 100%;">
+                                    <select class="form-select select2" name="role" style="width: 100%;">
                                         <option value="">Select Role</option>
                                         @if(!is_null($roles))
                                             @foreach($roles as $rk => $rv)
@@ -87,10 +86,8 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
-                            <a href="{{ route('admin.exportTeamMembers')}}" class="btn btn-secondary">Export</a>    
-                        </div>
-                        <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+
+                        <table id="datatable-buttons" class="table table-striped table-bordered nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Sr. No</th>
@@ -98,7 +95,6 @@
                                     <th>Role</th>
                                     <th>Email</th>
                                     <th>Location</th>
-                                    <th>Multi Location</th>
                                     <th>Status</th>
                                     @if($admin == 'yes')
                                         <th class='notexport'>Actions</th>
@@ -111,22 +107,16 @@
                             </thead>
                             <tbody>
                                 @if(!is_null($members))
-                                    @php
-                                        $count = (($offset == 0) ? 1 : $offset+1); 
-                                    @endphp
                                     @foreach($members as $mk => $mv)
                                         <tr>
-                                            <td>{{ $count++ }}</td>
-                                            <td>{{ ($mv->name != '') ? $mv->name : '---' }}</td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $mv->name }}</td>
                                             <td>
                                                 {{ (!is_null($mv->role) && $mv->role->name != '') ? $mv->role->name : '---' }}
                                             </td>
                                             <td>{{ $mv->email }}</td>
                                             <td>
                                                 {{ (!is_null($mv->location) && (($mv->location->location_name != '') && ($mv->location->location_type != '')) ) ? $mv->location->location_name.' - '.$mv->location->location_type : '---' }}
-                                            </td>
-                                            <td>
-                                                {{ $mv->multiLocationNames }}
                                             </td>
 
                                             @php $checked = ''; @endphp
@@ -170,38 +160,7 @@
                                 @endif
                             </tbody>
                         </table>
-                        <div class="mt-2">
-                            Showing {{ $offset + 1}} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
-                        </div>
-                        <div style="float:right;">
-                            @if ($pageCount >= 1)
-                                <nav id="pagination" aria-label="...">
-                                    <ul class="pagination">
-                                        <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link" data-page= "{{1}}" href="javascript:void(0)">First</a>
-                                        </li>
-                                        <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" data-page= "{{ ($page - 1) }}" href="javascript:void(0)">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
-                                            <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
-                                                <a class="page-link" data-page= "{{ $i }}" href="javascript:void(0)">{{ $i }}</a>
-                                            </li>
-                                        @endfor
-                                        <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" data-page= "{{ ($page + 1) }}" href="javascript:void(0)">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link" data-page="{{ $pageCount }}" href="javascript:void(0)">Last</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            @endif
-                        </div>
+                        
                     </div>
                 </div>
             </div>

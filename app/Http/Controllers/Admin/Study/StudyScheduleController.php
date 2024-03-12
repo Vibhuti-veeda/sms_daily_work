@@ -22,8 +22,6 @@ use App\Models\ParaCode;
 use DB;
 use App\Jobs\SendEmailOnStudyScheduleCreated;
 use DateTime;
-use App\Exports\StudyScheduleExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class StudyScheduleController extends GlobalController
 {
@@ -39,15 +37,7 @@ class StudyScheduleController extends GlobalController
         *
         * @return to study schedule listing page
     **/
-    public function studyScheduleList(Request $request){
-
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
+    public function studyScheduleList(){
 
         $studyNo = Study::where('is_delete', 0)
                         ->whereHas('projectManager', function($q){
@@ -92,19 +82,45 @@ class StudyScheduleController extends GlobalController
                                     ->whereIn('study_id',$studyNo)
                                     ->groupBy('study_id')
                                     ->orderBy('id', 'DESC')
-                                    ->skip($offset)
-                                    ->limit($perPage)
                                     ->get();
 
-            $studiesCount = StudySchedule::where('is_delete', 0)
-                                    ->whereIn('study_id',$studyNo)
+        } else if (Auth::guard('admin')->user()->role_id == 16) {
+
+            $studies = StudySchedule::where('is_delete', 0)
+                                    ->select('id', 'study_id')
                                     ->whereHas(
                                         'studyNo', function($q) { 
                                             $q->select('id','study_no', 'sponsor')
                                               ->where('project_manager',Auth::guard('admin')->user()->id);
                                         }
                                     )
+                                    ->with([
+                                        'studyNo' => function ($q) {
+                                            $q->select('id','study_no', 'sponsor')
+                                              ->with([
+                                                'sponsorName' => function($q){
+                                                    $q->select('id','sponsor_name');
+                                                }
+                                            ]);
+                                        },
+                                        'drugDetails' => function($q) {
+                                            $q->with([
+                                                'drugName' => function($q){
+                                                    $q->select('id','drug_name');
+                                                },
+                                                'drugDosageName' => function($q){
+                                                    $q->select('id','para_value');
+                                                },
+                                                'drugUom' => function($q){
+                                                    $q->select('id','para_value');
+                                                },
+                                                'drugType'
+                                            ]);
+                                        }
+                                    ])
+                                    ->whereIn('study_id',$studyNo)
                                     ->groupBy('study_id')
+                                    ->orderBy('id', 'DESC')
                                     ->get();
 
         } else {
@@ -137,18 +153,8 @@ class StudyScheduleController extends GlobalController
                                     ->whereIn('study_id',$studyNo)
                                     ->groupBy('study_id')
                                     ->orderBy('id', 'DESC')
-                                    ->skip($offset)
-                                    ->limit($perPage)
                                     ->get();
-
-            $studiesCount = StudySchedule::where('is_delete', 0)
-                                        ->whereIn('study_id',$studyNo)
-                                        ->groupBy('study_id')
-                                        ->get();
         }
-
-        $recordCount = $studiesCount->count();
-        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -160,7 +166,7 @@ class StudyScheduleController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.study.study_schedule.study_schedule_list', compact('studies', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.study.study_schedule.study_schedule_list', compact('studies', 'admin', 'access'));
     }
 
     /**
@@ -178,6 +184,16 @@ class StudyScheduleController extends GlobalController
                                  ->pluck('study_id');
 
         if (Auth::guard('admin')->user()->role_id == 3) {
+            $studyList = Study::where('is_active', 1)
+                                ->where('is_delete', 0)
+                                ->where('project_manager',Auth::guard('admin')->user()->id)
+                                ->whereHas('projectManager', function($q){
+                                    $q->where('is_active',1);
+                                })
+                                ->whereNotIn('id', $schedule)
+                                ->select('id', 'study_no')
+                                ->get();
+        } else if (Auth::guard('admin')->user()->role_id == 16) {
             $studyList = Study::where('is_active', 1)
                                 ->where('is_delete', 0)
                                 ->where('project_manager',Auth::guard('admin')->user()->id)
@@ -527,7 +543,7 @@ class StudyScheduleController extends GlobalController
             }
         }
 
-        if (!is_null($studyschedule)) {
+        /*if (!is_null($studyschedule)) {
             $bdUser = Admin::where('role_id', 14)->get();
             if (!is_null($bdUser)) {
                 foreach ($bdUser as $buk => $buv) {
@@ -544,8 +560,7 @@ class StudyScheduleController extends GlobalController
                     $this->dispatch((new SendEmailOnStudyScheduleCreated($buv->email_id,$buv->name,$newStudyScheduledCreated->studyNo->study_no,$newStudyScheduledCreated->studyNo->projectManager->name))->delay(10));
                 }
             }
-
-        }
+        }*/
 
         $route = $request->btn_submit == 'save_and_update' ? 'admin.addStudySchedule' : 'admin.studyScheduleList';
 
@@ -2062,11 +2077,6 @@ class StudyScheduleController extends GlobalController
         }
 
         return 'true';
-    }
-
-    // excel export and download
-    public function exportStudySchedule(){
-        return Excel::download(new StudyScheduleExport, 'All Schedule Study  Study Management System.xlsx');
     }
 
 }

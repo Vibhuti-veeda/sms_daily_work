@@ -3,16 +3,13 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\GlobalController;
 use App\Models\SponsorMasterTrail;
 use Illuminate\Http\Request;
 use App\Models\SponsorMaster;
 use App\Models\RoleModuleAccess;
 use Auth;
-use App\Exports\SponsorMasterExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class SponsorMasterController extends GlobalController
+class SponsorMasterController extends Controller
 {
     public function __construct(){
         $this->middleware('admin');
@@ -26,25 +23,9 @@ class SponsorMasterController extends GlobalController
         *
         * @return to sponsor master listing page
     **/
-    public function sponsorMasterList(Request $request){
+    public function sponsorMasterList(){
 
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
-        $sponsors = SponsorMaster::select('id','sponsor_name', 'sponsor_type', 'is_active')
-                                   ->where('is_delete', 0)
-                                   ->orderBy('id', 'DESC')
-                                   ->skip($offset)
-                                   ->limit($perPage)
-                                   ->get();
-
-        $recordCount = SponsorMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
+        $sponsors = SponsorMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
 
         $admin = '';
         $access = '';
@@ -56,7 +37,7 @@ class SponsorMasterController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.sponsor_master.sponsor_master_list', compact('sponsors', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.sponsor_master.sponsor_master_list', compact('sponsors', 'admin', 'access'));
     }
 
     /**
@@ -82,12 +63,11 @@ class SponsorMasterController extends GlobalController
             
         $sponsor = new SponsorMaster;
         $sponsor->sponsor_name = $request->sponsor_name;
+        $sponsor->sponsor_type = $request->sponsor_type;
         
         if ($request->sponsor_address != '') {
             $sponsor->sponsor_address = $request->sponsor_address;
         }
-        
-        $sponsor->sponsor_type = $request->sponsor_type;
         
         if ($request->contact_person_1 != '') {
             $sponsor->contact_person_1 = $request->contact_person_1;
@@ -130,12 +110,15 @@ class SponsorMasterController extends GlobalController
         $sponsorTrail = new SponsorMasterTrail;
         $sponsorTrail->sponsor_master_id = $sponsor->id;
         $sponsorTrail->sponsor_name = $request->sponsor_name;
+
         if ($request->sponsor_address != '') {
             $sponsorTrail->sponsor_address = $request->sponsor_address;
         }
+
         if ($request->sponsor_type != '') {
             $sponsorTrail->sponsor_type = $request->sponsor_type;
         }
+        
         if ($request->contact_person_1 != '') {
             $sponsorTrail->contact_person_1 = $request->contact_person_1;
         }
@@ -171,6 +154,7 @@ class SponsorMasterController extends GlobalController
         if (Auth::guard('admin')->user()->id != '') {
             $sponsorTrail->created_by_user_id = Auth::guard('admin')->user()->id;
         }
+
         $sponsorTrail->save();
 
         $route = $request->btn_submit == 'save_and_update' ? 'admin.addSponsorMaster' : 'admin.sponsorMasterList';
@@ -254,7 +238,7 @@ class SponsorMasterController extends GlobalController
         if (Auth::guard('admin')->user()->id != '') {
             $sponsor->updated_by_user_id = Auth::guard('admin')->user()->id;
         }
-        
+
         $sponsor->save();
 
         $sponsorTrail = new SponsorMasterTrail;
@@ -301,6 +285,7 @@ class SponsorMasterController extends GlobalController
         if (Auth::guard('admin')->user()->id != '') {
             $sponsorTrail->updated_by_user_id = Auth::guard('admin')->user()->id;
         }
+
         $sponsorTrail->save();
 
         return redirect(route('admin.sponsorMasterList'))->with('messages', [
@@ -394,10 +379,5 @@ class SponsorMasterController extends GlobalController
         $status = SponsorMaster::where('id',$request->id)->update(['is_active' => $request->option]);
 
         return $status ? 'true' : 'false';
-    }
-
-    // excel export and download
-    public function exportSponsorMaster(){
-        return Excel::download(new SponsorMasterExport, 'All Sponsor Master  Study Management System.xlsx');
     }
 }

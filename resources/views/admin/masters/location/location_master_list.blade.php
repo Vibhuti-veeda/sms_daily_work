@@ -35,10 +35,8 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
-                            <a href="{{ route('admin.exportLocationMaster')}}" class="btn btn-secondary">Export</a>    
-                        </div>
-                        <table id="tableList" class="table table-striped table-bordered nowrap tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+
+                        <table id="datatable-buttons" class="table table-striped table-bordered nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Sr. No</th>
@@ -59,15 +57,12 @@
                             </thead>
                             <tbody>
                                 @if(!is_null($locationlist))
-                                    @php
-                                        $count = (($offset == 0) ? 1 : $offset+1); 
-                                    @endphp
                                     @foreach ($locationlist as $lk=>$lv)
                                         <tr>
-                                            <td>{{ $count++ }}</td>
-                                            <td>{{ ($lv->location_name != '') ? $lv->location_name : '---' }}</td>
-                                            <td>{{ ($lv->location_type != '') ? $lv->location_type : '---' }}</td>
-                                            <td>{{ ($lv->location_address != '') ? $lv->location_address : '---' }}</td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $lv->location_name }}</td>
+                                            <td>{{ $lv->location_type }}</td>
+                                            <td>{{ $lv->location_address != '' ? $lv->location_address : '---' }}</td>
                                         
                                             @if($access->delete != '')
                                                 @php $checked = ''; @endphp
@@ -112,38 +107,7 @@
                                 @endif
                             </tbody>
                         </table>
-                        <div class="mt-2">
-                            Showing {{ $offset + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
-                        </div>
-                        <div style="float:right;">
-                            @if ($pageCount >= 1)
-                                <nav aria-label="...">
-                                    <ul class="pagination">
-                                        <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ route('admin.locationMasterList', ['page' => base64_encode(1)]) }}">First</a>
-                                        </li>
-                                        <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" href="{{ route('admin.locationMasterList', ['page' => base64_encode($page - 1)]) }}">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
-                                            <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
-                                                <a class="page-link" href="{{ route('admin.locationMasterList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
-                                            </li>
-                                        @endfor
-                                        <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" href="{{ route('admin.locationMasterList', ['page' => base64_encode($page + 1)]) }}">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ route('admin.locationMasterList', ['page' => base64_encode($pageCount)]) }}">Last</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            @endif
-                        </div>
+                        
                     </div>
                 </div>
             </div>

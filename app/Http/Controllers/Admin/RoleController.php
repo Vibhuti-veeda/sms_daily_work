@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\GlobalController;
 use Illuminate\Http\Request;
 use App\Models\RoleModule;
 use App\Models\Role;
@@ -13,28 +12,17 @@ use App\Models\RoleDefinedDashboardElement;
 use App\Models\RoleDefinedModule;
 use Session;
 use Illuminate\Support\Facades\Auth;
-use App\Exports\RoleExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class RoleController extends GlobalController
+class RoleController extends Controller
 {
     public function __construct(){
        $this->middleware('admin');
     }
 
     // Role List
-    public function roleList(Request $request){
+    public function roleList(){
 
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
-        $data = Role::select('id', 'name', 'is_active')
-                    ->where('is_delete',0)
+        $data = Role::where('is_delete',0)
                     ->with([
                         'defined_module' => function($q){ 
                             $q->with([
@@ -47,12 +35,7 @@ class RoleController extends GlobalController
                             ]);
                         }
                     ])
-                    ->skip($offset)
-                    ->limit($perPage)
                     ->get();
-
-        $recordCount = Role::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -64,7 +47,7 @@ class RoleController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.role.role_list',compact('data','admin','access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.role.role_list',compact('data','admin','access'));
     }
 
     // Add Role
@@ -414,11 +397,6 @@ class RoleController extends GlobalController
         $role = $query->first();
 
         return $role ? 'false' : 'true';
-    }
-    
-    // excel export and download
-    public function exportRoles(){
-        return Excel::download(new RoleExport, 'All Roles  Study Management System.xlsx');
     }
 
 }

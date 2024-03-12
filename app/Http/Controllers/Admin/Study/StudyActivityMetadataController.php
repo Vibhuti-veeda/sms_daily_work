@@ -6,12 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\GlobalController;
 use App\Models\StudyActivityMetadata;
 use Illuminate\Http\Request;
-use App\Exports\StudyMetaDataExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class StudyActivityMetadataController extends GlobalController
 {
-    public function __construct() {
+    public function __construct(){
         $this->middleware('admin');
         $this->middleware('checkpermission');
     }
@@ -26,14 +24,6 @@ class StudyActivityMetadataController extends GlobalController
         $activityId = '';
         $fromDate = '';
         $toDate = '';
-
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
 
         $studyNo = StudyActivityMetadata::select('id', 'study_schedule_id')
                                         ->with([
@@ -135,18 +125,9 @@ class StudyActivityMetadataController extends GlobalController
                                       ->where('is_active', 1)
                                       ->where('is_delete', 0)
                                       ->orderBy('id', 'DESC')
-                                      ->skip($offset)
-                                      ->limit($perPage)
                                       ->get();
 
-        $recordCount = StudyActivityMetadata::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
-                                      
-        return view('admin.study.study_metadata.all_studies_activity_metadata_list', compact('allActivityMetadataList', 'filter', 'studyNo', 'activityNames', 'studyId', 'activityId' , 'fromDate','toDate', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.study.study_metadata.all_studies_activity_metadata_list', compact('allActivityMetadataList', 'filter', 'studyNo', 'activityNames', 'studyId', 'activityId' , 'fromDate','toDate'));
     }
 
-    // excel export and download
-    public function exportStudyMetaData(){
-        return Excel::download(new StudyMetaDataExport, 'All Study MetaData  Study Management System.xlsx');
-    }
 }

@@ -12,7 +12,7 @@
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.teamMemberList') }}">Team Member List</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.roleList') }}">Team Member List</a></li>
                             <li class="breadcrumb-item active">Add Team Member</li>
                         </ol>
                     </div>
@@ -77,6 +77,7 @@
                                         @endforeach
                                     @endif
                                 </select>
+                                <span id="role"></span>
                             </div>
 
                             <!-- <div class="form-group mb-3">
@@ -102,20 +103,6 @@
                                     @endif
                                 </select>
                                 <!-- <span id="location"></span> -->
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label>Multi Location<span class="mandatory">*</span></label>
-                                <select class="form-control select2" name="multi_location_id[]" multiple id="multi_location_id" data-placeholder="Select Multiple Location">
-                                    <option value="">Select Multiple Location</option>
-                                        @if(!is_null($locations))
-                                            @foreach($locations as $lk => $lv)
-                                                <option value="{{ $lv->id }}">
-                                                    {{ $lv->location_name }} - {{ $lv->location_type }}
-                                                </option>
-                                            @endforeach
-                                        @endif
-                                </select> 
                             </div>
 
                             <div class="button-items">

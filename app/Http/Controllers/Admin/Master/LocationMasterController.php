@@ -9,8 +9,6 @@ use App\Models\LocationMaster;
 use App\Http\Controllers\GlobalController;
 use App\Models\RoleModuleAccess;
 use Auth;
-use App\Exports\LocationMasterExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class LocationMasterController extends GlobalController
 {
@@ -20,26 +18,10 @@ class LocationMasterController extends GlobalController
         $this->middleware('checkpermission');
     }
 
-    public function locationMasterList(Request $request){
+    public function locationMasterList(){
         
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
+    	$locationlist = LocationMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
 
-    	$locationlist = LocationMaster::select('id', 'location_name', 'location_type', 'location_address', 'is_active')
-                                        ->where('is_delete', 0)
-                                        ->orderBy('id', 'DESC')
-                                        ->skip($offset)
-                                        ->limit($perPage)
-                                        ->get();
-                                        
-        $recordCount = LocationMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
-                                        
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){
@@ -50,7 +32,7 @@ class LocationMasterController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.location.location_master_list',compact('locationlist', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.location.location_master_list',compact('locationlist', 'admin', 'access'));
     }
 
     public function addLocationMaster(){
@@ -196,8 +178,4 @@ class LocationMasterController extends GlobalController
         return $status ? 'true' : 'false';
     }
     
-    // excel export and download
-    public function exportLocationMaster(){
-        return Excel::download(new LocationMasterExport, 'All Location Master  Study Management System.xlsx');
-    }
 }

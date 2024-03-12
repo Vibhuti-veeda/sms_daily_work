@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Study;
 use App\Models\LocationMaster;
 use App\Http\Controllers\GlobalController;
-use App\Exports\StudyMasterExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class StudyMasterController extends GlobalController
 {
@@ -24,27 +22,17 @@ class StudyMasterController extends GlobalController
         $startDate = '';
         $endDate = '';
 
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = $request->page;
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
         $crLocation = LocationMaster::where('location_type', 'CRSITE')
                                     ->where('is_active', 1)
                                     ->where('is_delete', 0)
                                     ->get();
 
         $query = Study::where('is_active', 1)->where('is_delete', 0);
-        $queryCount = Study::where('is_active', 1)->where('is_delete', 0);
 
         if(isset($request->cr_location) && $request->cr_location != ''){
             $filter = 1;
             $crLocationName = $request->cr_location;
             $query->where('cr_location',$crLocationName);
-            $queryCount->where('cr_location',$crLocationName);
         }
 
         /*if($request->start_date != '' && $request->end_date != ''){
@@ -59,7 +47,6 @@ class StudyMasterController extends GlobalController
             $startDate = $request->start_date;
             $endDate = $request->end_date;
             $query->whereBetween('created_at', array($this->convertDt($startDate),$this->convertDt($endDate)));
-            $queryCount->whereBetween('created_at', array($this->convertDt($startDate),$this->convertDt($endDate)));
         }
 
         $studies = $query->select('id', 'study_no', 'sponsor_study_no', 'project_manager', 'sponsor', 'no_of_subject', 'cr_location', 
@@ -130,18 +117,8 @@ class StudyMasterController extends GlobalController
                                 },
                             ])
                         ->orderBy('global_priority_no', 'ASC')
-                        ->skip($offset)
-                        ->limit($perPage)
                         ->get();
 
-        $recordCount = $queryCount->count();
-        $pageCount = ceil($recordCount / $perPage);
-
-        return view('admin.study.study_master.all_study_master_list', compact('studies', 'crLocation', 'crLocationName', 'filter', 'startDate', 'endDate', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
-    }
-
-    // excel export and download
-    public function exportStudyMaster(){
-        return Excel::download(new StudyMasterExport, 'All Study Master Study Management System.xlsx');
+        return view('admin.study.study_master.all_study_master_list', compact('studies', 'crLocation', 'crLocationName', 'filter', 'startDate', 'endDate'));
     }
 }

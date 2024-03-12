@@ -9,8 +9,6 @@ use App\Http\Controllers\GlobalController;
 use App\Models\RoleModuleAccess;
 use Auth;
 use App\Models\HolidayMasterTrail;
-use App\Exports\HolidayMasterExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class HolidayController extends GlobalController
 {
@@ -19,26 +17,10 @@ class HolidayController extends GlobalController
         $this->middleware('checkpermission');
     }
 	
-    public function holidayMasterList(Request $request){
+    public function holidayMasterList(){
 
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
+        $holidaylist = HolidayMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
 
-        $holidaylist = HolidayMaster::select('id', 'holiday_year', 'holiday_name', 'holiday_type', 'holiday_date', 'is_active')
-                                    ->where('is_delete', 0)
-                                    ->orderBy('id', 'DESC')
-                                    ->skip($offset)
-                                    ->limit($perPage)
-                                    ->get();
-
-        $recordCount = HolidayMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
-                                    
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){
@@ -49,7 +31,7 @@ class HolidayController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.holiday_master.holiday_master_list',compact('holidaylist', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.holiday_master.holiday_master_list',compact('holidaylist', 'admin', 'access'));
     }
 
     public function addHolidayMaster(){
@@ -180,8 +162,4 @@ class HolidayController extends GlobalController
         return $date ? 'false' : 'true';
     }
 
-    // excel export and download
-    public function exportHolidayMaster(){
-        return Excel::download(new HolidayMasterExport, 'All Holiday Masters  Study Management System.xlsx');
-    }
 }

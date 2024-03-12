@@ -59,7 +59,7 @@
                                     <th>Dosage<span class="mandatory">*</span></th>
                                     <th>Drug Strength</th>
                                     <th>UOM<span class="mandatory">*</span></th>
-                                    <th>Treatment type<span class="mandatory">*</span></th>
+                                    <th>Reference Type<span class="mandatory">*</span></th>
                                     <th>Manufacture / Distribution By<span class="mandatory">*</span></th>
                                     <th>Action</th>
                                 </tr>
@@ -229,6 +229,8 @@
                             </div>
 
                             <input type="hidden" name="id" id="id" value="{{ $study->id }}">
+                            <input type="hidden" name="role" id="role" value="{{ Auth::guard('admin')->user()->role_id }}">
+                            <input type="hidden" name="departmentNo" id="departmentNo" value="{{ Auth::guard('admin')->user()->department_no }}">
                             <input type="hidden" name="group_study_id" id="group_study_id" value="{{ $study->group_study }}">
 
                             <div class="form-group mb-3">
@@ -341,22 +343,22 @@
                                 <input type="text" class="form-control numeric totalSubject" name="no_of_subject" id="no_of_subject" placeholder="No Of Subjects" autocomplete="off" value="{{ $study->no_of_subject }}" required/>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>No of Male Subjects<span class="mandatory">*</span></label>
                                 <input type="text" class="form-control numeric maleSubject" name="no_of_male_subjects" id="no_of_male_subjects" placeholder="No of Male Subjects" autocomplete="off" value="{{ $study->no_of_male_subjects }}" required/>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>No of Female Subjects<span class="mandatory">*</span></label>
                                 <input type="text" class="form-control numeric femaleSubject" name="no_of_female_subjects" id="no_of_female_subjects" placeholder="No of Female Subjects" autocomplete="off" value="{{ $study->no_of_female_subjects }}" required/>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>Washout Period(In Days)<span class="mandatory">*</span></label>
-                                <input type="text" class="form-control width" name="washout_period" id="washout_period" placeholder="Washout Period" autocomplete="off" value="{{ $study->washout_period }}" required readonly/>
+                                <input type="text" class="form-control width" name="washout_period" id="washout_period" placeholder="Washout Period" autocomplete="off" value="{{ $study->washout_period }}" required/>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>CR Location<span class="mandatory">*</span></label>
                                 <select class="form-control select2 selectCrLocation" id="cr_location" name="cr_location" data-placeholder="Select CR Location" required>
                                     <option value="">Select CR Location</option>
@@ -369,7 +371,7 @@
                                 <span id="selectCrLocation"></span>
                             </div>
 
-                            <div class="form-group mb-3">
+                            {{-- <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>Clinical Ward Location<span class="mandatory">*</span></label>
                                 <select class="form-control select2 selectClinicalWordLocation" id="clinical_word_location" name="clinical_word_location" data-placeholder="Select Clinical Ward Location" required disabled>
                                     <option @if($study->clinical_word_location == '7') selected @endif value={{ $study->clinical_word_location }}>NA</option>
@@ -383,7 +385,7 @@
                                 </select>
                                 <input type="hidden" name="clinical_word_location" id="clinical_word_location" value="{{ $study->clinical_word_location }}">
                                 <span id="selectClinicalWordLocation"></span>
-                            </div>
+                            </div> --}}
 
                             <div class="form-group mb-3">
                                 <label>Additional Requirement<span class="mandatory">*</span></label>
@@ -420,7 +422,7 @@
                                 <input type="text" class="form-control numeric" name="token_number" id="token_number" placeholder="Token Number" value="{{ $study->token_number }}" >
                             </div> -->
 
-                            <div class="form-group mb-3">
+                            {{-- <div class="form-group mb-3">
                                 <label>Project Manager<span class="mandatory">*</span></label>
                                 <select class="form-control select2 projectManager" id="project_manager" name="project_manager" data-placeholder="Select Project Manager" required>
                                     <option value="">Select Project Manager</option>
@@ -437,9 +439,42 @@
                                     @endif
                                 </select>
                                 <span id="projectManager"></span>
-                            </div>
+                            </div> --}}
 
                             <div class="form-group mb-3">
+                                <label>Project Manager<span class="mandatory">*</span></label>
+                                <select class="form-control select2 projectManager" name="project_manager" id="project_manager" data-placeholder="Select Project Manager" required>
+                                    <option value="">Select Project Manager</option>
+                                    @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3)
+                                        @if(!is_null($projectManager))
+                                            @foreach($projectManager as $pk => $pv)
+                                                @if(!is_null($pv->projectHead))
+                                                    @foreach($pv->projectHead as $ppk => $ppv)
+                                                        <option @if($study->project_manager == $ppv->id) selected @endif value="{{ $ppv->id }}">
+                                                            {{ $ppv->employee_code }} - {{ $ppv->name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    @elseif(Auth::guard('admin')->user()->role_id == 16)
+                                        @if(!is_null($brProjectManager))
+                                            @foreach($brProjectManager as $pk => $pv)
+                                                @if(!is_null($pv->projectHead))
+                                                    @foreach($pv->projectHead as $ppk => $ppv)
+                                                        <option @if($study->project_manager == $ppv->id) selected @endif value="{{ $ppv->id }}">
+                                                            {{ $ppv->employee_code }} - {{ $ppv->name }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    @endif
+                                </select>
+                                <span id="projectManager"></span>
+                            </div>
+
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>Study Result</label>
                                 <select class="form-control select2" id="study_result" name="study_result" data-placeholder="Select Study Result">
                                     <option value="">Select Study Result</option>
@@ -493,7 +528,7 @@
                                 <span id="selectRegulatorySubmission"></span>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>Complexity<span class="mandatory">*</span></label>
                                 <select class="form-control select2 selectComplexity" name="complexity" id="complexity" data-placeholder="Select Complexity" required>
                                     <option value="">Select Complexity</option>
@@ -523,7 +558,7 @@
                                 <span id="selectStudyCondition"></span>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>Priority<span class="mandatory">*</span></label>
                                 <select class="form-control select2 selectPriority" name="priority" id="priority" data-placeholder="Select Priority" required disabled>
                                     <option value="">Select Priority</option>
@@ -539,7 +574,7 @@
                                 <span id="selectPriority"></span>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>No Of Groups<span class="mandatory">*</span></label>
                                 <input type="text" class="form-control numeric" name="no_of_groups" id="no_of_groups" placeholder="No Of Groups" autocomplete="off" value="{{ $study->no_of_groups }}" @if($study->group_study != '') readonly @endif min="1" required/>
                             </div>
@@ -554,9 +589,9 @@
                                 <input type="text" class="form-control width" name="total_housing" id="total_housing" placeholder="Total Housing" autocomplete="off" value="{{ $study->total_housing }}" required/>
                             </div> -->
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>Pre Housing (In Hours)<span class="mandatory">*</span></label>
-                                <input type="text" class="form-control width" name="pre_housing" id="pre_housing" placeholder="Pre Housing" autocomplete="off" value="{{ $study->pre_housing }}" required readonly/>
+                                <input type="text" class="form-control width noValidate" name="pre_housing" id="pre_housing" placeholder="Pre Housing" autocomplete="off" value="{{ $study->pre_housing }}" required readonly/>
                             </div>
 
                             <div class="form-group mb-3">
@@ -599,61 +634,100 @@
                                 <input type="text" class="form-control tentative_imp_date datepickerStyle" name="tentative_imp_date" placeholder="dd/mm/yyyy" data-provide="datepickerStyle" data-date-autoclose="true" data-date-format="dd/mm/yyyy" autocomplete="off" value="{{ date('d-m-Y', strtotime($study->tentative_imp_date)) }}" required>
                             </div> -->
 
-                            <div class="form-group mb-3">
-                                <label>Principle Investigator<span class="mandatory">*</span></label>
-                                <select class="form-control select2 principleInvestigator" id="principle_investigator" name="principle_investigator" data-placeholder="Select Principle Investigator" required>
-                                    <option value="">Select Principle Investigator</option>
-                                    @if(!is_null($principle->principleInvestigator))
-                                        @if($study->principle_investigator == 0)
-                                            <option value="0" selected>NA</option>
-                                            @foreach($principle->principleInvestigator as $pk => $pv)
-                                                <option @if($study->principle_investigator == $pv->id) selected @endif value="{{ $pv->id }}">
-                                                    {{ $pv->employee_code }} - {{ $pv->name }}
-                                                </option>
-                                            @endforeach
-                                        @else
-                                            <option value="0">NA</option>
-                                            @foreach($principle->principleInvestigator as $pk => $pv)
-                                                <option @if($study->principle_investigator == $pv->id) selected @endif value="{{ $pv->id }}">
-                                                    {{ $pv->employee_code }} - {{ $pv->name }}
-                                                </option>
-                                            @endforeach
+                            @if(Auth::guard('admin')->user()->role_id != 16)
+                                <div class="form-group mb-3">
+                                    <label>Principle Investigator<span class="mandatory">*</span></label>
+                                    <select class="form-control select2 principleInvestigator" id="principle_investigator" name="principle_investigator" data-placeholder="Select Principle Investigator" required>
+                                        <option value="">Select Principle Investigator</option>
+                                        @if(!is_null($principle->principleInvestigator))
+                                            @if($study->principle_investigator == 0)
+                                                <option value="0" selected>NA</option>
+                                                @foreach($principle->principleInvestigator as $pk => $pv)
+                                                    <option @if($study->principle_investigator == $pv->id) selected @endif value="{{ $pv->id }}">
+                                                        {{ $pv->employee_code }} - {{ $pv->name }}
+                                                    </option>
+                                                @endforeach
+                                            @else
+                                                <option value="0">NA</option>
+                                                @foreach($principle->principleInvestigator as $pk => $pv)
+                                                    <option @if($study->principle_investigator == $pv->id) selected @endif value="{{ $pv->id }}">
+                                                        {{ $pv->employee_code }} - {{ $pv->name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
                                         @endif
-                                    @endif
-                                </select>
-                                <span id="selectPrinciple"></span>
-                            </div>
+                                    </select>
+                                    <span id="selectPrinciple"></span>
+                                </div>
+                            @else
+                                <div class="form-group mb-3">
+                                    <label>Study Director<span class="mandatory">*</span></label>
+                                    <select class="form-control select2 principleInvestigator" name="principle_investigator" id="principle_investigator" data-placeholder="Select Study Director" required>
+                                        <option value="">Select Study Director</option>
+                                        <option @if($study->principle_investigator == 1430) selected @endif value="1430">Swati Guttikar - 145</option>
+                                    </select>
+                                    <span id="selectPrinciple"></span>
+                                </div>
+                            @endif
 
-                            <div class="form-group mb-3">
-                                <label>Bioanalytical Investigator<span class="mandatory">*</span></label>
-                                <select class="form-control select2" id="bioanalytical_investigator" name="bioanalytical_investigator" data-placeholder="Select Bioanalytical Investigator" required disabled>
-                                    <option value="">Select Bioanalytical Investigator</option>
-                                    <option @if ($study->bioanalytical_investigator == '0') selected @endif value="0">NA</option>
-                                    @if(!is_null($bioanalytical->bioanalyticalInvestigator))
-                                        @if($study->bioanalytical_investigator == 0)
-                                            <option value="0" selected value="0">NA</option>
-                                            @foreach($bioanalytical->bioanalyticalInvestigator as $bk => $bv)
-                                                <option @if($study->bioanalytical_investigator == $bv->id) selected @endif value="{{ $bv->id }}">
-                                                    {{ $bv->employee_code }} - {{ $bv->name }}
-                                                </option>
-                                            @endforeach
-                                        @else
-                                            <option value="0">NA</option>
-                                            @foreach($bioanalytical->bioanalyticalInvestigator as $bk => $bv)
-                                                <option @if($study->bioanalytical_investigator == $bv->id) selected @endif value="{{ $bv->id }}">
-                                                    {{ $bv->employee_code }} - {{ $bv->name }}
-                                                </option>
-                                            @endforeach
+                            @if(Auth::guard('admin')->user()->role_id != 16)
+                                <div class="form-group mb-3">
+                                    <label>Bioanalytical Investigator<span class="mandatory">*</span></label>
+                                    <select class="form-control select2" id="bioanalytical_investigator" name="bioanalytical_investigator" data-placeholder="Select Bioanalytical Investigator" required disabled>
+                                        <option value="">Select Bioanalytical Investigator</option>
+                                        <option @if ($study->bioanalytical_investigator == '0') selected @endif value="0">NA</option>
+                                        @if(!is_null($bioanalytical->bioanalyticalInvestigator))
+                                            @if($study->bioanalytical_investigator == 0)
+                                                <option value="0" selected value="0">NA</option>
+                                                @foreach($bioanalytical->bioanalyticalInvestigator as $bk => $bv)
+                                                    <option @if($study->bioanalytical_investigator == $bv->id) selected @endif value="{{ $bv->id }}">
+                                                        {{ $bv->employee_code }} - {{ $bv->name }}
+                                                    </option>
+                                                @endforeach
+                                            @else
+                                                <option value="0">NA</option>
+                                                @foreach($bioanalytical->bioanalyticalInvestigator as $bk => $bv)
+                                                    <option @if($study->bioanalytical_investigator == $bv->id) selected @endif value="{{ $bv->id }}">
+                                                        {{ $bv->employee_code }} - {{ $bv->name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
                                         @endif
-                                    @endif
-                                </select>
-                                <input type="hidden" name="bioanalytical_investigator" id="bioanalytical_investigator" value="{{ $study->bioanalytical_investigator }}">
-                            </div>
+                                    </select>
+                                    <input type="hidden" name="bioanalytical_investigator" id="bioanalytical_investigator" value="{{ $study->bioanalytical_investigator }}">
+                                    <span id="selectBioanalytical"></span>
+                                </div>
+                            @else
+                                <div class="form-group mb-3">
+                                    <label>Bioanalytical Investigator<span class="mandatory">*</span></label>
+                                    <select class="form-control select2 bioanalyticalInvestigator" id="bioanalytical_investigator" name="bioanalytical_investigator" data-placeholder="Select Bioanalytical Investigator" required>
+                                        <option value="">Select Bioanalytical Investigator</option>
+                                        <option @if($study->bioanalytical_investigator == 20) selected @endif value="20">Tulsi Mishra - 21</option>
+                                        <option @if($study->bioanalytical_investigator == 19) selected @endif value="19">Ajay Gupta - 20</option>
+                                        <option @if($study->bioanalytical_investigator == 701) selected @endif value="701">Chirag Patel - 2229</option>
+                                        <option @if($study->bioanalytical_investigator == 7) selected @endif value="7">Vikas Trivedi - 751</option>
+                                    </select>
+                                    <span id="selectBioanalytical"></span>
+                                </div>
+                            @endif
 
-                            <div class="form-group mb-3"><label>Special Notes</label>
+                            @if(Auth::guard('admin')->user()->role_id == 16)
+                                <div class="form-group mb-3">
+                                    <label>ISR Sample<span class="mandatory">*</span></label>
+                                    <input type="text" class="form-control width" name="isr_sample" id="isr_sample" placeholder="ISR Sample" autocomplete="off" value="{{ $study->isr_sample }}" required/>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label>Final Report SLA<span class="mandatory">*</span></label>
+                                    <input type="text" class="form-control width" name="final_report_sla" id="final_report_sla" placeholder="Final Report SLA" autocomplete="off" value="{{ $study->final_report_sla }}" required/>
+                                </div>
+                            @endif
+
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
+                                <label>Special Notes</label>
                                 <select class="form-control select2 selectSpecialNotes" name="special_notes" id="special_notes" data-placeholder="Select Special Notes">
                                     <option value="">Select Special Notes</option>
-                                    <option value="0">NA</option>
+                                    <option  @if($study->special_notes == 0) selected @endif value="0">NA</option>
                                     @if(!is_null($specialNotes->paraCode))
                                         @foreach($specialNotes->paraCode as $pk => $pv)
                                         <option @if($study->special_notes == $pv->id) selected @endif value="{{ $pv->id }}">
@@ -669,32 +743,32 @@
                                 <textarea class="form-control" name="remark" id="remark" placeholder="Remark">{{ $study->remark }}</textarea>
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>CDisc Required?</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <input class="form-check-input" type="checkbox" name="cdisc_require" id="customSwitch" value="1" @if($study->cdisc_require == 1) checked @endif>&nbsp;Yes
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>TLF Required?</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <input class="form-check-input" type="checkbox" name="tlf_require" id="customSwitch" value="1" @if($study->tlf_require == 1) checked @endif>&nbsp;Yes
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>SAP Required?</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <input class="form-check-input" type="checkbox" name="sap_require" id="customSwitch" value="1" @if($study->sap_require == 1) checked @endif>&nbsp;Yes
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>eCRF Required?</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <input class="form-check-input" type="checkbox" name="ecrf_require" id="customSwitch" value="1" @if($study->ecrf_require == 1) checked @endif>&nbsp;Yes
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>BTIF Required?</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <input class="form-check-input" type="checkbox" name="btif_require" id="customSwitch" value="1" @if($study->btif_require == 1) checked @endif>&nbsp;Yes
                             </div>
 
-                            <div class="form-group mb-3">
+                            <div class="form-group mb-3 department{{ Auth::guard('admin')->user()->department_no }}" style="display: none;">
                                 <label>CSBE Required?</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <input class="form-check-input" type="checkbox" name="csbe_require" id="customSwitch" value="1" @if($study->csbe_require == 1) checked @endif>&nbsp;Yes
                             </div>

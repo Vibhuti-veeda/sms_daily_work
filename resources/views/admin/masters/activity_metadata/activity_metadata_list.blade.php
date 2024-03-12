@@ -34,11 +34,8 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-body">
-                        <div class="export" style="margin-top: -40px; transform: translate(137px, 51px); width: fit-content; display: none;">
-                            <a href="{{ route('admin.exportActivityMetadata')}}" class="btn btn-secondary">Export</a>    
-                        </div>   
-                        <table id="tableList" class="table table-striped table-bordered tableList-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                    <div class="card-body">    
+                        <table id="datatable-buttons" class="table table-striped table-bordered datatable-search" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Sr. No</th>
@@ -63,12 +60,9 @@
                             </thead>
                             <tbody>
                                 @if(!is_null($activityMetadataList))
-                                    @php
-                                        $count = (($offset == 0) ? 1 : $offset+1); 
-                                    @endphp
                                     @foreach($activityMetadataList as $amk => $amv)
                                         <tr>
-                                            <td>{{ $count++ }}</td>
+                                            <td>{{ $loop->iteration }}</td>
                                             <td>
                                                 {{ ((!is_null($amv->activityName)) && ($amv->activityName->activity_name != '')) ? $amv->activityName->activity_name : '---' }}
                                             </td>
@@ -134,38 +128,7 @@
                                 @endif
                             </tbody>
                         </table> 
-                        <div class="mt-2">
-                            Showing {{ $offset + 1 }} to {{ min($page * $perPage, $recordCount) }} of {{ $recordCount }} entries
-                        </div>
-                        <div style="float:right;">
-                            @if ($pageCount >= 1)
-                                <nav aria-label="...">
-                                    <ul class="pagination">
-                                        <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ route('admin.activityMetadataList', ['page' => base64_encode(1)]) }}">First</a>
-                                        </li>
-                                        <li class="page-item {{ ($page == 1) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" href="{{ route('admin.activityMetadataList', ['page' => base64_encode($page - 1)]) }}">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                        @for ($i = max(1, $page); $i <= min($page + 4, $pageCount); $i++)
-                                            <li class="page-item {{($page == $i) ? 'active' : '' }}" aria-current="page">
-                                                <a class="page-link" href="{{ route('admin.activityMetadataList', ['page' => base64_encode($i)]) }}">{{ $i }}</a>
-                                            </li>
-                                        @endfor
-                                        <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link h5" href="{{ route('admin.activityMetadataList', ['page' => base64_encode($page + 1)]) }}">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item {{ ($page == $pageCount) ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ route('admin.activityMetadataList', ['page' => base64_encode($pageCount)]) }}">Last</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            @endif
-                        </div>                           
+                                                   
                     </div>
                 </div>
             </div>

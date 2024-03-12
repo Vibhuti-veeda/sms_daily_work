@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\GlobalController;
 use App\Models\LocationMaster;
 use App\Models\Location;
 use Illuminate\Http\Request;
@@ -12,10 +11,8 @@ use App\Models\Role;
 use Hash;
 use Auth;
 use App\Models\RoleModuleAccess;
-use App\Exports\TeamMemberExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class TeamMemberController extends GlobalController
+class TeamMemberController extends Controller
 {
     public function __construct(){
         $this->middleware('admin');
@@ -35,64 +32,23 @@ class TeamMemberController extends GlobalController
         $status = '';
         $roleId = '';
 
-        $perPage =  $this->perPageLimit();
-        if($request->page != ''){
-            $page = $request->page;
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
         $roles = Role::where('is_active', 1)->where('is_delete',0)->get();
-        $query = Admin::select('id', 'name', 'role_id', 'email', 'location_id', 'multi_location_id','is_active')
-                      ->where('is_delete', 0);
+        $query = Admin::where('is_delete', 0);
 
-        $queryCount = Admin::where('is_delete', 0);              
         if(isset($request->status) && $request->status != ''){
             $filter = 1;
             $status = $request->status;
             $query->where('is_active',$status);
-            $queryCount->where('is_active',$status);
         }
 
         if(isset($request->role) && $request->role != ''){
             $filter = 1;
             $roleId = $request->role;
             $query->where('role_id',$roleId);
-            $queryCount->where('role_id', $roleId);
         }
 
-        $members = $query->with(['role', 'location', 'multiLocation'])
-                        ->skip($offset)
-                        ->limit($perPage)
-                        ->get();
-        
-        // Fetch multi-location names for each member
-        if(!is_null($members)){  
-            foreach ($members as $mk => $mv) {
-                if (($mv->multi_location_id != '') && ($mv->multi_location_id != 0)) {
-                    $locationIds = explode(',', $mv->multi_location_id);
-                    $locations = LocationMaster::whereIn('id', $locationIds)->get();
+        $members = $query->with(['role', 'location'])->get();
 
-                    // Concatenate location names and types
-                    $multiLocationNames = '';
-                    if(!is_null($locations)){
-                        foreach ($locations as $location) {
-                            $multiLocationNames .= $location->location_name . '-' . $location->location_type . ' | ';
-                        }
-                    }
-
-                    // Remove the trailing pipe and space from the concatenated string
-                    $mv->multiLocationNames = rtrim($multiLocationNames, ' | ');
-                } else {
-                    $mv->multiLocationNames = '---';
-                }
-            }
-        }
-                
-        $recordCount = $queryCount->count();
-        $pageCount = ceil($recordCount / $perPage);
-        
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){
@@ -101,7 +57,7 @@ class TeamMemberController extends GlobalController
             $access = RoleModuleAccess::where('role_id', Auth::guard('admin')->user()->role_id)->where('module_name','team-member')->first();
         }
 
-        return view('admin.masters.team.team_member_list', compact('members', 'filter', 'status', 'roles', 'roleId', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.team.team_member_list', compact('members', 'filter', 'status', 'roles', 'roleId', 'admin', 'access'));
     }
 
     /**
@@ -129,8 +85,6 @@ class TeamMemberController extends GlobalController
     **/
     public function saveTeamMember(Request $request){
 
-        // dd(implode(',', $request->multi_location_id));
-
         $member = new Admin;
         $member->name = $request->full_name;
         $member->login_id = $request->login_id;
@@ -141,7 +95,7 @@ class TeamMemberController extends GlobalController
         $member->designation_no = $request->designation_no;
         $member->mobile = $request->mobile;
         $member->email = $request->email;
-        if($request->role_id != ''){
+        if ($request->role_id != '') {
             $member->role_id = $request->role_id;
         } else {
             $member->role_id = Null;
@@ -150,11 +104,6 @@ class TeamMemberController extends GlobalController
             $member->location_id = $request->location_id;
         } else {
             $member->location_id = 0;
-        }
-        if (isset($request->multi_location_id) && $request->multi_location_id != '') {
-            $member->multi_location_id = implode(',', $request->multi_location_id);
-        } else {
-            $member->multi_location_id = 0;
         }
         $member->save();
 
@@ -214,11 +163,6 @@ class TeamMemberController extends GlobalController
             $member->location_id = $request->location_id;
         } else {
             $member->location_id = 0;
-        }
-        if (isset($request->multi_location_id) && $request->multi_location_id != '') {
-            $member->multi_location_id = implode(',', $request->multi_location_id);
-        } else {
-            $member->multi_location_id = 0;
         }
         $member->save();
 
@@ -284,10 +228,5 @@ class TeamMemberController extends GlobalController
         $email = $query->first();
 
         return $email ? 'false' : 'true';
-    }
-
-    // excel export and download
-    public function exportTeamMembers(){
-        return Excel::download(new TeamMemberExport, 'All Team members  Study Management System.xlsx');
     }
 }

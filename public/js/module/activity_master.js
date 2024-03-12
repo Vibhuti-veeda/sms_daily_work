@@ -86,12 +86,3 @@ $(document).on('change', '.maximumDays', function(){
     }
     
 });
-
-$(document).ready(function(){
-    // Function to handle change in records per page
-    $('#perPage').change(function(){
-        var perPage = $(this).val();
-        var currentPage = {{ $page }};
-        window.location.href = "/activity-master/view/activity-master-list?perPage=" + perPage + "&page=" + currentPage;
-    });
-});

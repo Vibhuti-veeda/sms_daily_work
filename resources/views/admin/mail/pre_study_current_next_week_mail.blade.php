@@ -122,7 +122,7 @@
                                         <?php echo 'Red';?>
                                     </center>
                                 </td>
-                           @elseif(($pcv->dcgi_submission_noc_tl_stage != '' && $pcv->dcgi_submission_noc_tl_stage == 'Red') || ($pcv->dcgi_approval_noc_tl_stage != '' && $pcv->dcgi_approval_noc_tl_stage == 'Red') || ($pcv->md_mv_stage != '' && $pcv->md_mv_stage == 'Red') || ($pcv->protocol_finalization_stage == 'Red') || ($pcv->iec_submission_stage == 'Red') || ($pcv->iec_approval_stage == 'Red') || ($pcv->imp_availibility_stage == 'Red'))
+                            @elseif(($pcv->dcgi_submission_noc_tl_stage != '' && $pcv->dcgi_submission_noc_tl_stage == 'Red') || ($pcv->dcgi_approval_noc_tl_stage != '' && $pcv->dcgi_approval_noc_tl_stage == 'Red') || ($pcv->md_mv_stage != '' && $pcv->md_mv_stage == 'Red') || ($pcv->protocol_finalization_stage == 'Red') || ($pcv->iec_submission_stage == 'Red') || ($pcv->iec_approval_stage == 'Red') || ($pcv->imp_availibility_stage == 'Red'))
                                 <td style="border: 1px solid; width: 10%;">
                                     <center>
                                         <?php echo 'Red';?>

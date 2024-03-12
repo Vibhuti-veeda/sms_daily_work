@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\GlobalController;
 use Illuminate\Http\Request;
 use App\Models\ParaCode;
 use App\Models\ParaMaster;
@@ -12,10 +11,8 @@ use App\Models\ReasonMaster;
 use App\Models\ReasonMasterTrail;
 use App\Models\RoleModuleAccess;
 use Auth;
-use App\Exports\ReasonMasterExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class ReasonMasterController extends GlobalController
+class ReasonMasterController extends Controller
 {   
     public function __construct(){
         $this->middleware('admin');
@@ -23,30 +20,15 @@ class ReasonMasterController extends GlobalController
     }
 
     // Reason Master List
-    public function reasonMasterList(Request $request){
+    public function reasonMasterList(){
 
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
-        $reasonMaster = ReasonMaster::select('id', 'activity_type_id', 'activity_id', 'start_delay_remark', 'end_delay_remark', 'is_active')
-                                    ->where('is_delete', 0)
+        $reasonMaster = ReasonMaster::where('is_delete', 0)
                                     ->orderBy('id', 'DESC')
                                     ->with([
-                                        'activityType',
-                                        'activityName'
+                                        'activityType'
                                     ])
-                                    ->skip($offset)
-                                    ->limit($perPage)
                                     ->get();
 
-        $recordCount = ReasonMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
-                                    
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){
@@ -57,7 +39,7 @@ class ReasonMasterController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.reason_master.reason_master_list',compact('reasonMaster','admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.reason_master.reason_master_list',compact('reasonMaster','admin', 'access'));
     }
 
     // Add Reason Master
@@ -223,10 +205,5 @@ class ReasonMasterController extends GlobalController
         $reasonMasterTrail->save();
 
         return $reasonMaster ? 'true' : 'false';
-    }
-
-    // excel export and download
-    public function exportReasonMaster(){
-        return Excel::download(new ReasonMasterExport, 'All Reason Master  Study Management System.xlsx');
     }
 }

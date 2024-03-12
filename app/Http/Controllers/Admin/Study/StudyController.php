@@ -26,8 +26,6 @@ use App\Models\RoleModuleAccess;
 use App\Models\Admin;
 use DB;
 use App\View\VwPreStudyProjection;
-use App\Exports\StudyExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class StudyController extends GlobalController
 {
@@ -89,14 +87,6 @@ class StudyController extends GlobalController
         $uomName = '';
         $drugType = '';
         $studyStatusName = '';
-
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = $request->page;
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
 
         $projectManagers = Admin::whereIn('role_id', ['2', '3'])
                                 ->where('is_active', 1)
@@ -268,144 +258,124 @@ class StudyController extends GlobalController
         
         $drugs = DrugMaster::where('is_active', 1)->where('is_delete', 0)->get();
 
-        $query = Study::select('id', 'study_result', 'study_status', 'study_slotted', 'tentative_clinical_date', 'projection_status', 'study_no', 'sponsor', 'project_manager', 'is_active')
-                        ->where('is_delete', 0)
-                        ->whereHas('projectManager', function($q){
+        $query = Study::where('is_delete', 0)
+                      ->whereHas('projectManager', function($q){
                             $q->where('is_active',1);
-                        })
-                        ->orderBy('id', 'DESC');
-        $queryCount = Study::where('is_delete', 0);                
+                      })
+                      ->orderBy('id', 'DESC');
+
         if(isset($request->project_manager) && $request->project_manager != ''){
             $filter = 1;
             $projectManagerName = $request->project_manager;
             $query->where('project_manager',$projectManagerName);
-            $queryCount->where('project_manager',$projectManagerName);
         }
 
         if(isset($request->complexity) && $request->complexity != ''){
             $filter = 1;
             $complexityName = $request->complexity;
             $query->where('complexity',$complexityName);
-            $queryCount->where('complexity',$complexityName);
         }
 
         if(isset($request->study_design) && $request->study_design != ''){
             $filter = 1;
             $studyDesignName = $request->study_design;
             $query->where('study_design',$studyDesignName);
-            $queryCount->where('study_design',$studyDesignName);
         }
 
         if(isset($request->study_sub_type) && $request->study_sub_type != ''){
             $filter = 1;
             $studySubTypeName = $request->study_sub_type;
             $query->where('study_sub_type',$studySubTypeName);
-            $queryCount->where('study_sub_type',$studySubTypeName);
         }
 
         if(isset($request->study_type) && $request->study_type != ''){ 
             $filter = 1;
             $studyTypeName = $request->study_type;
             $query->where('study_type',$studyTypeName);
-            $queryCount->where('study_type',$studyTypeName);
         }
 
         if(isset($request->study_condition) && $request->study_condition != ''){ 
             $filter = 1;
             $studyConditionName = $request->study_condition;
             $query->where('study_condition',$studyConditionName);
-            $queryCount->where('study_condition',$studyConditionName);
         }
 
         if(isset($request->subject_type) && $request->subject_type != ''){ 
             $filter = 1;
             $subjectTypeName = $request->subject_type;
             $query->where('subject_type',$subjectTypeName);
-            $queryCount->where('subject_type',$subjectTypeName);
         }
 
         if(isset($request->priority) && $request->priority != ''){ 
             $filter = 1;
             $priorityName = $request->priority;
             $query->where('priority',$priorityName);
-            $queryCount->where('priority',$priorityName);
         }
 
         if(isset($request->blinding_status) && $request->blinding_status != ''){ 
             $filter = 1;
             $blindingStatusName = $request->blinding_status;
             $query->where('blinding_status',$blindingStatusName);
-            $queryCount->where('blinding_status',$blindingStatusName);
         }
 
         if(isset($request->regulatory_submission) && $request->regulatory_submission != ''){ 
             $filter = 1;
             $regulatorySubmissionName = $request->regulatory_submission;
             $query->whereHas('studyRegulatory', function($q) use($regulatorySubmissionName){ $q->where('regulatory_submission',$regulatorySubmissionName);});
-            $queryCount->whereHas('studyRegulatory', function($q) use($regulatorySubmissionName){ $q->where('regulatory_submission',$regulatorySubmissionName);});
         }
 
         if(isset($request->study_no) && $request->study_no != ''){
             $filter = 1;
             $studyName = $request->study_no;
             $query->where('study_no',$studyName);
-            $queryCount->where('study_no',$studyName);
         }
 
         if(isset($request->sponsor_id) && $request->sponsor_id != ''){
             $filter = 1;
             $sponsorName = $request->sponsor_id;
             $query->where('sponsor',$sponsorName);
-            $queryCount->where('sponsor',$sponsorName);
         }
 
         if(isset($request->cr_location) && $request->cr_location != ''){
             $filter = 1;
             $crLocationName = $request->cr_location;
             $query->where('cr_location',$crLocationName);
-            $queryCount->where('cr_location',$crLocationName);
         }
 
         if(isset($request->br_location) && $request->br_location != ''){
             $filter = 1;
             $brLocationName = $request->br_location;
             $query->where('br_location',$brLocationName);
-            $queryCount->where('br_location',$brLocationName);
         }
 
         if(isset($request->scope) && $request->scope != ''){
             $filter = 1;
             $scopeName = $request->scope;
             $query->whereHas('studyScope', function($q) use($scopeName){ $q->where('scope',$scopeName);});
-            $queryCount->whereHas('studyScope', function($q) use($scopeName){ $q->where('scope',$scopeName);});
         }
 
         if(isset($request->principle_investigator) && $request->principle_investigator != ''){
             $filter = 1;
             $principleName = $request->principle_investigator;
             $query->where('principle_investigator',$principleName);
-            $queryCount->where('principle_investigator',$principleName);
         }
 
         if(isset($request->bioanalytical_investigator) && $request->bioanalytical_investigator != ''){
             $filter = 1;
             $bioanalyticalName = $request->bioanalytical_investigator;
             $query->where('bioanalytical_investigator',$bioanalyticalName);
-            $queryCount->where('bioanalytical_investigator',$bioanalyticalName);
         }
 
         if(isset($request->special_notes) && $request->special_notes != ''){
             $filter = 1;
             $specialNotesName = $request->special_notes;
             $query->where('special_notes',$specialNotesName); 
-            $queryCount->where('special_notes',$specialNotesName); 
         } 
 
         if(isset($request->no_of_subject) && $request->no_of_subject != ''){
             $filter = 1;
             $noOfSubject = $request->no_of_subject;
             $query->where('no_of_subject',$noOfSubject); 
-            $queryCount->where('no_of_subject',$noOfSubject); 
         } 
 
         /*if(isset($request->no_of_male_subjects) && $request->no_of_male_subjects != ''){
@@ -424,63 +394,54 @@ class StudyController extends GlobalController
             $filter = 1;
             $studyResult = $request->study_result;
             $query->where('study_result',$studyResult); 
-            $queryCount->where('study_result',$studyResult); 
         }
 
         if(isset($request->sponsor_study_no) && $request->sponsor_study_no != ''){
             $filter = 1;
             $sponsorStudyName = $request->sponsor_study_no;
             $query->where('sponsor_study_no',$sponsorStudyName);
-            $queryCount->where('sponsor_study_no',$sponsorStudyName);
         }
 
         /*if(isset($request->washout_period) && $request->washout_period != ''){
             $filter = 1;
             $washoutPeriod = $request->washout_period;
             $query->where('washout_period',$washoutPeriod); 
-            $queryCount->where('washout_period',$washoutPeriod); 
         }*/
 
         if(isset($request->clinical_ward_location) && $request->clinical_ward_location != ''){
             $filter = 1;
             $clinicalWardLocation = $request->clinical_ward_location;
             $query->where('clinical_word_location',$clinicalWardLocation); 
-            $queryCount->where('clinical_word_location',$clinicalWardLocation); 
         }
 
         if(isset($request->total_group) && $request->total_group != ''){
             $filter = 1;
             $noOfGroup = $request->total_group;
             $query->where('no_of_groups',$noOfGroup); 
-            $queryCount->where('no_of_groups',$noOfGroup); 
         }
 
         if(isset($request->no_of_periods) && $request->no_of_periods != ''){
             $filter = 1;
             $noOdPeriod = $request->no_of_periods;
             $query->where('no_of_periods',$noOdPeriod); 
-            $queryCount->where('no_of_periods',$noOdPeriod); 
         }
 
         /*if(isset($request->total_housing) && $request->total_housing != ''){
             $filter = 1;
             $noOfHousing = $request->total_housing;
             $query->where('total_housing',$noOfHousing); 
-            $queryCount->where('total_housing',$noOfHousing); 
         }*/
 
         if(isset($request->pre_housing) && $request->pre_housing != ''){
             $filter = 1;
             $noOfPreHousing = $request->pre_housing;
             $query->where('pre_housing',$noOfPreHousing); 
-            $queryCount->where('pre_housing',$noOfPreHousing); 
         }
         
         if(isset($request->post_housing) && $request->post_housing != ''){
             $filter = 1;
             $noOfPostHousing = $request->post_housing;
             $query->where('post_housing',$noOfPostHousing);
-            $queryCount->where('post_housing',$noOfPostHousing);
         }
 
         /*if($request->start_all_date != '' && $request->end_all_date != ''){
@@ -488,7 +449,6 @@ class StudyController extends GlobalController
             $startAllocationDate = $request->start_all_date;
             $endAllocationDate = $request->end_all_date;
             $query->whereBetween('study_no_allocation_date',array($this->convertDateTime($startAllocationDate),$this->convertDateTime($endAllocationDate)));
-            $queryCount->whereBetween('study_no_allocation_date',array($this->convertDateTime($startAllocationDate),$this->convertDateTime($endAllocationDate)));
         }
 
         if($request->start_tentative_date != '' && $request->end_tentative_date != ''){
@@ -496,7 +456,6 @@ class StudyController extends GlobalController
             $startTentativeDate = $request->start_tentative_date;
             $endTentativeDate = $request->end_tentative_date;
             $query->whereBetween('tentative_study_start_date',array($this->convertDateTime($startTentativeDate),$this->convertDateTime($endTentativeDate)));
-            $queryCount->whereBetween('tentative_study_start_date',array($this->convertDateTime($startTentativeDate),$this->convertDateTime($endTentativeDate)));
         }
         
         if($request->start_end_tentative_date != '' && $request->end_end_tentative_date != ''){
@@ -504,7 +463,6 @@ class StudyController extends GlobalController
             $startEndTentativeDate = $request->start_end_tentative_date;
             $endEndTentativeDate = $request->end_end_tentative_date;
             $query->whereBetween('tentative_study_end_date',array($this->convertDateTime($startEndTentativeDate),$this->convertDateTime($endEndTentativeDate)));
-            $queryCount->whereBetween('tentative_study_end_date',array($this->convertDateTime($startEndTentativeDate),$this->convertDateTime($endEndTentativeDate)));
         }
 
         if($request->start_imp_date != '' && $request->end_imp_date != ''){
@@ -512,52 +470,48 @@ class StudyController extends GlobalController
             $startImpDate = $request->start_imp_date;
             $endImpDate = $request->end_imp_date;
             $query->whereBetween('tentative_study_end_date',array($this->convertDateTime($startImpDate),$this->convertDateTime($endImpDate)));
-            $queryCount->whereBetween('tentative_study_end_date',array($this->convertDateTime($startImpDate),$this->convertDateTime($endImpDate)));
         }*/
 
         if(isset($request->drug_name) && $request->drug_name != ''){
             $filter = 1;
             $drugName = $request->drug_name;
             $query->whereHas('drugDetails', function($q) use($drugName){ $q->where('drug_id',$drugName);});
-            $queryCount->whereHas('drugDetails', function($q) use($drugName){ $q->where('drug_id',$drugName);});
         }
 
         if(isset($request->dosage_form_id) && $request->dosage_form_id != ''){
             $filter = 1;
             $dosageFormName = $request->dosage_form_id;
             $query->whereHas('drugDetails', function($q) use($dosageFormName){ $q->where('dosage_form_id',$dosageFormName);});
-            $queryCount->whereHas('drugDetails', function($q) use($dosageFormName){ $q->where('dosage_form_id',$dosageFormName);});
         }
 
         if(isset($request->uom_id) && $request->uom_id != ''){
             $filter = 1;
             $dosageFormName = $request->uom_id;
             $query->whereHas('drugDetails', function($q) use($dosageFormName){ $q->where('uom_id',$dosageFormName);});
-            $queryCount->whereHas('drugDetails', function($q) use($dosageFormName){ $q->where('uom_id',$dosageFormName);});
         }
         
         if(isset($request->uom_id) && $request->uom_id != ''){
             $filter = 1;
             $uomName = $request->uom_id;
             $query->whereHas('drugDetails', function($q) use($uomName){ $q->where('uom_id',$uomName);});
-            $queryCount->whereHas('drugDetails', function($q) use($uomName){ $q->where('uom_id',$uomName);});
         }
         
         if(isset($request->drug_type) && $request->drug_type != ''){
             $filter = 1;
             $drugType = $request->drug_type;
             $query->whereHas('drugDetails', function($q) use($drugType){ $q->where('type',$drugType);});
-            $queryCount->whereHas('drugDetails', function($q) use($drugType){ $q->where('type',$drugType);});
         }
 
         if(isset($request->study_status) && $request->study_status != ''){
             $filter = 1;
             $studyStatusName = $request->study_status;
             $query->where('study_status',$studyStatusName);
-            $queryCount->where('study_status',$studyStatusName);
         }
 
         if (Auth::guard('admin')->user()->role_id == 3) {
+            // echo "<pre>";
+            // print_r(Auth::guard('admin')->user()->id);
+            // exit;
             $studies = $query->where('project_manager', Auth::guard('admin')->user()->id)
                             ->with([
                                     'sponsorName',
@@ -590,11 +544,48 @@ class StudyController extends GlobalController
                                         ]);
                                     }
                                 ])
-                            ->skip($offset)
-                            ->limit($perPage)
                             ->get();
-            $recordCount = $queryCount->where('project_manager', Auth::guard('admin')->user()->id)->count();
+
+        } elseif (Auth::guard('admin')->user()->role_id == 16) {
+            $studies = $query->where('project_manager', Auth::guard('admin')->user()->id)
+                            ->with([
+                                    'sponsorName',
+                                    'studyType',
+                                    'priorityName',
+                                    'studyDesignName',
+                                    'studySubTypeName',
+                                    'subjectTypeName',
+                                    'blindingStatusName',
+                                    'crLocationName',
+                                    'wardName',
+                                    'complexityName',
+                                    'studyConditionName',
+                                    'brLocationName',
+                                    'projectManager',
+                                    'specialNotesName',
+                                    'principleInvestigator',
+                                    'bioanalyticalInvestigator',
+                                    'studyScope' => function($q){
+                                        $q->with([
+                                            'scopeName'
+                                        ]);
+                                    },
+                                    'drugDetails' => function($q) {
+                                        $q->with([
+                                            'drugName',
+                                            'drugDosageName',
+                                            'drugUom',
+                                            'drugType'
+                                        ]);
+                                    }
+                                ])
+                            ->get();
         } else {
+
+            if(Auth::guard('admin')->user()->role_id == 2) {
+                $query->where('project_manager', '!=', 293);
+            }
+
             $studies = $query->with([
                                     'sponsorName',
                                     'studyType',
@@ -626,13 +617,9 @@ class StudyController extends GlobalController
                                         ]);
                                     }
                                 ])
-                            ->skip($offset)
-                            ->limit($perPage)
                             ->get();
-            $recordCount = $queryCount->count();
-        }
 
-        $pageCount = ceil($recordCount / $perPage);
+        }
 
         $admin = '';
         $access = '';
@@ -644,7 +631,7 @@ class StudyController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.study.study.study_list', compact('studies', 'admin', 'access', 'projectManagers', 'filter', 'projectManagerName','complexityName','complexity','studyDesign','studyDesignName', 'studySubType', 'studySubTypeName', 'studyType', 'studyTypeName', 'studyConditionName', 'studyCondition','subjectTypeName','subjectType', 'priority', 'priorityName', 'blindingStatusName', 'blindingStatus', 'regulatorySubmissionName', 'regulatorySubmission','sponsors','sponsorName', 'crLocation', 'crLocationName', 'brLocation', 'brLocationName','scopeName','scope','principleName','principle','bioanalytical','bioanalyticalName','studyName','studies', 'specialNotesName','specialNotes','noOfSubject','noOfMaleSubject', 'maleStudies', 'subject', 'femaleSubject', 'noOfFemaleSubject', 'studyResult', 'sponsorStudyName', 'totalWashoutPeriod', 'washoutPeriod', 'clinicalWardMaster', 'clinicalWardLocation', 'totalGroups', 'noOfGroup', 'totalPeriods', 'noOfPeriod', 'totalHousing', 'noOfHousing', 'preHousing', 'noOfPreHousing', 'noOfPostHousing', 'postHousing', 'startAllocationDate', 'endAllocationDate', 'startTentativeDate', 'endTentativeDate', 'startEndTentativeDate', 'endEndTentativeDate', 'startImpDate', 'endImpDate', 'drugs', 'drugName', 'dosageForms', 'dosageFormName', 'uoms', 'uomName', 'drugType', 'studyStatus','studyStatusName','sponsorStudy', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.study.study.study_list', compact('studies', 'admin', 'access', 'projectManagers', 'filter', 'projectManagerName','complexityName','complexity','studyDesign','studyDesignName', 'studySubType', 'studySubTypeName', 'studyType', 'studyTypeName', 'studyConditionName', 'studyCondition','subjectTypeName','subjectType', 'priority', 'priorityName', 'blindingStatusName', 'blindingStatus', 'regulatorySubmissionName', 'regulatorySubmission','sponsors','sponsorName', 'crLocation', 'crLocationName', 'brLocation', 'brLocationName','scopeName','scope','principleName','principle','bioanalytical','bioanalyticalName','studyName','studies', 'specialNotesName','specialNotes','noOfSubject','noOfMaleSubject', 'maleStudies', 'subject', 'femaleSubject', 'noOfFemaleSubject', 'studyResult', 'sponsorStudyName', 'totalWashoutPeriod', 'washoutPeriod', 'clinicalWardMaster', 'clinicalWardLocation', 'totalGroups', 'noOfGroup', 'totalPeriods', 'noOfPeriod', 'totalHousing', 'noOfHousing', 'preHousing', 'noOfPreHousing', 'noOfPostHousing', 'postHousing', 'startAllocationDate', 'endAllocationDate', 'startTentativeDate', 'endTentativeDate', 'startEndTentativeDate', 'endEndTentativeDate', 'startImpDate', 'endImpDate', 'drugs', 'drugName', 'dosageForms', 'dosageFormName', 'uoms', 'uomName', 'drugType', 'studyStatus','studyStatusName','sponsorStudy'));
     }
 
     /**
@@ -749,6 +736,18 @@ class StudyController extends GlobalController
                                 ])
                               ->get();
 
+        $brProjectManager = Role::select('id')
+                                ->where('id', ['16'])
+                                ->with([
+                                    'projectHead' => function($q){
+                                        $q->select('id', 'role_id', 'employee_code', 'name')
+                                          ->where('is_active', 1)
+                                          ->where('is_delete', 0)
+                                          ->orderBy('name');
+                                        }
+                                    ])
+                                ->get();
+
         $regulatorySubmission = ParaMaster::select('id', 'para_description')
                                           ->where('para_code', 'Submission')
                                           ->where('is_active', 1)
@@ -845,7 +844,7 @@ class StudyController extends GlobalController
 
         $uom = ParaMaster::where('para_code', 'UOM')->where('is_active', 1)->where('is_delete', 0)->with(['paraCode'])->first();
 
-        return view('admin.study.study.add_study', compact('sponsors', 'scope', 'studyDesign', 'studySubType', 'subjectType', 'blindingStatus', 'crLocation', 'regulatorySubmission', 'studyType', 'complexity', 'studyCondition', 'priority', 'brLocation', 'principle', 'bioanalytical', 'projectManager', 'specialNotes', 'dosageForm', 'drug', 'uom'));
+        return view('admin.study.study.add_study', compact('sponsors', 'scope', 'studyDesign', 'studySubType', 'subjectType', 'blindingStatus', 'crLocation', 'regulatorySubmission', 'studyType', 'complexity', 'studyCondition', 'priority', 'brLocation', 'principle', 'bioanalytical', 'projectManager', 'specialNotes', 'dosageForm', 'drug', 'uom', 'brProjectManager'));
     }
 
     /**
@@ -892,20 +891,20 @@ class StudyController extends GlobalController
         $project->subject_type = $request->subject_type;
         $project->blinding_status = $request->blinding_status;
         $project->no_of_subject = $request->no_of_subject;
-        $project->no_of_male_subjects = $request->no_of_male_subjects;
-        $project->no_of_female_subjects = $request->no_of_female_subjects;
-        $project->washout_period = $request->washout_period;
-        $project->cr_location = $request->cr_location;
-        $project->clinical_word_location = $request->clinical_word_location;
+        // $project->no_of_male_subjects = $request->no_of_male_subjects;
+        // $project->no_of_female_subjects = $request->no_of_female_subjects;
+        // $project->washout_period = $request->washout_period;
+        // $project->cr_location = $request->cr_location;
+        // $project->clinical_word_location = $request->clinical_word_location;
         $project->additional_requirement = $request->additional_requirement;
         $project->study_type = $request->study_type;
-        $project->complexity = $request->complexity;
+        // $project->complexity = $request->complexity;
         $project->study_condition = $request->study_condition;
-        $project->priority = $request->priority;
-        $project->no_of_groups = $request->no_of_groups;
+        // $project->priority = $request->priority;
+        // $project->no_of_groups = $request->no_of_groups;
         $project->no_of_periods = $request->no_of_periods;
         /*$project->total_housing = $request->total_housing;*/
-        $project->pre_housing = $request->pre_housing;
+        // $project->pre_housing = $request->pre_housing;
         $project->post_housing = $request->post_housing;
         $project->br_location = $request->br_location;
         /*$project->study_no_allocation_date = $this->convertDateTime($request->study_no_allocation_date);
@@ -913,10 +912,58 @@ class StudyController extends GlobalController
         $project->tentative_study_end_date = $this->convertDateTime($request->tentative_study_end_date);
         $project->tentative_imp_date = $this->convertDateTime($request->tentative_imp_date);*/
         $project->project_manager = $request->project_manager;
-        $project->principle_investigator = $request->principle_investigator;
+        // $project->principle_investigator = $request->principle_investigator;
         $project->bioanalytical_investigator = $request->bioanalytical_investigator;
         /*$project->total_sponsor_queries = $request->total_sponsor_queries;
         $project->open_sponsor_queries = $request->open_sponsor_queries;*/
+
+        if(isset($request->no_of_male_subjects) && $request->no_of_male_subjects != '') {
+            $project->no_of_male_subjects = $request->no_of_male_subjects;
+        }
+
+        if(isset($request->no_of_female_subjects) && $request->no_of_female_subjects != '') {
+            $project->no_of_female_subjects = $request->no_of_female_subjects;
+        }
+
+        if(isset($request->washout_period) && $request->washout_period != '') {
+            $project->washout_period = $request->washout_period;
+        }
+
+        if(isset($request->cr_location) && $request->cr_location != '') {
+            $project->cr_location = $request->cr_location;
+        }
+
+        if(isset($request->clinical_word_location) && $request->clinical_word_location != '') {
+            $project->clinical_word_location = $request->clinical_word_location;
+        }
+
+        if(isset($request->complexity) && $request->complexity != '') {
+            $project->complexity = $request->complexity;
+        }
+
+        if(isset($request->no_of_groups) && $request->no_of_groups != '') {
+            $project->no_of_groups = $request->no_of_groups;
+        }
+
+        if(isset($request->priority) && $request->priority != '') {
+            $project->priority = $request->priority;
+        }
+
+        if(isset($request->pre_housing) && $request->pre_housing != '') {
+            $project->pre_housing = $request->pre_housing;
+        }
+
+        if(isset($request->principle_investigator) && $request->principle_investigator != '') {
+            $project->principle_investigator = $request->principle_investigator;
+        }
+
+        if(isset($request->isr_sample) && $request->isr_sample != '') {
+            $project->isr_sample = $request->isr_sample;
+        }
+
+        if(isset($request->final_report_sla) && $request->final_report_sla != '') {
+            $project->final_report_sla = $request->final_report_sla;
+        }
 
         if(isset($request->quotation_amount) && $request->quotation_amount != ''){
             $project->quotation_amount = $request->quotation_amount;
@@ -985,20 +1032,20 @@ class StudyController extends GlobalController
         $projectTrail->subject_type = $request->subject_type;
         $projectTrail->blinding_status = $request->blinding_status;
         $projectTrail->no_of_subject = $request->no_of_subject;
-        $projectTrail->no_of_male_subjects = $request->no_of_male_subjects;
-        $projectTrail->no_of_female_subjects = $request->no_of_female_subjects;
-        $projectTrail->washout_period = $request->washout_period;
-        $projectTrail->cr_location = $request->cr_location;
-        $projectTrail->clinical_word_location = $request->clinical_word_location;
+        // $projectTrail->no_of_male_subjects = $request->no_of_male_subjects;
+        // $projectTrail->no_of_female_subjects = $request->no_of_female_subjects;
+        // $projectTrail->washout_period = $request->washout_period;
+        // $projectTrail->cr_location = $request->cr_location;
+        // $projectTrail->clinical_word_location = $request->clinical_word_location;
         $projectTrail->additional_requirement = $request->additional_requirement;
         $projectTrail->study_type = $request->study_type;
-        $projectTrail->complexity = $request->complexity;
+        // $projectTrail->complexity = $request->complexity;
         $projectTrail->study_condition = $request->study_condition;
-        $projectTrail->priority = $request->priority;
-        $projectTrail->no_of_groups = $request->no_of_groups;
+        // $projectTrail->priority = $request->priority;
+        // $projectTrail->no_of_groups = $request->no_of_groups;
         $projectTrail->no_of_periods = $request->no_of_periods;
         /*$projectTrail->total_housing = $request->total_housing;*/
-        $projectTrail->pre_housing = $request->pre_housing;
+        // $projectTrail->pre_housing = $request->pre_housing;
         $projectTrail->post_housing = $request->post_housing;
         $projectTrail->br_location = $request->br_location;
         /*$projectTrail->study_no_allocation_date = $this->convertDateTime($request->study_no_allocation_date);
@@ -1006,10 +1053,58 @@ class StudyController extends GlobalController
         $projectTrail->tentative_study_end_date = $this->convertDateTime($request->tentative_study_end_date);
         $projectTrail->tentative_imp_date = $this->convertDateTime($request->tentative_imp_date);*/
         $projectTrail->project_manager = $request->project_manager;
-        $projectTrail->principle_investigator = $request->principle_investigator;
+        // $projectTrail->principle_investigator = $request->principle_investigator;
         $projectTrail->bioanalytical_investigator = $request->bioanalytical_investigator;
         /*$projectTrail->total_sponsor_queries = $request->total_sponsor_queries;
         $projectTrail->open_sponsor_queries = $request->open_sponsor_queries;*/
+
+        if(isset($request->no_of_male_subjects) && $request->no_of_male_subjects != '') {
+            $projectTrail->no_of_male_subjects = $request->no_of_male_subjects;
+        }
+
+        if(isset($request->no_of_female_subjects) && $request->no_of_female_subjects != '') {
+            $projectTrail->no_of_female_subjects = $request->no_of_female_subjects;
+        }
+
+        if(isset($request->washout_period) && $request->washout_period != '') {
+            $projectTrail->washout_period = $request->washout_period;
+        }
+
+        if(isset($request->cr_location) && $request->cr_location != '') {
+            $projectTrail->cr_location = $request->cr_location;
+        }
+
+        if(isset($request->clinical_word_location) && $request->clinical_word_location != '') {
+            $projectTrail->clinical_word_location = $request->clinical_word_location;
+        }
+
+        if(isset($request->complexity) && $request->complexity != '') {
+            $projectTrail->complexity = $request->complexity;
+        }
+
+        if(isset($request->no_of_groups) && $request->no_of_groups != '') {
+            $projectTrail->no_of_groups = $request->no_of_groups;
+        }
+
+        if(isset($request->priority) && $request->priority != '') {
+            $projectTrail->priority = $request->priority;
+        }
+
+        if(isset($request->pre_housing) && $request->pre_housing != '') {
+            $projectTrail->pre_housing = $request->pre_housing;
+        }
+
+        if(isset($request->principle_investigator) && $request->principle_investigator != '') {
+            $projectTrail->principle_investigator = $request->principle_investigator;
+        }
+
+        if(isset($request->isr_sample) && $request->isr_sample != '') {
+            $projectTrail->isr_sample = $request->isr_sample;
+        }
+
+        if(isset($request->final_report_sla) && $request->final_report_sla != '') {
+            $projectTrail->final_report_sla = $request->final_report_sla;
+        }
 
         if(isset($request->quotation_amount) && $request->quotation_amount != ''){
             $projectTrail->quotation_amount = $request->quotation_amount;
@@ -1290,6 +1385,18 @@ class StudyController extends GlobalController
                                 ])
                               ->get();
 
+        $brProjectManager = Role::select('id')
+                                ->where('id', ['16'])
+                                ->with([
+                                    'projectHead' => function($q){
+                                        $q->select('id', 'role_id', 'employee_code', 'name')
+                                            ->where('is_active', 1)
+                                            ->where('is_delete', 0)
+                                            ->orderBy('name');
+                                        }
+                                    ])
+                                ->get();
+
         $regulatorySubmission = ParaMaster::select('id', 'para_description')
                                           ->where('para_code', 'Submission')
                                           ->where('is_active', 1)
@@ -1383,7 +1490,7 @@ class StudyController extends GlobalController
             }
         }
 
-        return view('admin.study.study.edit_study', compact('sponsors', 'dosageform', 'scope', 'studyDesign', 'studySubType', 'subjectType', 'blindingStatus', 'crLocation', 'uom', 'regulatorySubmission', 'studyType', 'complexity', 'studyCondition', 'priority', 'brLocation', 'study', 'scopeId', 'regulatoryId', 'principle', 'bioanalytical', 'drug', 'clinicalWordLocation', 'projectManager', 'specialNotes'));
+        return view('admin.study.study.edit_study', compact('sponsors', 'dosageform', 'scope', 'studyDesign', 'studySubType', 'subjectType', 'blindingStatus', 'crLocation', 'uom', 'regulatorySubmission', 'studyType', 'complexity', 'studyCondition', 'priority', 'brLocation', 'study', 'scopeId', 'regulatoryId', 'principle', 'bioanalytical', 'drug', 'clinicalWordLocation', 'projectManager', 'brProjectManager', 'specialNotes'));
     }
 
     /**
@@ -1471,7 +1578,7 @@ class StudyController extends GlobalController
             ]);
 
         } else if((($request->no_of_subject > $getStudy->no_of_subject) || ($request->no_of_male_subjects > $getStudy->no_of_male_subjects) || ($request->no_of_female_subjects > $getStudy->no_of_female_subjects)) && ($request->study_no == $getStudy->study_no.'-G1')) {
-            
+
             $updateStudy = Study::where('id', $request->id)->update([
                                                                 'no_of_subject' => Null,
                                                                 'no_of_male_subjects' => Null,
@@ -1513,20 +1620,20 @@ class StudyController extends GlobalController
             $project->subject_type = $request->subject_type;
             $project->blinding_status = $request->blinding_status;
             $project->no_of_subject = $request->no_of_subject;
-            $project->no_of_male_subjects = $request->no_of_male_subjects;
-            $project->no_of_female_subjects = $request->no_of_female_subjects;
-            $project->washout_period = $request->washout_period;
-            $project->cr_location = $request->cr_location;
+            // $project->no_of_male_subjects = $request->no_of_male_subjects;
+            // $project->no_of_female_subjects = $request->no_of_female_subjects;
+            // $project->washout_period = $request->washout_period;
+            // $project->cr_location = $request->cr_location;
             $project->clinical_word_location = $request->clinical_word_location;
             $project->additional_requirement = $request->additional_requirement;
             $project->study_type = $request->study_type;
-            $project->complexity = $request->complexity;
+            // $project->complexity = $request->complexity;
             $project->study_condition = $request->study_condition;
-            $project->priority = $request->priority;
-            $project->no_of_groups = $request->no_of_groups;
+            // $project->priority = $request->priority;
+            // $project->no_of_groups = $request->no_of_groups;
             $project->no_of_periods = $request->no_of_periods;
             /*$project->total_housing = $request->total_housing;*/
-            $project->pre_housing = $request->pre_housing;
+            // $project->pre_housing = $request->pre_housing;
             $project->post_housing = $request->post_housing;
             $project->br_location = $request->br_location;
             /*$project->study_no_allocation_date = $this->convertDateTime($request->study_no_allocation_date);
@@ -1534,10 +1641,58 @@ class StudyController extends GlobalController
             $project->tentative_study_end_date = $this->convertDateTime($request->tentative_study_end_date);
             $project->tentative_imp_date = $this->convertDateTime($request->tentative_imp_date);*/
             $project->project_manager = $request->project_manager;
-            $project->principle_investigator = $request->principle_investigator;
-            $project->bioanalytical_investigator = $request->bioanalytical_investigator;
+            // $project->principle_investigator = $request->principle_investigator;
+            // $project->bioanalytical_investigator = $request->bioanalytical_investigator;
             /*$project->total_sponsor_queries = $request->total_sponsor_queries;
             $project->open_sponsor_queries = $request->open_sponsor_queries;*/
+
+            if(isset($request->no_of_male_subjects) && $request->no_of_male_subjects != '') {
+                $project->no_of_male_subjects = $request->no_of_male_subjects;
+            }
+    
+            if(isset($request->no_of_female_subjects) && $request->no_of_female_subjects != '') {
+                $project->no_of_female_subjects = $request->no_of_female_subjects;
+            }
+    
+            if(isset($request->washout_period) && $request->washout_period != '') {
+                $project->washout_period = $request->washout_period;
+            }
+    
+            if(isset($request->cr_location) && $request->cr_location != '') {
+                $project->cr_location = $request->cr_location;
+            }
+    
+            if(isset($request->clinical_word_location) && $request->clinical_word_location != '') {
+                $project->clinical_word_location = $request->clinical_word_location;
+            }
+    
+            if(isset($request->complexity) && $request->complexity != '') {
+                $project->complexity = $request->complexity;
+            }
+    
+            if(isset($request->no_of_groups) && $request->no_of_groups != '') {
+                $project->no_of_groups = $request->no_of_groups;
+            }
+    
+            if(isset($request->priority) && $request->priority != '') {
+                $project->priority = $request->priority;
+            }
+    
+            if(isset($request->pre_housing) && $request->pre_housing != '') {
+                $project->pre_housing = $request->pre_housing;
+            }
+    
+            if(isset($request->principle_investigator) && $request->principle_investigator != '') {
+                $project->principle_investigator = $request->principle_investigator;
+            }
+    
+            if(isset($request->isr_sample) && $request->isr_sample != '') {
+                $project->isr_sample = $request->isr_sample;
+            }
+    
+            if(isset($request->final_report_sla) && $request->final_report_sla != '') {
+                $project->final_report_sla = $request->final_report_sla;
+            }
 
             if (isset($request->quotation_amount) && $request->quotation_amount != '') {
                 $project->quotation_amount = $request->quotation_amount;
@@ -1565,6 +1720,8 @@ class StudyController extends GlobalController
 
             if(isset($request->remark) && $request->remark != ''){
                 $project->remark = $request->remark;
+            } else {
+                $project->remark = NULL;
             }
 
             /*if($request->token_number != ''){
@@ -1605,6 +1762,10 @@ class StudyController extends GlobalController
                 $project->updated_by_user_id = Auth::guard('admin')->user()->id;
             }
 
+            // echo "<pre>";
+            // print_r($request->special_notes);
+            // exit;
+
             $project->save();
         }
 
@@ -1644,6 +1805,54 @@ class StudyController extends GlobalController
         $projectTrail->bioanalytical_investigator = $request->bioanalytical_investigator;
         /*$projectTrail->total_sponsor_queries = $request->total_sponsor_queries;
         $projectTrail->open_sponsor_queries = $request->open_sponsor_queries;*/
+
+        if(isset($request->no_of_male_subjects) && $request->no_of_male_subjects != '') {
+            $projectTrail->no_of_male_subjects = $request->no_of_male_subjects;
+        }
+
+        if(isset($request->no_of_female_subjects) && $request->no_of_female_subjects != '') {
+            $projectTrail->no_of_female_subjects = $request->no_of_female_subjects;
+        }
+
+        if(isset($request->washout_period) && $request->washout_period != '') {
+            $projectTrail->washout_period = $request->washout_period;
+        }
+
+        if(isset($request->cr_location) && $request->cr_location != '') {
+            $projectTrail->cr_location = $request->cr_location;
+        }
+
+        if(isset($request->clinical_word_location) && $request->clinical_word_location != '') {
+            $projectTrail->clinical_word_location = $request->clinical_word_location;
+        }
+
+        if(isset($request->complexity) && $request->complexity != '') {
+            $projectTrail->complexity = $request->complexity;
+        }
+
+        if(isset($request->no_of_groups) && $request->no_of_groups != '') {
+            $projectTrail->no_of_groups = $request->no_of_groups;
+        }
+
+        if(isset($request->priority) && $request->priority != '') {
+            $projectTrail->priority = $request->priority;
+        }
+
+        if(isset($request->pre_housing) && $request->pre_housing != '') {
+            $projectTrail->pre_housing = $request->pre_housing;
+        }
+
+        if(isset($request->principle_investigator) && $request->principle_investigator != '') {
+            $projectTrail->principle_investigator = $request->principle_investigator;
+        }
+
+        if(isset($request->isr_sample) && $request->isr_sample != '') {
+            $projectTrail->isr_sample = $request->isr_sample;
+        }
+
+        if(isset($request->final_report_sla) && $request->final_report_sla != '') {
+            $projectTrail->final_report_sla = $request->final_report_sla;
+        }
 
         if (isset($request->quotation_amount) && $request->quotation_amount != '') {
             $projectTrail->quotation_amount = $request->quotation_amount;
@@ -2370,8 +2579,4 @@ class StudyController extends GlobalController
         return $status ? 'true' : 'false';
     }
 
-    // excel export and download
-    public function exportStudy(){
-        return Excel::download(new StudyExport, 'All Studies  Study Management System.xlsx');
-    }
 }

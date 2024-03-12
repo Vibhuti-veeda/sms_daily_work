@@ -36,7 +36,6 @@
 		Route::post('/view/module-access-change', 'RoleController@moduleAccessChange')->name('admin.moduleAccessChange');
 		Route::post('/view/session-store', 'RoleController@sessionStore')->name('admin.sessionStore');
 		Route::post('/view/get-removed-temp-array', 'RoleController@removeTempArray')->name('admin.removeTempArray');
-		Route::get('/view/export-roles', 'RoleController@exportRoles')->name('admin.exportRoles');
 	});
 
 	// Team Member Route
@@ -49,7 +48,6 @@
 		Route::get('/delete/delete-team-member/{id}', 'TeamMemberController@deleteTeamMember')->name('admin.deleteTeamMember');
 		Route::post('/view/change-team-member-status', 'TeamMemberController@changeTeamMemberStatus')->name('admin.changeTeamMemberStatus');
 		Route::post('/view/check-team-member-email-exists', 'TeamMemberController@checkTeamMemberEmailExist')->name('admin.checkTeamMemberEmailExist');
-		Route::get('/view/export-team-members', 'TeamMemberController@exportTeamMembers')->name('admin.exportTeamMembers');
 	});
 
 	// Activity Master Route
@@ -61,7 +59,6 @@
 		Route::post('/edit/update-activity-master', 'Master\ActivityMasterController@updateActivityMaster')->name('admin.updateActivityMaster');
 		Route::get('/delete/delete-activity-master/{id}', 'Master\ActivityMasterController@deleteActivityMaster')->name('admin.deleteActivityMaster');
 		Route::post('/view/change-activity-master-status', 'Master\ActivityMasterController@changeActivityMasterStatus')->name('admin.changeActivityMasterStatus');
-		Route::get('/view/export-activity-master', 'Master\ActivityMasterController@exportActivityMaster')->name('admin.exportActivityMaster');
 	});
 
 	// Study master Route
@@ -83,7 +80,6 @@
 		Route::post('/view/study-projected', 'Study\StudyController@studyProjected')->name('admin.studyProjected');
 		Route::post('/view/study-tentative-clinical-date', 'Study\StudyController@studyTentativeClinicalDate')->name('admin.studyTentativeClinicalDate');
 		Route::post('/view/pre-study-projection-status', 'Study\StudyController@preStudyProjectionStatus')->name('admin.preStudyProjectionStatus');
-		Route::get('/view/export-study', 'Study\StudyController@exportStudy')->name('admin.exportStudy');
 	});
 
 	// Study Schedule Route
@@ -108,7 +104,6 @@
         Route::post('/view/copy-study-activity', 'Study\StudyScheduleController@copyStudyActivity')->name('admin.copyStudyActivity');
         Route::post('/view/change-schedule-version-date', 'Study\StudyScheduleController@changeScheduleVersionDate')->name('admin.changeScheduleVersionDate');
         Route::post('/view/add-copy-activity-modal', 'Study\StudyScheduleController@addCopyActivityModal')->name('admin.addCopyActivityModal');
-		Route::get('/view/export-study-schedule', 'Study\StudyScheduleController@exportStudySchedule')->name('admin.exportStudySchedule');
 
     });
 
@@ -136,8 +131,6 @@
 		Route::post('/edit/update-drug-master', 'Master\DrugMasterController@updateDrugMaster')->name('admin.updateDrugMaster');
 		Route::get('/delete/delete-drug-master/{id}', 'Master\DrugMasterController@deleteDrugMaster')->name('admin.deleteDrugMaster');
 		Route::post('/view/change-drug-master-status', 'Master\DrugMasterController@changeDrugMasterStatus')->name('admin.changeDrugMasterStatus');
-		Route::get('/view/export-drug-master', 'Master\DrugMasterController@exportDrugMaster')->name('admin.exportDrugMaster');
-
 	});
 
 	// Para Master Route
@@ -157,8 +150,6 @@
 		Route::post('/edit/update-para-code-master', 'Master\ParaMasterController@updateParaCodeMaster')->name('admin.updateParaCodeMaster');
 		Route::get('/delete/delete-para-code-master/{para_id}/{id}', 'Master\ParaMasterController@deleteParaCodeMaster')->name('admin.deleteParaCodeMaster');
 		Route::post('/view/change-para-code-master-status', 'Master\ParaMasterController@changeParaCodeMasterStatus')->name('admin.changeParaCodeMasterStatus');
-		Route::get('/view/export-para-master', 'Master\ParaMasterController@exportParaMaster')->name('admin.exportParaMaster');
-		Route::get('/view/export-para-code/{id}', 'Master\ParaMasterController@exportParaCode')->name('admin.exportParaCode');
 	});
 
 	// Sponsor Master Route
@@ -170,7 +161,6 @@
 		Route::post('/edit/update-sponsor-master', 'Master\SponsorMasterController@updateSponsorMaster')->name('admin.updateSponsorMaster');
 		Route::get('/delete/delete-sponsor-master/{id}', 'Master\SponsorMasterController@deleteSponsorMaster')->name('admin.deleteSponsorMaster');
 		Route::post('/view/change-sponsor-master-status', 'Master\SponsorMasterController@changeSponsorMasterStatus')->name('admin.changeSponsorMasterStatus');
-		Route::get('/view/export-sponsor-master', 'Master\SponsorMasterController@exportSponsorMaster')->name('admin.exportSponsorMaster');
 	});
 
 	// Holiday Master Route
@@ -183,7 +173,6 @@
         Route::get('/delete/delete-holiday-master/{id}', 'Master\HolidayController@deleteHolidayMaster')->name('admin.deleteHolidayMaster');
         Route::post('/view/change-holiday-master-status', 'Master\HolidayController@changeHolidayMasterStatus')->name('admin.changeHolidayMasterStatus');
         Route::post('/view/check-holiday-master-date-exist', 'Master\HolidayController@checkHolidayMasterDateExist')->name('admin.checkHolidayMasterDateExist');
-		Route::get('/view/export-holiday-master', 'Master\HolidayController@exportHolidayMaster')->name('admin.exportHolidayMaster');
 	});
 
 	// Location Master Route
@@ -195,13 +184,11 @@
         Route::post('/edit/update-location-master', 'Master\LocationMasterController@updateLocationMaster')->name('admin.updateLocationMaster');
         Route::get('/delete/delete-location-master/{id}', 'Master\LocationMasterController@deleteLocationMaster')->name('admin.deleteLocationMaster');
         Route::post('/view/change-location-master-status', 'Master\LocationMasterController@changeLocationMasterStatus')->name('admin.changeLocationMasterStatus');
-		Route::get('/view/export-location-master', 'Master\LocationMasterController@exportLocationMaster')->name('admin.exportLocationMaster');
 	});
 
 	// Study master Route
 	Route::group(['prefix' => 'study-master-data'], function () {
 		Route::match(['get', 'post'],'/view/study-master-list', 'Study\StudyMasterController@studyMasterList')->name('admin.studyMasterList');
-		Route::get('/view/export-study-master', 'Study\StudyMasterController@exportStudyMaster')->name('admin.exportStudyMaster');
 	});
 
 	Route::group(['prefix' => 'sla-activity-master'], function () {
@@ -212,7 +199,6 @@
 	    Route::post('/edit/update-sla-activity-master', 'Master\SlaActivityMasterController@updateSlaActivityMaster')->name('admin.updateSlaActivityMaster');
 	    Route::get('/delete/delete-sla-activity-master/{id}', 'Master\SlaActivityMasterController@deleteSlaActivityMaster')->name('admin.deleteSlaActivityMaster');
 	    Route::post('/view/change-sla-activity-master-status', 'Master\SlaActivityMasterController@changeSlaActivityMasterStatus')->name('admin.changeSlaActivityMasterStatus');
-		Route::get('/view/export-sla-activity-master', 'Master\SlaActivityMasterController@exportSlaActivityMaster')->name('admin.exportSlaActivityMaster');
 	});
 
 	// Reason master Route
@@ -224,7 +210,6 @@
         Route::post('/edit/update-reason-master', 'Master\ReasonMasterController@updateReasonMaster')->name('admin.updateReasonMaster');
         Route::get('/delete/delete-reason-master/{id}', 'Master\ReasonMasterController@deleteReasonMaster')->name('admin.deleteReasonMaster');
         Route::post('/view/change-reason-master-status', 'Master\ReasonMasterController@changeReasonMasterStatus')->name('admin.changeReasonMasterStatus');
-		Route::get('/view/export-reason-master', 'Master\ReasonMasterController@exportReasonMaster')->name('admin.exportReasonMaster');
     });
 
     Route::group(['prefix' => 'pre-study-projection-data'], function () {
@@ -240,15 +225,8 @@
 		Route::post('/add/save-activity-metadata', 'Master\ActivityMetadataController@saveActivityMetadata')->name('admin.saveActivityMetadata');
 		Route::get('/delete/delete-activity-metadata/{id}', 'Master\ActivityMetadataController@deleteActivityMetadata')->name('admin.deleteActivityMetadata');
 		Route::post('/view/change-activity-metadata-status', 'Master\ActivityMetadataController@changeActivityMetadataStatus')->name('admin.changeActivityMetadataStatus');
-		Route::get('/view/export-activity-metadata-master', 'Master\ActivityMetadataController@exportActivityMetadata')->name('admin.exportActivityMetadata');
 	});
 
 	Route::group(['prefix' => 'study-metadata'], function () {
 		Route::match(['get', 'post'], '/view/all-studies-activity-metadata-list', 'Study\StudyActivityMetadataController@allStudiesActivityMetadataList')->name('admin.allStudiesActivityMetadataList');
-		Route::get('/view/export-study-metadata', 'Study\StudyActivityMetadataController@exportStudyMetaData')->name('admin.exportStudyMetaData');
-	});
-
-	// Study Tracking List
-	Route::group(['prefix' => 'study-tracking'], function () {
-		Route::match(['get', 'post'],'/view/sudy-tracking-list', 'Study\StudyTrackingController@studyTrackingList')->name('admin.studyTrackingList');
 	});

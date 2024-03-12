@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\GlobalController;
 use App\Models\StudySchedule;
 use Illuminate\Http\Request;
 use App\Models\ActivityMaster;
@@ -13,10 +12,8 @@ use Auth;
 use App\Models\ActivityMasterTrail;
 use App\Models\RoleModuleAccess;
 use App\Models\ParaCode;
-use App\Exports\ActivityMasterExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class ActivityMasterController extends GlobalController
+class ActivityMasterController extends Controller
 {
     public function __construct(){
         $this->middleware('admin');
@@ -30,18 +27,9 @@ class ActivityMasterController extends GlobalController
         *
         * @return to activity master listing page
     **/
-    public function activityMasterList(Request $request){
+    public function activityMasterList(){
         
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
-        $activities = ActivityMaster::select('id', 'activity_name', 'days_required', 'next_activity', 'buffer_days', 'responsibility', 'activity_type', 'activity_days', 'sequence_no', 'previous_activity', 'is_milestone', 'parent_activity', 'is_active')
-                                    ->where('is_delete', 0)
+        $activities = ActivityMaster::where('is_delete', 0)
                                     ->with([
                                             'responsible', 
                                             'nextActivity', 
@@ -49,12 +37,7 @@ class ActivityMasterController extends GlobalController
                                             'parentActivity',
                                             'activityType'
                                         ])
-                                    ->skip($offset)
-                                    ->limit($perPage)
                                     ->get();
-
-        $recordCount = ActivityMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
 
         $admin = '';
         $access = '';
@@ -66,7 +49,7 @@ class ActivityMasterController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.activity.activity_masters_list', compact('activities', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.activity.activity_masters_list', compact('activities', 'admin', 'access'));
     }
 
     /**
@@ -481,11 +464,6 @@ class ActivityMasterController extends GlobalController
         $status = ActivityMaster::where('id',$request->id)->update(['is_active' => $request->option]);
 
         return $status ? 'true' : 'false';
-    }
-
-    // excel export and download
-    public function exportActivityMaster(){
-        return Excel::download(new ActivityMasterExport, 'All Team members  Study Management System.xlsx');
     }
 
 }

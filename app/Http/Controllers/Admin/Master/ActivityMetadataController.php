@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\Master;
 
 use Illuminate\Http\Request;
 use App\Models\ControlMaster;
-use App\Http\Controllers\GlobalController;
 use App\Models\StudySchedule;
 use App\Models\ActivityMaster;
 use App\Models\ActivityMetadata;
@@ -13,10 +12,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\StudyActivityMetadata;
 use App\Models\ActivityMetadataTrail; 
-use App\Exports\ActivityMetadataExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class ActivityMetadataController extends GlobalController
+class ActivityMetadataController extends Controller
 {
     public function __construct(){
         $this->middleware('admin');
@@ -25,14 +22,6 @@ class ActivityMetadataController extends GlobalController
 
     // Activity Metadata List
     public function activityMetadataList(Request $request){
-
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
 
         $activityMetadataList = ActivityMetadata::select('id', 'activity_id', 'control_id', 'source_value', 'source_question', 'is_mandatory', 'input_validation', 'is_activity', 'is_active')
                                                 ->where('is_delete', 0)
@@ -43,19 +32,12 @@ class ActivityMetadataController extends GlobalController
                                                           ->where('is_delete', 0);
                                                     },
                                                     'controlName' => function($q){
-                                                        $q->select('id', 'control_name')
-                                                        ->where('is_active', 1)
-                                                        ->where('is_delete', 0);
+                                                        $q->select('id', 'control_name');
                                                     }
                                                 ])
                                                 ->orderBy('id', 'DESC')
-                                                ->skip($offset)
-                                                ->limit($perPage)
                                                 ->get();
 
-        $recordCount = ActivityMetadata::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
-                                                
         $admin = '';
         $access = '';
 
@@ -67,7 +49,7 @@ class ActivityMetadataController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.activity_metadata.activity_metadata_list', compact('admin', 'access', 'activityMetadataList', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.activity_metadata.activity_metadata_list', compact('admin', 'access', 'activityMetadataList'));
     }
 
     // Add ActivityMetadata
@@ -171,8 +153,4 @@ class ActivityMetadataController extends GlobalController
         return $status ? 'true' : 'false';
     }
 
-    // excel export and download
-    public function exportActivityMetadata(){
-        return Excel::download(new ActivityMetadataExport, 'All Team members  Study Management System.xlsx');
-    }
 }

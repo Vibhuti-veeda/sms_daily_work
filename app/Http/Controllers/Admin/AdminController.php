@@ -157,13 +157,8 @@ class AdminController extends GlobalController
         }
 
         // Activity nos queries
-        $authLocation = explode(',',Auth::guard('admin')->user()->multi_location_id);
-        
-        /*$crlocation = Study::where('cr_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();*/
-        $crlocation = Study::where('is_active', 1)->where('is_delete', 0)->whereIn('cr_location',$authLocation)->get('id')->toArray();
-        /*$brlocation = Study::where('br_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();*/ 
-   
-        $brlocation = Study::where('is_active', 1)->where('is_delete', 0)->whereIn('br_location',$authLocation)->get('id')->toArray(); 
+        $crlocation = Study::where('cr_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();
+        $brlocation = Study::where('br_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();
 
         $totalPreCompleted = 0;
         $totalPreUpcoming = 0;
@@ -253,7 +248,7 @@ class AdminController extends GlobalController
                                                 }
                                             })
                                             ->count();
-          
+
             $totalUpcoming = StudySchedule::where('is_active', 1)
                                           ->where('is_delete', 0)
                                           ->where('activity_status', 'UPCOMING')
@@ -366,6 +361,42 @@ class AdminController extends GlobalController
                                             })
                                           ->count();
         
+        } else if(Auth::guard('admin')->user()->role_id == '16'){
+            $totalCompleted = StudySchedule::where('is_active', 1)
+                                            ->where('is_delete', 0)
+                                            ->where('activity_status', 'COMPLETED')
+                                            ->where('scheduled_start_date', '!=', NULL)
+                                            ->where('scheduled_end_date', '!=', NULL)
+                                            ->whereIn('responsibility_id', [15, 16])
+                                            ->whereIn('study_id',$brlocation)
+                                            ->count();
+
+            $totalUpcoming = StudySchedule::where('is_active', 1)
+                                            ->where('is_delete', 0)
+                                            ->where('activity_status', 'UPCOMING')
+                                            ->where('scheduled_start_date', '!=', NULL)
+                                            ->where('scheduled_end_date', '!=', NULL)
+                                            ->whereIn('responsibility_id', [15, 16])
+                                            ->whereIn('study_id',$brlocation)
+                                            ->count();
+
+            $totalOngoing = StudySchedule::where('is_active', 1)
+                                           ->where('is_delete', 0)
+                                           ->where('activity_status', 'ONGOING')
+                                           ->where('scheduled_start_date', '!=', NULL)
+                                           ->where('scheduled_end_date', '!=', NULL)
+                                           ->whereIn('responsibility_id', [15, 16])
+                                            ->whereIn('study_id',$brlocation)
+                                           ->count();
+
+            $totalDelay = StudySchedule::where('is_active', 1)
+                                          ->where('is_delete', 0)
+                                          ->where('activity_status', 'DELAY')
+                                          ->where('scheduled_start_date', '!=', NULL)
+                                          ->where('scheduled_end_date', '!=', NULL)
+                                          ->whereIn('responsibility_id', [15, 16])
+                                            ->whereIn('study_id',$brlocation)
+                                          ->count();        
         } else {
             $totalCompleted = StudySchedule::where('is_active', 1)
                                            ->where('is_delete', 0)

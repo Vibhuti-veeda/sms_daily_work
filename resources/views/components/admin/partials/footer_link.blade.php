@@ -114,12 +114,6 @@
     <script type="text/javascript" src="{{ asset('js/module/reason_master.js') }}"></script>
 @endif
 
-<!-- Study Master js -->
-@if (\Route::is('admin.studyMasterList'))
-
-    <script type="text/javascript" src="{{ asset('js/module/study_master.js') }}"></script>
-@endif
-
 <!-- Dropify & Select2 js -->
 <script type="text/javascript">
 	$('.dropify').dropify();
@@ -177,22 +171,6 @@
             });
         });
     });
-
-    $(document).ready(function(){
-        $('.export').show()
-    });
-
-    /*$(document).ready(function() {
-        $('#tracking').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
-            scrollY: '50vh',
-            scrollCollapse: true,
-            paging: true
-        });
-    });*/
 
     /*$(".scheduleDatepicker").datepicker({
         dateFormat: "yy-mm-dd",

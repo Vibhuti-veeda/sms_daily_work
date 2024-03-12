@@ -108,11 +108,11 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">CR Location</label>
-                                    <select class="form-control select2" multiple name="cr_location" style="width: 100%;">
+                                    <select class="form-control select2" name="cr_location" style="width: 100%;">
                                         <option value="">Select CR Location</option>
                                         @if(!is_null($crLocation))
                                             @foreach($crLocation as $ck => $cv)
-                                                <option value="{{ $cv->id }}" {{ in_array($cv->id, $crLocationName) ? 'selected' : '' }}>
+                                                <option @if($crLocationName == $cv->id) selected @endif value="{{ $cv->id }}">
                                                     {{ $cv->location_name }}
                                                 </option>
                                             @endforeach
@@ -122,12 +122,11 @@
 
                                 <div class="col-md-2 mt-4">
                                     <label class="control-label">BR Location</label>
-                                    <select class="form-control select2" multiple name="br_location" style="width: 100%;">
+                                    <select class="form-control select2" name="br_location" style="width: 100%;">
                                         <option value="">Select BR Location</option>
                                         @if(!is_null($brLocation))
                                             @foreach($brLocation as $bk => $bv)
-                                                
-                                                <option value="{{ $bv->id }}" {{ in_array($bv->id, $brLocationName) ? 'selected' : '' }}>
+                                                <option @if($brLocationName == $bv->id) selected @endif value="{{ $bv->id }}">
                                                     {{ $bv->location_name }}
                                                 </option>
                                             @endforeach

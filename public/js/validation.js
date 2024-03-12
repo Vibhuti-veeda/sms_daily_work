@@ -223,7 +223,7 @@ $(document).ready(function() {
         errorElement: 'span',
         rules: {
             full_name: {
-               required: true,
+                required: true,
             },
             /*role_id: {
                 required: true,
@@ -516,7 +516,7 @@ $(document).ready(function() {
 
     // Add study form validation
     $("#addProject").validate({
-        ignore: '.noValidate',
+        ignore: ".noValidate,:not(:visible)",
         errorElement: 'span',
         rules: {
             sponsor: {
@@ -525,9 +525,9 @@ $(document).ready(function() {
             dosage_form: {
                 required: true,
             },
-            /*study_text: {
+            study_text: {
                 required: true,
-            },*/
+            },
             'scope[]': {
                 required: true,
             },
@@ -560,10 +560,10 @@ $(document).ready(function() {
             },
             /*clinical_word_location: {
                 required: true,
-            },
+            },*/
             additional_requirement: {
                 required: true,
-            },*/
+            },
             quotation_amount: {
                 required: true,
             },
@@ -611,12 +611,12 @@ $(document).ready(function() {
             /*total_housing: {
                 required: true,
             },*/
-            /*pre_housing: {
+            pre_housing: {
                 required: true,
             },
             post_housing: {
                 required: true,
-            },*/
+            },
             br_location: {
                 required: true,
             },
@@ -638,9 +638,15 @@ $(document).ready(function() {
             principle_investigator: {
                 required: true,
             },
-            /*bioanalytical_investigator: {
+            bioanalytical_investigator: {
                 required: true,
-            },*/
+            },
+            isr_sample: {
+                required: true,
+            },
+            final_report_sla: {
+                required: true,
+            },
             /*study_result: {
                 required: true,
             },*/
@@ -691,9 +697,9 @@ $(document).ready(function() {
                 error.insertAfter('#projectManager');
             }  else if(element.attr("name") == 'principle_investigator'){ 
                 error.insertAfter('#selectPrinciple');
-            /*}  else if(element.attr("name") == 'bioanalytical_investigator'){ 
+            }  else if(element.attr("name") == 'bioanalytical_investigator'){ 
                 error.insertAfter('#selectBioanalytical');
-            }  else if(element.attr("name") == 'study_result'){ 
+            /*}  else if(element.attr("name") == 'study_result'){ 
                 error.insertAfter('#studyResult');*/
             }  else {
                 error.insertAfter( element );
@@ -706,9 +712,9 @@ $(document).ready(function() {
             dosage_form:{
                 required: 'Please select dosage form',
             },
-            /*study_text: {
+            study_text: {
                 required: "Please enter study text",
-            },*/
+            },
             'scope[]': {
                 required: "Please select scope",
             },
@@ -741,10 +747,10 @@ $(document).ready(function() {
             },
             /*clinical_word_location: {
                 required: "Please select clinical word location"
-            },
+            },*/
             additional_requirement: {
                 required: "Please enter additional requirement",
-            },*/
+            },
             quotation_amount: {
                 required: "Please enter quotation amount",
             },
@@ -788,12 +794,12 @@ $(document).ready(function() {
             /*total_housing: {
                 required: "Please enter total housing",
             },*/
-            /*pre_housing: {
+            pre_housing: {
                 required: "Please enter pre housing"
             },
             post_housing: {
                 required: "Please enter post housing"
-            },*/
+            },
             br_location: {
                 required: "Please select br location"
             },
@@ -815,9 +821,15 @@ $(document).ready(function() {
             principle_investigator: {
                 required: "Please select principle investigator"
             },
-            /*bioanalytical_investigator: {
+            bioanalytical_investigator: {
                 required: "Please select bioanalytical investigator"
-            },*/
+            },
+            isr_sample: {
+                required: "Please enter isr sample"
+            },
+            final_report_sla: {
+                required: "Please enter final report sla"
+            },
             /*study_result: {
                 required: "Please select study result"
             },*/
@@ -1164,7 +1176,7 @@ $(document).ready(function() {
                 error.insertAfter(element);
             }
         },
-       messages: {
+        messages: {
             activity_id: {
                 required: 'Please select activity'
             },
@@ -1187,5 +1199,3 @@ $(document).ready(function() {
     });
 
 });
-
-

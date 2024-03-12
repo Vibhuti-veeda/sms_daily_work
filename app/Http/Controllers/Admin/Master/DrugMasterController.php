@@ -3,16 +3,13 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\GlobalController;
 use Illuminate\Http\Request;
 use App\Models\DrugMaster;
 use App\Models\DrugMasterTrail;
 use App\Models\RoleModuleAccess;
 use Auth;
-use App\Exports\DrugMasterExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class DrugMasterController extends GlobalController
+class DrugMasterController extends Controller
 {
     public function __construct(){
         $this->middleware('admin');
@@ -26,26 +23,10 @@ class DrugMasterController extends GlobalController
         *
         * @return to drug master listing page
     **/
-    public function drugMasterList(Request $request){
+    public function drugMasterList(){
 
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
+        $drugs = DrugMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
 
-        $drugs = DrugMaster::select('id','drug_name', 'drug_type', 'remarks', 'is_active')
-                            ->where('is_delete', 0)
-                            ->orderBy('id', 'DESC')
-                            ->skip($offset)
-                            ->limit($perPage)
-                            ->get();
-
-        $recordCount = DrugMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage); 
-        
         $admin = '';
         $access = '';
         if(Auth::guard('admin')->user()->role == 'admin'){
@@ -56,7 +37,7 @@ class DrugMasterController extends GlobalController
                                       ->first();
         }
         
-        return view('admin.masters.drug.drug_list', compact('drugs', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.drug.drug_list', compact('drugs', 'admin', 'access'));
     }
 
     /**
@@ -187,10 +168,5 @@ class DrugMasterController extends GlobalController
         $status = DrugMaster::where('id',$request->id)->update(['is_active' => $request->option]);
 
         return $status ? 'true' : 'false';
-    }
-
-    // excel export and download
-    public function exportDrugMaster(){
-        return Excel::download(new DrugMasterExport, 'All Drugs  Study Management System.xlsx');
     }
 }

@@ -67,9 +67,7 @@ class StudyScheduleMonitoringController extends GlobalController
 
         $multipleRoleActivities = explode(',', Auth::guard('admin')->user()->multiple_roles);
         
-       /* $location = LocationMaster::where('id',Auth::guard('admin')->user()->location_id)->pluck('id');*/
-
-        $location = LocationMaster::where('id',Auth::guard('admin')->user()->multi_location_id)->pluck('id');
+        $location = LocationMaster::where('id',Auth::guard('admin')->user()->location_id)->pluck('id');
 
         $query = Study::where('is_delete', 0)
                       ->whereIn('id',$studyNo);       
@@ -198,6 +196,75 @@ class StudyScheduleMonitoringController extends GlobalController
 
             }
 
+        } else if (Auth::guard('admin')->user()->role_id == 16) {
+
+            if(($request->ref == 'ONGOING') || ($request->ref == 'COMPLETED') || ($request->ref == 'UPCOMING')) {
+
+                $studies = $query->with([
+                                        'schedule' => function($q){
+                                            $q->whereNotNull('scheduled_start_date');
+                                        },
+                                        'sponsorName' => function($q) {
+                                            $q->select('sponsor_name');
+                                        },
+                                        'drugDetails' => function($q) {
+                                            $q->with([
+                                                'drugName' => function($q){
+                                                    $q->select('id','drug_name');
+                                                },
+                                                'drugDosageName' => function($q){
+                                                    $q->select('id','para_value');
+                                                },
+                                                'drugUom' => function($q){
+                                                    $q->select('id','para_value');
+                                                },
+                                                'drugType'
+                                            ]);
+                                        }
+                                    ])
+                                ->select('id','study_no', 'sponsor', 'study_status', 'study_result','global_priority_no')
+                                ->orderBy('global_priority_no', 'ASC')
+                                ->get();
+
+            } else {
+
+                $studies = $query->with([
+                                    'schedule',
+                                    'sponsorName' => function($q) {
+                                        $q->select('id', 'sponsor_name');
+                                    },
+                                    'drugDetails' => function($q) {
+                                        $q->select('id', 'drug_id', 'dosage_form_id', 'uom_id', 'study_id', 'dosage')
+                                          ->with([
+                                            'drugName' => function($q){
+                                                $q->select('id','drug_name');
+                                            },
+                                            'drugDosageName' => function($q){
+                                                $q->select('id','para_value');
+                                            },
+                                            'drugUom' => function($q){
+                                                $q->select('id','para_value');
+                                            },
+                                            'drugType' => function($q){
+                                                $q->select('id', 'type');
+                                            },
+                                        ]);
+                                    }
+                                ])
+                                ->whereHas('schedule', function($q){
+                                    $q->whereIn('responsibility_id', [15, 16])
+                                    ->whereNotNull('scheduled_start_date');
+                                })
+                                ->select('id','study_no', 'sponsor', 'study_status', 'study_result','global_priority_no')
+                                ->orderBy('global_priority_no', 'ASC')
+                                ->get();
+                            /*echo "<pre>";
+                            print_r($studies->toArray());
+                            exit; */
+
+
+            }
+
         } else if (Auth::guard('admin')->user()->role_id == 15 || Auth::guard('admin')->user()->role_id == 13) {
 
              if(($request->ref == 'ONGOING') || ($request->ref == 'COMPLETED') || ($request->ref == 'UPCOMING')){
@@ -229,7 +296,7 @@ class StudyScheduleMonitoringController extends GlobalController
                                 ])
                                 ->select('id','study_no', 'sponsor', 'study_status', 'study_result','global_priority_no')
                                 ->get();
-            } else{
+            } else {
                 $studies = $query->with([
                                     'schedule' => function($q) use ($activityId){
                                         $q->whereNotNull('scheduled_start_date')
@@ -516,7 +583,7 @@ class StudyScheduleMonitoringController extends GlobalController
             }
         }
 
-        if (Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3) {
+        if (Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 16) {
             $activitySchedule = ParaCode::where('para_code','=','ActivityType')
                                         ->with([
                                             'studySchedule'=> function($q) use($id){ 
@@ -767,12 +834,8 @@ class StudyScheduleMonitoringController extends GlobalController
         $projectManagers = Admin::whereIn('role_id', ['2', '3'])->where('is_active', 1)->where('is_delete', 0)->get();
         $activityStatusMaster = ActivityStatusMaster::where('is_active', 1)->where('is_delete', 0)->get();
 
-        /*$crlocationIds = Study::where('cr_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();
-        $brlocationIds = Study::where('br_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();*/
-        $authLocation = explode(',', Auth::guard('admin')->user()->multi_location_id);
-
-        $crlocationIds = Study::where('is_active', 1)->where('is_delete', 0)->whereIn('cr_location',$authLocation)->get('id')->toArray();
-        $brlocationIds = Study::where('is_active', 1)->where('is_delete', 0)->whereIn('br_location',$authLocation)->get('id')->toArray();
+        $crlocationIds = Study::where('cr_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();
+        $brlocationIds = Study::where('br_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();
 
         $studySubTypes = ParaCode::where('para_code', 'StudySubType')->where('is_active', 1)->where('is_delete', 0)->get();
 
@@ -865,9 +928,9 @@ class StudyScheduleMonitoringController extends GlobalController
             if (Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 4 || Auth::guard('admin')->user()->role_id == 5 || Auth::guard('admin')->user()->role_id == 6 || Auth::guard('admin')->user()->role_id == 10 || Auth::guard('admin')->user()->role_id == 14) {
                 $query->whereHas('studyNo', function($q) use($status){ $q->where('activity_status',$status);});
             } elseif(Auth::guard('admin')->user()->role_id == 11 || Auth::guard('admin')->user()->role_id == 12){
-                $query->whereIn('activity_id',$activityId)->whereHas('studyNo', function($q) use($status, $authLocation){ $q->where('activity_status',$status)->whereIn('cr_location',$authLocation);});
+                $query->whereIn('activity_id',$activityId)->whereHas('studyNo', function($q) use($status){ $q->where('activity_status',$status)->where('cr_location',Auth::guard('admin')->user()->location_id);});
             } elseif(Auth::guard('admin')->user()->role_id == 13 || Auth::guard('admin')->user()->role_id == 15){
-                $query->whereIn('activity_id',$activityId)->whereHas('studyNo', function($q) use($status, $authLocation){ $q->where('activity_status',$status)->where('br_location',$authLocation);});
+                $query->whereIn('activity_id',$activityId)->whereHas('studyNo', function($q) use($status){ $q->where('activity_status',$status)->where('br_location',Auth::guard('admin')->user()->location_id);});
             } else {
                 $query->whereIn('activity_id',$activityId)->whereHas('studyNo', function($q) use($status){ $q->where('activity_status',$status);});
             }
@@ -977,10 +1040,8 @@ class StudyScheduleMonitoringController extends GlobalController
                                     ->get();
 
         } else if(($request->refPostStatus != '') && ((Auth::guard('admin')->user()->role_id == '11') || (Auth::guard('admin')->user()->role_id == '12'))){
-            $crLocationName = $authLocation;
-            $brLocationName = $authLocation;
-           /* $crLocationName = Auth::guard('admin')->user()->multi_location_id;
-            $brLocationName = Auth::guard('admin')->user()->multi_location_id;*/
+            $crLocationName = Auth::guard('admin')->user()->location_id;
+            $brLocationName = Auth::guard('admin')->user()->location_id;
             $activityStatus = $query->select('id', 'study_id', 'activity_id', 'activity_status', 'activity_name', 'group_no', 'period_no', 
                                     'scheduled_start_date', 'actual_start_date', 'scheduled_end_date', 'actual_end_date', 'start_delay_remark', 'end_delay_remark', 'start_delay_reason_id', 'end_delay_reason_id', 'actual_start_date_time', 'actual_end_date_time', 'activity_version_type', 'activity_version')
                                     ->with([
@@ -1044,8 +1105,8 @@ class StudyScheduleMonitoringController extends GlobalController
                                     ->get();
 
         } else if(($request->refPostStatus != '') && ((Auth::guard('admin')->user()->role_id == '15') || (Auth::guard('admin')->user()->role_id == '13'))){
-            $crLocationName = $authLocation;
-            $brLocationName = $authLocation;
+            $crLocationName = Auth::guard('admin')->user()->location_id;
+            $brLocationName = Auth::guard('admin')->user()->location_id;
             $activityStatus = $query->select('id', 'study_id', 'activity_id', 'activity_status', 'activity_name', 'group_no', 'period_no', 
                                     'scheduled_start_date', 'actual_start_date', 'scheduled_end_date', 'actual_end_date', 'start_delay_remark', 'end_delay_remark', 'start_delay_reason_id', 'end_delay_reason_id', 'actual_start_date_time', 'actual_end_date_time', 'activity_version_type', 'activity_version')
                                     ->with([

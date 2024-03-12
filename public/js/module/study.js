@@ -4,6 +4,26 @@ $.ajaxSetup({
     }
 });
 
+$(document).ready(function(){
+    $('.select2').select2();
+
+    if($('#role').val() == 16) {
+        if($('#departmentNo').val() == '') {
+            $('.department').hide();
+        } else {
+            $('.department' + $('#departmentNo').val()).hide();
+        }
+    } else {
+        if($('#departmentNo').val() == '') {
+            $('.department').show();
+        } else {
+            $('.department' + $('#departmentNo').val()).show();
+        }
+    }
+
+    $('.select2-container').css('width', '100%');
+});
+
 // Study Switch Status Change
 $(document).on('change', '.studyStatus', function(){
     if(this.checked){
@@ -207,14 +227,14 @@ $('.projectManager').on('change',function(){
     }
 });
 
-/*$('.bioanalyticalInvestigator').on('change',function(){
+$('.bioanalyticalInvestigator').on('change',function(){
     var val = $(this).val();
     if(val != ''){
         $('#bioanalytical_investigator-error').text('');
     }
 });
 
-$('.studyResult').on('change',function(){
+/*$('.studyResult').on('change',function(){
     var val = $(this).val();
     if(val != ''){
         $('#study_result-error').text('');
@@ -445,19 +465,25 @@ $(document).on('click','.deleteBtn',function(e){
 
 $("#addProject").submit(function(e){
 
-    var totalSubjects = parseInt($('.totalSubject').val());
-    var femaleSubjects = parseInt($('.femaleSubject').val());
-    var maleSubjects = parseInt($('.maleSubject').val());
-    var maleFemale = maleSubjects + femaleSubjects;
+    // var role = $('#role').val();
+
+    // if(role != 16){
     var isFormValid = true;
 
-    if(totalSubjects == maleFemale){
-    } else {
-        $('.maleSubject').val('');
-        $('.femaleSubject').val('');
-        toastr.error('Please enter correct male & female subjects');
+    if(($('.totalSubject').is(':visible')) && ($('.femaleSubject').is(':visible')) && ($('.maleSubject').is(':visible'))) {
+        var totalSubjects = parseInt($('.totalSubject').val());
+        var femaleSubjects = parseInt($('.femaleSubject').val());
+        var maleSubjects = parseInt($('.maleSubject').val());
+        var maleFemale = maleSubjects + femaleSubjects;
+
+        if(totalSubjects == maleFemale){
+        } else {
+            $('.maleSubject').val('');
+            $('.femaleSubject').val('');
+            toastr.error('Please enter correct male & female subjects');
+        }
     }
-    
+
     $('.select_drug').each(function(){
         if($(this).val() != '') {
             $(this).next('span.select_drug_error').hide();
@@ -512,10 +538,16 @@ $("#addProject").submit(function(e){
         }
     });
 
+    if(!$('#addProject').valid()) {
+        isFormValid = false;
+    }
+
     if(!isFormValid) {
         e.preventDefault();
         $(window).scrollTop(0);
     }
+    // }
+    
 });
 
 $(document).on('change','.projectionStatus',function(){
@@ -536,132 +568,6 @@ $(document).on('change','.projectionStatus',function(){
     });
 });
 
-$(document).on('click', '.page-link', function(){
-    var pageNo = $(this).data('page');
-    $('#page').val(pageNo);
-    $('.save_button').trigger('click');
-});
-
-$(document).on('change', '#study_no', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#project_manager', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#drug_name', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#dosage_form_id', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#uom_id', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#drug_type', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#complexity', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#study_design', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#study_sub_type', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#study_type', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#study_condition', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#subject_type', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#priority', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#blinding_status', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#regulatory_submission', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#sponsor_id', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#cr_location', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#br_location', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#scope', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#principle_investigator', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#bioanalytical_investigator', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#special_notes', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#no_of_subject', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#study_result', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#study_status', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#sponsor_study_no', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#clinical_ward_location', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#total_group', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#no_of_periods', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#pre_housing', function(){
-    $('#page').val(1);
-});
-
-$(document).on('change', '#post_housing', function(){
-    $('#page').val(1);
-})
+// $(document).ready(function () {
+//     $('.departmentBpd').show();
+// });

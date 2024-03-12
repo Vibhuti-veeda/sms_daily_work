@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\GlobalController;
 use App\Models\ParaCodesTrail;
 use Illuminate\Http\Request;
 use App\Models\ParaMaster;
@@ -11,36 +10,17 @@ use Auth;
 use App\Models\ParaMasterTrail;
 use App\Models\ParaCode;
 use App\Models\RoleModuleAccess;
-use App\Exports\ParaMasterExport;
-use App\Exports\ParaCodeExport;
-use Maatwebsite\Excel\Facades\Excel;
 
-class ParaMasterController extends GlobalController
+class ParaMasterController extends Controller
 {
     public function __construct(){
         $this->middleware('admin');
         $this->middleware('checkpermission');
     }
 
-    public function paraMasterList(Request $request){
-
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
-        $paras = ParaMaster::select('id', 'para_code', 'para_description', 'is_active')
-                            ->where('is_delete', 0)
-                            ->orderBy('id', 'DESC')
-                            ->skip($offset)
-                            ->limit($perPage)
-                            ->get();
-
-        $recordCount = ParaMaster::where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
+    public function paraMasterList(){
+        
+        $paras = ParaMaster::where('is_delete', 0)->orderBy('id', 'DESC')->get();
 
         $admin = '';
         $access = '';
@@ -53,7 +33,7 @@ class ParaMasterController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.para_master.para_master_list', compact('paras', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.para_master.para_master_list', compact('paras', 'admin', 'access'));
     }
 
     public function addParaMaster(){
@@ -159,25 +139,9 @@ class ParaMasterController extends GlobalController
         return $status ? 'true' : 'false';
     }
 
-    public function paraCodeMasterList($id, Request $request){
-
-        $perPage = $this->perPageLimit();
-        if($request->page != ''){
-            $page = base64_decode($request->query('page', base64_decode(1)));
-        } else{
-            $page = 1;
-        }
-        $offset = ($page - 1) * $perPage;
-
-        $paraCodes = ParaCode::select('id', 'para_master_id', 'para_value', 'is_active')
-                               ->where('para_master_id', base64_decode($id))
-                               ->where('is_delete', 0)
-                               ->skip($offset)
-                                ->limit($perPage)
-                               ->get();
-
-        $recordCount = ParaCode::where('para_master_id', base64_decode($id))->where('is_delete', 0)->count();
-        $pageCount = ceil($recordCount / $perPage);
+    public function paraCodeMasterList($id){
+        
+        $paraCodes = ParaCode::where('para_master_id', base64_decode($id))->where('is_delete', 0)->get();
 
         $admin = '';
         $access = '';
@@ -189,7 +153,7 @@ class ParaMasterController extends GlobalController
                                       ->first();
         }
 
-        return view('admin.masters.para_code.para_code_master_list', compact('paraCodes', 'id', 'admin', 'access', 'pageCount', 'offset' , 'page', 'recordCount', 'perPage'));
+        return view('admin.masters.para_code.para_code_master_list', compact('paraCodes', 'id', 'admin', 'access'));
     }
 
     public function addParaCodeMaster($id){
@@ -305,16 +269,4 @@ class ParaMasterController extends GlobalController
         return $status ? 'true' : 'false';
     }
 
-    // excel export and download
-    public function exportParaMaster(){
-        return Excel::download(new ParaMasterExport, 'All Para Master  Study Management System.xlsx');
-    }
-
-     // excel export and download
-    public function exportParaCode(Request $request){
-        $id = $request->id;
-        $export = new ParaCodeExport($id);
-
-        return Excel::download($export, 'All Para Master  Study Management System.xlsx');
-    }
 }
