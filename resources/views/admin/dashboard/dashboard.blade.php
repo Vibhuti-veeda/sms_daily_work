@@ -9,7 +9,7 @@
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                         <h4 class="mb-sm-0 font-size-18">Dashboard</h4>
-                        @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3)
+                        @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 16)
                             <div class="form-group">
                                 <label>Dashboard Access<span class="mandatory">*</span></label>
                                 <select class="form-control select2 dashboardView" name="role" id="role_modules" data-placeholder="Select Module(s)" required >

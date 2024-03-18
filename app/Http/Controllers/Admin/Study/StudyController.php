@@ -1015,6 +1015,10 @@ class StudyController extends GlobalController
             $project->regulatory_queries = 0;
         }*/
 
+        if (Auth::guard('admin')->user()->role_id == 16) {
+            $project->created_by = 'BO';
+        }
+
         if (Auth::guard('admin')->user()->id != '') {
             $project->created_by_user_id = Auth::guard('admin')->user()->id;
         }
@@ -1164,6 +1168,10 @@ class StudyController extends GlobalController
             $projectTrail->regulatory_queries = 0;
         }*/
 
+        if (Auth::guard('admin')->user()->role_id == 16) {
+            $projectTrail->created_by = 'BO';
+        }
+        
         if (Auth::guard('admin')->user()->id != '') {
             $projectTrail->created_by_user_id = Auth::guard('admin')->user()->id;
         }

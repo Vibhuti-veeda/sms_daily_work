@@ -200,34 +200,34 @@ class StudyScheduleMonitoringController extends GlobalController
 
             if(($request->ref == 'ONGOING') || ($request->ref == 'COMPLETED') || ($request->ref == 'UPCOMING')) {
 
-                $studies = $query->with([
-                                        'schedule' => function($q){
-                                            $q->whereNotNull('scheduled_start_date');
-                                        },
-                                        'sponsorName' => function($q) {
-                                            $q->select('sponsor_name');
-                                        },
-                                        'drugDetails' => function($q) {
-                                            $q->with([
-                                                'drugName' => function($q){
-                                                    $q->select('id','drug_name');
-                                                },
-                                                'drugDosageName' => function($q){
-                                                    $q->select('id','para_value');
-                                                },
-                                                'drugUom' => function($q){
-                                                    $q->select('id','para_value');
-                                                },
-                                                'drugType'
-                                            ]);
-                                        }
-                                    ])
-                                ->select('id','study_no', 'sponsor', 'study_status', 'study_result','global_priority_no')
-                                ->orderBy('global_priority_no', 'ASC')
-                                ->get();
-
+                $studies = $query->where('created_by', 'BO')
+                                ->where('project_manager', Auth::guard('admin')->user()->id)
+                                ->with([
+                                    'schedule' => function($q){
+                                        $q->whereNotNull('scheduled_start_date');
+                                    },
+                                    'sponsorName' => function($q) {
+                                        $q->select('sponsor_name');
+                                    },
+                                    'drugDetails' => function($q) {
+                                        $q->with([
+                                            'drugName' => function($q){
+                                                $q->select('id','drug_name');
+                                            },
+                                            'drugDosageName' => function($q){
+                                                $q->select('id','para_value');
+                                            },
+                                            'drugUom' => function($q){
+                                                $q->select('id','para_value');
+                                            },
+                                            'drugType'
+                                        ]);
+                                    }
+                                ])
+                            ->select('id','study_no', 'sponsor', 'study_status', 'study_result','global_priority_no')
+                            ->orderBy('global_priority_no', 'ASC')
+                            ->get();
             } else {
-
                 $studies = $query->with([
                                     'schedule',
                                     'sponsorName' => function($q) {
@@ -251,18 +251,20 @@ class StudyScheduleMonitoringController extends GlobalController
                                         ]);
                                     }
                                 ])
-                                ->whereHas('schedule', function($q){
+                                ->whereHas('schedule', function ($q) {
                                     $q->whereIn('responsibility_id', [15, 16])
-                                    ->whereNotNull('scheduled_start_date');
+                                      ->whereNotNull('scheduled_start_date')
+                                      ->where(function ($q) {
+                                          $q->where(function ($q) {
+                                              $q->where('created_by', 'BO')
+                                                    ->where('created_by_user_id', Auth::guard('admin')->user()->id);
+                                          })
+                                          ->orWhereNull('created_by');
+                                      });
                                 })
                                 ->select('id','study_no', 'sponsor', 'study_status', 'study_result','global_priority_no')
                                 ->orderBy('global_priority_no', 'ASC')
                                 ->get();
-                            /*echo "<pre>";
-                            print_r($studies->toArray());
-                            exit; */
-
-
             }
 
         } else if (Auth::guard('admin')->user()->role_id == 15 || Auth::guard('admin')->user()->role_id == 13) {
@@ -544,6 +546,11 @@ class StudyScheduleMonitoringController extends GlobalController
                                 ->orderBy('scheduled_start_date', 'ASC')
                                 ->with('crActivity', 'brActivity', 'pbActivity', 'rwActivity', 'psActivity')
                                 ->get();
+        $studyProject = Study::where('project_manager',Auth::guard('admin')->user()->id)->pluck('id');
+        /*echo "<pre>";
+        print_r($studiProject->toArray());
+        exit; */
+
 
         $study = Study::where('id', base64_decode($id))
                         ->with([
@@ -583,7 +590,7 @@ class StudyScheduleMonitoringController extends GlobalController
             }
         }
 
-        if (Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 16) {
+        if (Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3) {
             $activitySchedule = ParaCode::where('para_code','=','ActivityType')
                                         ->with([
                                             'studySchedule'=> function($q) use($id){ 
@@ -602,7 +609,36 @@ class StudyScheduleMonitoringController extends GlobalController
                                         ])
                                         ->get();
            
+        } elseif(Auth::guard('admin')->user()->role_id == 16) {
+            $activitySchedule = ParaCode::where('para_value','=','BR')
+                                        ->with([
+                                            'studySchedule'=> function($q) use($id){ 
+                                                $q->where('study_id', base64_decode($id))
+                                                  ->where('is_active',1)
+                                                  ->where('is_delete',0)
+                                                  ->where(function($q) {
+                                                        $q->whereHas('studyNo', function($q) {
+                                                          $q->where('created_by', 'BO');
+                                                        })
+                                                      ->orWhere('responsibility_id', 15);
+                                                    })
+                                                  ->with([
+                                                      'startDelayReason',
+                                                      'endDelayReason',
+                                                      'activityStatusName'
+                                                  ])
+                                                ->orderBy('activity_sequence_no', 'ASC')
+                                                ->orderBy('activity_version', 'ASC');
+                                                },
+                                            'reasons',
+                                        ])
+                                        ->get();
+                                        /*echo "<pre>";
+                                        print_r($activitySchedule->toArray());
+                                        exit; */
+      
         } else {
+
             $activitySchedule = ParaCode::where('para_code','=','ActivityType')
                                         ->with([
                                             'studySchedule'=> function($q) use($id){ 
@@ -849,6 +885,8 @@ class StudyScheduleMonitoringController extends GlobalController
 
         $multipleRoleActivities = explode(',', Auth::guard('admin')->user()->multiple_roles); 
 
+        $studyBO = Study::where('created_by', 'BO')->where('is_active', 1)->where('is_delete', 0)->pluck('id');
+
         $query = StudySchedule::where('is_active', 1)
                               ->where('is_delete', 0)
                               //->whereIn('study_id',$studyNo)
@@ -931,6 +969,8 @@ class StudyScheduleMonitoringController extends GlobalController
                 $query->whereIn('activity_id',$activityId)->whereHas('studyNo', function($q) use($status){ $q->where('activity_status',$status)->where('cr_location',Auth::guard('admin')->user()->location_id);});
             } elseif(Auth::guard('admin')->user()->role_id == 13 || Auth::guard('admin')->user()->role_id == 15){
                 $query->whereIn('activity_id',$activityId)->whereHas('studyNo', function($q) use($status){ $q->where('activity_status',$status)->where('br_location',Auth::guard('admin')->user()->location_id);});
+            } elseif(Auth::guard('admin')->user()->role_id == 16){
+                $query->where('responsibility_id',15)->whereHas('studyNo', function($q) use($status){ $q->where('activity_status',$status)->where('br_location',Auth::guard('admin')->user()->location_id);});
             } else {
                 $query->whereIn('activity_id',$activityId)->whereHas('studyNo', function($q) use($status){ $q->where('activity_status',$status);});
             }
@@ -974,13 +1014,13 @@ class StudyScheduleMonitoringController extends GlobalController
             $query->whereHas('studyNo', function($q) use($CDisc){ $q->where('cdisc_require', $CDisc);});
         }
 
-        if(($request->refPreStatus == 'ONGOING') || ($request->refPostStatus == 'ONGOING')){
+        if(($request->refPreStatus == 'ONGOING') || ($request->refPostStatus == 'ONGOING')|| ($request->refsPostStatus == 'ONGOING')){
             $activityStatusName = 'ONGOING';
-        } else if(($request->refPreStatus == 'COMPLETED') || ($request->refPostStatus == 'COMPLETED')){
+        } else if(($request->refPreStatus == 'COMPLETED') || ($request->refPostStatus == 'COMPLETED') || ($request->refsPostStatus == 'COMPLETED')){
             $activityStatusName = 'COMPLETED';
-        } else if(($request->refPreStatus == 'DELAY') || ($request->refPostStatus == 'DELAY')){
+        } else if(($request->refPreStatus == 'DELAY') || ($request->refPostStatus == 'DELAY') || ($request->refsPostStatus == 'DELAY')){
             $activityStatusName = 'DELAY';
-        } else if(($request->refPreStatus == 'UPCOMING') || ($request->refPostStatus == 'UPCOMING')){
+        } else if(($request->refPreStatus == 'UPCOMING') || ($request->refPostStatus == 'UPCOMING') || ($request->refsPostStatus == 'UPCOMING')){
             $activityStatusName = 'UPCOMING';
         }
 
@@ -1164,6 +1204,122 @@ class StudyScheduleMonitoringController extends GlobalController
                                         }
                                     })
                                     ->where('activity_status',$request->refPostStatus)
+                                    ->orderBy('scheduled_start_date', 'ASC')
+                                    ->get();
+
+        } else if(($request->refPostStatus != '') && (Auth::guard('admin')->user()->role_id == '16')){
+            // $crLocationName = Auth::guard('admin')->user()->location_id;
+            $brLocationName = Auth::guard('admin')->user()->location_id;
+            $activityStatus = $query->select('id', 'study_id', 'activity_id', 'activity_status', 'activity_name', 'group_no', 'period_no', 
+                                    'scheduled_start_date', 'actual_start_date', 'scheduled_end_date', 'actual_end_date', 'start_delay_remark', 'end_delay_remark', 'start_delay_reason_id', 'end_delay_reason_id', 'actual_start_date_time', 'actual_end_date_time', 'activity_version_type', 'activity_version')
+                                    ->with([
+                                        'activityName' => function($q) {
+                                            $q->select('id', 'activity_status', 'activity_status_code');
+                                        },
+                                        'studyNo' => function($q) { 
+                                            $q->select('id', 'project_manager', 'sponsor', 'cr_location', 'br_location', 'study_no', 'study_type', 'study_sub_type')
+                                              ->where('is_active', 1)
+                                              ->where('is_delete', 0)
+                                              ->with(
+                                                [
+                                                    'sponsorName' => function($q) {
+                                                        $q->select('id', 'sponsor_name');
+                                                    }, 
+                                                    'projectManager' => function($q) {
+                                                        $q->select('id', 'name');
+                                                    }, 
+                                                    'crLocationName' => function($q) {
+                                                        $q->select('id', 'location_name');
+                                                    }, 
+                                                    'brLocationName' => function($q) {
+                                                        $q->select('id', 'location_name');
+                                                    },
+                                                    'studyType' => function($q) {
+                                                        $q->select('id', 'para_value');
+                                                    },
+                                                    'studySubTypeName' => function($q) {
+                                                        $q->select('id', 'para_value', 'para_code');
+                                                    },
+                                                    'studyRegulatories' => function($q) {
+                                                        $q->select('id', 'project_id', 'regulatory_submission')
+                                                          ->with([
+                                                            'regulatorySubmission' => function($q) {
+                                                                $q->select('id', 'para_value');
+                                                            }
+                                                        ]);
+                                                    }
+                                                ]
+                                            ); 
+                                        },
+                                        'startDelayReason' => function($q){
+                                            $q->select('id', 'start_delay_remark');
+                                        },
+                                        'endDelayReason' => function($q){
+                                            $q->select('id', 'end_delay_remark');
+                                        },
+                                    ])
+                                    ->whereNotIn('study_id', $studyBO)
+                                    ->whereIn('study_id',$brlocationIds)
+                                    ->where('responsibility_id', 15)
+                                    ->where('activity_status',$request->refPostStatus)
+                                    ->orderBy('scheduled_start_date', 'ASC')
+                                    ->get();
+
+        } else if(($request->refsPostStatus != '') && (Auth::guard('admin')->user()->role_id == '16')){
+            // $crLocationName = Auth::guard('admin')->user()->location_id;
+            // $brLocationName = Auth::guard('admin')->user()->location_id;
+            $activityStatus = $query->select('id', 'study_id', 'activity_id', 'activity_status', 'activity_name', 'group_no', 'period_no', 
+                                    'scheduled_start_date', 'actual_start_date', 'scheduled_end_date', 'actual_end_date', 'start_delay_remark', 'end_delay_remark', 'start_delay_reason_id', 'end_delay_reason_id', 'actual_start_date_time', 'actual_end_date_time', 'activity_version_type', 'activity_version')
+                                    ->with([
+                                        'activityName' => function($q) {
+                                            $q->select('id', 'activity_status', 'activity_status_code');
+                                        },
+                                        'studyNo' => function($q) { 
+                                            $q->select('id', 'project_manager', 'sponsor', 'cr_location', 'br_location', 'study_no', 'study_type', 'study_sub_type')
+                                              ->where('is_active', 1)
+                                              ->where('is_delete', 0)
+                                              ->with(
+                                                [
+                                                    'sponsorName' => function($q) {
+                                                        $q->select('id', 'sponsor_name');
+                                                    }, 
+                                                    'projectManager' => function($q) {
+                                                        $q->select('id', 'name');
+                                                    }, 
+                                                    'crLocationName' => function($q) {
+                                                        $q->select('id', 'location_name');
+                                                    }, 
+                                                    'brLocationName' => function($q) {
+                                                        $q->select('id', 'location_name');
+                                                    },
+                                                    'studyType' => function($q) {
+                                                        $q->select('id', 'para_value');
+                                                    },
+                                                    'studySubTypeName' => function($q) {
+                                                        $q->select('id', 'para_value', 'para_code');
+                                                    },
+                                                    'studyRegulatories' => function($q) {
+                                                        $q->select('id', 'project_id', 'regulatory_submission')
+                                                          ->with([
+                                                            'regulatorySubmission' => function($q) {
+                                                                $q->select('id', 'para_value');
+                                                            }
+                                                        ]);
+                                                    }
+                                                ]
+                                            ); 
+                                        },
+                                        'startDelayReason' => function($q){
+                                            $q->select('id', 'start_delay_remark');
+                                        },
+                                        'endDelayReason' => function($q){
+                                            $q->select('id', 'end_delay_remark');
+                                        },
+                                    ])
+                                    ->whereIn('study_id', $studyBO)
+                                    ->where('created_by_user_id', Auth::guard('admin')->user()->id)
+                                    // ->whereIn('study_id',$brlocationIds)
+                                    ->where('activity_status',$request->refsPostStatus)
                                     ->orderBy('scheduled_start_date', 'ASC')
                                     ->get();
 

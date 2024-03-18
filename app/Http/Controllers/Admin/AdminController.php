@@ -42,7 +42,8 @@ class AdminController extends GlobalController
                               })
                               ->withcount('scheduleDelay')
                               ->get();
-
+        $studyBO = Study::where('created_by', 'BO')->where('is_active', 1)->where('is_delete', 0)->pluck('id');
+                      
         $pm = array();
         $delayCount = array();
         if (!is_null($studySchedule)) {
@@ -367,7 +368,8 @@ class AdminController extends GlobalController
                                             ->where('activity_status', 'COMPLETED')
                                             ->where('scheduled_start_date', '!=', NULL)
                                             ->where('scheduled_end_date', '!=', NULL)
-                                            ->whereIn('responsibility_id', [15, 16])
+                                            ->whereNotIn('study_id', $studyBO)
+                                            ->where('responsibility_id', 15)
                                             ->whereIn('study_id',$brlocation)
                                             ->count();
 
@@ -376,7 +378,8 @@ class AdminController extends GlobalController
                                             ->where('activity_status', 'UPCOMING')
                                             ->where('scheduled_start_date', '!=', NULL)
                                             ->where('scheduled_end_date', '!=', NULL)
-                                            ->whereIn('responsibility_id', [15, 16])
+                                            ->whereNotIn('study_id', $studyBO)
+                                            ->where('responsibility_id', 15)
                                             ->whereIn('study_id',$brlocation)
                                             ->count();
 
@@ -385,8 +388,9 @@ class AdminController extends GlobalController
                                            ->where('activity_status', 'ONGOING')
                                            ->where('scheduled_start_date', '!=', NULL)
                                            ->where('scheduled_end_date', '!=', NULL)
-                                           ->whereIn('responsibility_id', [15, 16])
-                                            ->whereIn('study_id',$brlocation)
+                                           ->whereNotIn('study_id', $studyBO)
+                                           ->where('responsibility_id', 15)
+                                           ->whereIn('study_id',$brlocation)
                                            ->count();
 
             $totalDelay = StudySchedule::where('is_active', 1)
@@ -394,8 +398,9 @@ class AdminController extends GlobalController
                                           ->where('activity_status', 'DELAY')
                                           ->where('scheduled_start_date', '!=', NULL)
                                           ->where('scheduled_end_date', '!=', NULL)
-                                          ->whereIn('responsibility_id', [15, 16])
-                                            ->whereIn('study_id',$brlocation)
+                                          ->whereNotIn('study_id', $studyBO)
+                                          ->where('responsibility_id', 15)
+                                          ->whereIn('study_id',$brlocation)                
                                           ->count();        
         } else {
             $totalCompleted = StudySchedule::where('is_active', 1)
@@ -518,6 +523,9 @@ class AdminController extends GlobalController
                                 })
                                 ->withcount('scheduleDelay')
                                 ->get();
+
+        $studyBO = Study::where('created_by', 'BO')->where('is_active', 1)->where('is_delete', 0)->pluck('id');
+        // $brlocationIds = Study::where('br_location',Auth::guard('admin')->user()->location_id)->get('id')->toArray();
 
         $pm = array();
         $delayCount = array();
@@ -646,6 +654,7 @@ class AdminController extends GlobalController
         } else {
 
             $userId = $request->id;
+
             $totalCompletedStudy = Study::where('is_active', 1)
                                         ->where('is_delete', 0)
                                         ->where('study_status', 'COMPLETED')
@@ -759,6 +768,44 @@ class AdminController extends GlobalController
                                        ->whereIn('study_id', $id)
                                        ->whereIn('activity_type',[113,114,115,116])
                                        ->count();
+
+            if(Auth::guard('admin')->user()->role_id == '16'){
+                $totalCompleted = StudySchedule::where('is_active', 1)
+                                           ->where('is_delete', 0)
+                                           ->where('scheduled_start_date', '!=', NULL)
+                                           ->where('scheduled_end_date', '!=', NULL)
+                                           ->where('activity_status', 'COMPLETED')
+                                           ->whereIn('study_id', $studyBO)
+                                           ->where('created_by_user_id', Auth::guard('admin')->user()->id)
+                                           ->count();
+
+                $totalUpcoming = StudySchedule::where('is_active', 1)
+                                              ->where('is_delete', 0)
+                                              ->where('scheduled_start_date', '!=', NULL)
+                                              ->where('scheduled_end_date', '!=', NULL)
+                                              ->where('activity_status', 'UPCOMING')
+                                              ->whereIn('study_id', $studyBO)
+                                              ->where('created_by_user_id', Auth::guard('admin')->user()->id)
+                                              ->count();
+                                              
+                $totalOngoing = StudySchedule::where('is_active', 1)
+                                             ->where('is_delete', 0)
+                                             ->where('scheduled_start_date', '!=', NULL)
+                                             ->where('scheduled_end_date', '!=', NULL)
+                                             ->where('activity_status', 'ONGOING')
+                                             ->whereIn('study_id', $studyBO)
+                                             ->where('created_by_user_id', Auth::guard('admin')->user()->id)
+                                             ->count();
+
+                $totalDelay = StudySchedule::where('is_active', 1)
+                                           ->where('is_delete', 0)
+                                           ->where('scheduled_start_date', '!=', NULL)
+                                           ->where('scheduled_end_date', '!=', NULL)
+                                           ->where('activity_status', 'DELAY')
+                                           ->whereIn('study_id', $studyBO)
+                                           ->where('created_by_user_id', Auth::guard('admin')->user()->id)
+                                           ->count();
+            }
 
             $html = view('admin.dashboard.personal_dashboard',compact('totalCompletedStudy', 'totalOngoingStudy', 'totalUpcomingStudy', 'totalCompleted', 'totalPreCompleted', 'totalUpcoming', 'totalPreUpcoming', 'totalOngoing', 'totalPreOngoing', 'totalDelay', 'totalPreDelay', 'pmCount', 'graphName', 'graphDelay'))->render();
         
