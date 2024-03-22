@@ -114,6 +114,11 @@
     <script type="text/javascript" src="{{ asset('js/module/reason_master.js') }}"></script>
 @endif
 
+<!-- Study life Cycle js -->
+@if (\Route::is('admin.studyLifeCycleList') || Route::is('admin.updateStudyLifeCycle'))
+    <script type="text/javascript" src="{{ asset('js/module/study_life_cycle.js') }}"></script>
+@endif
+
 <!-- Dropify & Select2 js -->
 <script type="text/javascript">
 	$('.dropify').dropify();

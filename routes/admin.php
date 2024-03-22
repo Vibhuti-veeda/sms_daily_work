@@ -230,3 +230,9 @@
 	Route::group(['prefix' => 'study-metadata'], function () {
 		Route::match(['get', 'post'], '/view/all-studies-activity-metadata-list', 'Study\StudyActivityMetadataController@allStudiesActivityMetadataList')->name('admin.allStudiesActivityMetadataList');
 	});
+
+	Route::group(['prefix' => 'study-life-cycle'], function () {
+		Route::match(['get', 'post'], '/view/studies-life-cycle-list', 'Study\studyLifeCycleController@studyLifeCycleList')->name('admin.studyLifeCycleList');
+		Route::post('/view/update-study-life-cycle', 'Study\studyLifeCycleController@updateStudyLifeCycle')->name('admin.updateStudyLifeCycle');
+		Route::get('/view/studies-life-cycle-train', 'Study\studyLifeCycleController@studyLifeCycleTrain')->name('admin.studyLifeCycleTrain');
+	});

@@ -264,6 +264,13 @@
                                     </a>
                                 </li>
                             @endif
+                             @if(in_array('study-life-cycle',$module))
+                                <li>
+                                    <a href="{{ route('admin.studyLifeCycleTrain')}}">
+                                        Studies life Cycle
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                 @endif

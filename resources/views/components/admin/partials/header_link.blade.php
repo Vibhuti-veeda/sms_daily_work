@@ -33,3 +33,6 @@
 <!-- Dev express data grid css -->
 <link rel="stylesheet" href="{{ asset('js/pages/devexpress/css/dx.light.css') }}" type="text/css">
 <!-- <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/23.1.5/css/dx.light.css"> -->
+
+<!-- study train chart css -->
+<link rel="stylesheet" type="text/css" href="{{ asset('css/study train chart/study_train_chart.css') }}">

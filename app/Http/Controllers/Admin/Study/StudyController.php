@@ -2570,9 +2570,11 @@ class StudyController extends GlobalController
 
     public function studyTentativeClinicalDate(Request $request){
 
-        $status = Study::where('id',$request->id)->update(['tentative_clinical_date' => $this->convertDateTime($request->date)]);
+        $date = $request->date ? $this->convertDateTime($request->date) : null;
 
-        $updateStudyTrail = StudyTrail::where('study_id', $request->id)->orderBy('study_id', 'DESC')->update(['tentative_clinical_date' => $this->convertDateTime($request->date)]);
+        $status = Study::where('id',$request->id)->update(['tentative_clinical_date' => $date]);
+
+        $updateStudyTrail = StudyTrail::where('study_id', $request->id)->orderBy('study_id', 'DESC')->update(['tentative_clinical_date' => $date]);
 
         return $status ? 'true' : 'false';
     }

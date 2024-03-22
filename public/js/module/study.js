@@ -441,7 +441,6 @@ $(document).on('change','.studyProjected',function(){
 $(document).on('change','.tentativeClinicalDate',function(){
     var id = $(this).data('id');
     var date = $(this).val();
-    
     $.ajax({
         url: "/sms-admin/study-master/view/study-tentative-clinical-date",
         method:'POST',

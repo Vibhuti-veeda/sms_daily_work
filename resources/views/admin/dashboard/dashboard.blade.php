@@ -686,7 +686,7 @@
             <br>
 
             @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 10)
-                <div class="row">
+                <div class="row mb-2">
                     <div class="col-lg-12" style="border: 2px solid;">
                         <div class="card">
                             <div class="card-body">
@@ -706,6 +706,122 @@
                     </div>
                 </div>
             @endif
+
+            <!-- train chart -->
+
+            <!-- <div class="row mt-4 displayActivity">
+                <div class="col-lg-12" style="border: 2px solid;">
+                    <div class="card card-stepper text-black" style="border-radius: 16px;">
+                        <div class="card-body p-5">
+                            <div class="d-flex justify-content-between align-items-center mb-5">
+                              <div>
+                                <h5 class="mb-0">Studies</h5>
+                              </div>
+                              <div class="text-end">
+                                <p class="mb-0">Expected Arrival <span>01/12/19</span></p>
+                              </div>
+                            </div>
+
+                            <ul id="progressbar-2" class="d-flex justify-content-between">
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                              <li class="step0 active text-center"></li>
+                            </ul>
+
+                            <div class="d-flex justify-content-between">
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                                <div class="d-lg-flex align-items-center">
+                                    <div class="ms-4 ps-2">
+                                        <p class="fw-bold mb-1">Order</p>
+                                        <p class="fw-bold mb-0">Processed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
         </div>
     </div>
 
