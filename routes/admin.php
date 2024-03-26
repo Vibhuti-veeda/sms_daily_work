@@ -235,4 +235,5 @@
 		Route::match(['get', 'post'], '/view/studies-life-cycle-list', 'Study\studyLifeCycleController@studyLifeCycleList')->name('admin.studyLifeCycleList');
 		Route::post('/view/update-study-life-cycle', 'Study\studyLifeCycleController@updateStudyLifeCycle')->name('admin.updateStudyLifeCycle');
 		Route::get('/view/studies-life-cycle-train', 'Study\studyLifeCycleController@studyLifeCycleTrain')->name('admin.studyLifeCycleTrain');
+		Route::post('/view/change-studies-life-cycle-train', 'Study\studyLifeCycleController@changeStudyLifeCycleTrain')->name('admin.changeStudyLifeCycleTrain');
 	});

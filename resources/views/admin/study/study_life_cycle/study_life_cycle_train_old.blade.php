@@ -17,13 +17,9 @@
                                 <option value="ALL">
                                     All
                                 </option>
-                                @if(!is_null($getStudies))
-                                    @foreach($getStudies as $gsk => $gsv)
-                                        <option value="{{ $gsv->id }}">
-                                            {{ $gsv->study_no }}   
-                                        </option>
-                                    @endforeach
-                                @endif
+                                <option value="">
+                                    
+                                </option>
                             </select>
                         </div>
                     <div class="page-title-right">
@@ -57,13 +53,14 @@
                             @if(!is_null($studyLifeCycleTrain))
                                 @foreach($studyLifeCycleTrain as $sltk => $sltv)
                                     <li class="step0 active text-center">
-                                        <div class="pb-3" style="position: absolute; top: 40px; width: 100%; text-align: left;">
+                                        <div style="position: absolute; top: 40px; width: 100%; text-align: left;">
                                             @php
-                                                $activityName = $sltv->activity_name;
-                                                $activityName = wordwrap($activityName, 10, "\n", true);
+                                                // Split the activity name into activityName at whitespace characters
+                                                $activityName = preg_split('/\s+/', $sltv->activity_name);
                                             @endphp
-
-                                            <p class="fw-bold activityName">{!! nl2br($activityName) !!}</p> 
+                                            @foreach($activityName as $ak => $av)
+                                                <p class="fw-bold activityName">{{ $av }}</p>
+                                            @endforeach
                                         </div>
                                     </li>
                                 @endforeach
@@ -72,10 +69,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row mt-4 displayStudyActivity" style="display: none;">
-
         </div>                 
     </div>
 </div>
