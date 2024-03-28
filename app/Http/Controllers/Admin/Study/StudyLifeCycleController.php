@@ -102,6 +102,7 @@ class StudyLifeCycleController extends Controller
                             ])
                             ->whereHas('schedule', function($q) use($studyLifeCycleIds){
                                 $q->whereIn('activity_id', $studyLifeCycleIds)
+                                ->whereNotNull('scheduled_end_date')
                                 ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)");
                             })
                             ->get();
@@ -112,69 +113,45 @@ class StudyLifeCycleController extends Controller
     }
 
     public function changeStudyLifeCycleTrain(Request $request){ 
-
-        $studyLifeCycleIds = ActivityMaster::where('is_active', 1)->where('is_delete', 0)->where('study_life_cycle', 1)->pluck('id')->toArray();
-
+        
         if($request->id === 'ALL'){
-
-            // $studyLifeCycleIds = ActivityMaster::where('is_active', 1)->where('is_delete', 0)->where('study_life_cycle', 1)->pluck('id')->toArray();
-
-            $studyLifeCycleTrain = ActivityMaster::where('is_active', 1)
-                                                ->where('is_delete', 0)
-                                                ->where('study_life_cycle', 1)
-                                                ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)")
-                                                ->get();
-
-            $getStudies = Study::select('id', 'study_no', 'study_status')
-                            ->where('is_active', 1)
-                            ->where('is_delete', 0)
-                            ->where('study_status', 'ONGOING')
-                            ->with([
-                                'schedule' => function($q) use($studyLifeCycleIds){
-                                    $q->where('is_active', 1)
-                                    ->where('is_delete', 0)
-                                    ->whereIn('activity_id', $studyLifeCycleIds)
-                                    ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)");
-                                }
-                            ])
-                            ->whereHas('schedule', function($q) use($studyLifeCycleIds){
-                                $q->whereIn('activity_id', $studyLifeCycleIds)
-                                ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)");
-                            })
-                            ->get();
-
-            return view('admin.study.study_life_cycle.study_life_cycle_train',compact('studyLifeCycleTrain', 'getStudies'));
+            return redirect()->route('admin.studyLifeCycleTrain');
         } else {
-            // $studyLifeCycleIds = ActivityMaster::where('is_active', 1)->where('is_delete', 0)->where('study_life_cycle', 1)->pluck('id')->toArray();
 
-            $getActivity = StudySchedule::where('study_id', $request->id)
-                                        ->where('is_active', 1)
-                                        ->where('is_delete', 0)
-                                        ->whereIn('activity_id', $studyLifeCycleIds)
-                                        ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)")
-                                        ->get();
+            // Retrieve project manager's information from the study
+            $study = Study::with('projectManager')->findOrFail($request->id); // Assuming 'Study' is your model for the studies table
 
-            /*$getActivity = Study::select('id', 'study_no', 'study_status')
-                                ->where('is_active', 1)
-                                ->where('is_delete', 0)
-                                ->where('id', $request->id)
-                                ->where('study_status', 'ONGOING')
-                                ->with([
-                                    'schedule' => function($q) use($studyLifeCycleIds){
-                                        $q->where('is_active', 1)
-                                        ->where('is_delete', 0)
-                                        
-                                        ->whereIn('activity_id', $studyLifeCycleIds)
-                                        ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)");
-                                    }
-                                ])
-                                ->whereHas('schedule', function($q) use($studyLifeCycleIds){
-                                    $q->whereIn('activity_id', $studyLifeCycleIds)
-                                    ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)");
-                                })
-                                ->get();*/
+            // Access project manager's name through the relationship
+            $projectManagerName = $study->projectManager->name;
 
-            $html = view('admin.study.study_life_cycle.change_study_life_cycle_train',compact('getActivity'))->render();
+            $studyLifeCycleIds = ActivityMaster::where('is_active', 1)->where('is_delete', 0)->where('study_life_cycle', 1)->pluck('id')->toArray();
+
+            // Retrieve activities with activity_id 2 and 3
+            $activityAsc = StudySchedule::where('study_id', $request->id)
+                ->where('is_active', 1)
+                ->where('is_delete', 0)
+                ->whereNotNull('scheduled_end_date')
+                ->whereIn('activity_id', [2, 3])
+                ->orderBy('period_no', 'asc')
+                ->get();
+
+            // Retrieve activities with activity_id not in [2, 3]
+            $otherActivities = StudySchedule::where('study_id', $request->id)
+                ->where('is_active', 1)
+                ->where('is_delete', 0)
+                ->whereNotNull('scheduled_end_date')
+                ->whereIn('activity_id', $studyLifeCycleIds)
+                ->whereNotIn('activity_id', [2, 3])
+                ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)")
+                ->get();
+
+            $getActivity = $activityAsc->merge($otherActivities);
+
+            $firstActivityDate = $getActivity->first()->actual_end_date ?? $getActivity->first()->scheduled_end_date ?? null;
+            $lastActivityDate = $getActivity->last()->actual_end_date ?? $getActivity->last()->scheduled_end_date ?? null;
+
+
+            $html = view('admin.study.study_life_cycle.change_study_life_cycle_train',compact('getActivity', 'projectManagerName', 'firstActivityDate', 'lastActivityDate'))->render();
         
             return response()->json(['html'=>$html]);
         }

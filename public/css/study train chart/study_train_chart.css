@@ -1,6 +1,5 @@
 .card-stepper {
     z-index: 0;
-    overflow-x: auto; /* Add horizontal scrollbar */
 }
 
 .card-body {
@@ -15,8 +14,17 @@
     position: relative;
 }
 
-#progressbar-2 .step0:before {
+#progressbar-2 .step0.active:before {
     content: '\f058';
+    font-family: "Font Awesome 5 Free";
+    color: #fff;
+    width: 37px;
+    margin-left: 0px;
+    padding-left: 0px;
+}
+
+#progressbar-2 .step0:before {
+    content: '\f111';
     font-family: "Font Awesome 5 Free";
     color: #fff;
     width: 37px;
@@ -36,7 +44,7 @@
     content: '';
     width: calc(100% - 37px); /* Adjust line width dynamically */
     height: 10px;
-    background: blue;
+    background: #c5cae9;
     position: absolute;
     left: 37px;
     right: 0;
@@ -53,6 +61,12 @@
     background: #6520ff;
 }
 
+#progressbar-2 li:before,
+#progressbar-2 li:after {
+    color: #fff;
+}
+
 .activityName {
     margin-bottom: 0 !important;
 }
+
