@@ -33,26 +33,4 @@ $(document).on('change', '.studyLifeCycleStatus', function(){
     });
 });
 
-// Change study life cycle train
-$(document).ready(function(){
 
-    // Change study life cycle train
-    $(document).on('change', '.studiesView', function(){
-        var id = $(this).val();     
-        $.ajax({
-            url: "/sms-admin/study-life-cycle/view/change-studies-life-cycle-train",
-            method:'POST',
-            data:{ id: id },
-            success: function(data){
-                if (id == 'ALL') {
-                    $('.displayActivity').show();
-                    $('.displayStudyActivity').hide();
-                } else {
-                    $('.displayActivity').hide();
-                    $('.displayStudyActivity').show();
-                    $('.displayStudyActivity').empty().append(data.html);
-                }
-            }
-        });
-    });
-});

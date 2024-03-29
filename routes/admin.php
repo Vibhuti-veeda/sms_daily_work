@@ -15,6 +15,9 @@
 	Route::get('/', 'AdminController@index')->name('admin.dashboard');
 	Route::post('/dashboard/view/change-dashboard-view', 'AdminController@changeDashboardView')->name('admin.changeDashboardView');
 
+	// change studies life cycle train
+	Route::post('/dashboard/view/change-studies-life-cycle-train', 'AdminController@changeStudyLifeCycleTrain')->name('admin.changeStudyLifeCycleTrain');
+
 	// Change Password Route
 	Route::get('/change-admin-password', 'AdminController@changeAdminPassword')->name('admin.changeAdminPassword');
 	Route::post('/update-admin-password', 'AdminController@updateAdminPassword')->name('admin.updateAdminPassword');
@@ -234,6 +237,4 @@
 	Route::group(['prefix' => 'study-life-cycle'], function () {
 		Route::match(['get', 'post'], '/view/studies-life-cycle-list', 'Study\studyLifeCycleController@studyLifeCycleList')->name('admin.studyLifeCycleList');
 		Route::post('/view/update-study-life-cycle', 'Study\studyLifeCycleController@updateStudyLifeCycle')->name('admin.updateStudyLifeCycle');
-		Route::get('/view/studies-life-cycle-train', 'Study\studyLifeCycleController@studyLifeCycleTrain')->name('admin.studyLifeCycleTrain');
-		Route::post('/view/change-studies-life-cycle-train', 'Study\studyLifeCycleController@changeStudyLifeCycleTrain')->name('admin.changeStudyLifeCycleTrain');
 	});

@@ -42,17 +42,8 @@
 
         <div class="row displayActivity">
             <div class="col-lg-12" style="border: 2px solid; overflow-x: scroll;">
-                <div class="card card-stepper text-black" style="border-radius: 16px; width: 3000px; height: 500px;">
+                <div class="card card-stepper text-black" style="border-radius: 16px; width: 3000px; height: 270px;">
                     <div class="card-body p-5">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-0">Studies</h5>
-                            </div>
-                            <div class="text-end">
-                                <p class="mb-0">Expected Arrival <span>01/12/19</span></p>
-                            </div>
-                        </div>
-
                         <ul id="progressbar-2" class="d-flex">
                             @if(!is_null($studyLifeCycleTrain))
                                 @foreach($studyLifeCycleTrain as $sltk => $sltv)
@@ -60,7 +51,7 @@
                                         <div class="pb-3" style="position: absolute; top: 40px; width: 100%; text-align: left;">
                                             @php
                                                 $activityName = $sltv->activity_name;
-                                                $activityName = wordwrap($activityName, 5, "\n", true);
+                                                $activityName = wordwrap($activityName, 15, "\n", true);
                                             @endphp
 
                                             <p class="fw-bold activityName">{!! nl2br($activityName) !!}</p> 
@@ -75,7 +66,7 @@
         </div>
 
         <div class="row mt-4 displayStudyActivity" style="display: none;">
-
+            
         </div>                 
     </div>
 </div>

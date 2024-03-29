@@ -115,7 +115,7 @@
 @endif
 
 <!-- Study life Cycle js -->
-@if (\Route::is('admin.studyLifeCycleList') || Route::is('admin.updateStudyLifeCycle') || Route::is('admin.changeStudyLifeCycleTrain') || Route::is('admin.studyLifeCycleTrain'))
+@if (\Route::is('admin.studyLifeCycleList') || Route::is('admin.updateStudyLifeCycle') || Route::is('admin.changeStudyLifeCycleTrain') || Route::is('admin.studyLifeCycleTrain') || Route::is('admin.dashboard'))
     <script type="text/javascript" src="{{ asset('js/module/study_life_cycle.js') }}"></script>
 @endif
 

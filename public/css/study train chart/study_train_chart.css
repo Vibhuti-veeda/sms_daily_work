@@ -9,7 +9,7 @@
 #progressbar-2 li {
     list-style-type: none;
     font-size: 13px;
-    width: calc(100% / 3); /* Divide equally for three steps */
+    width: 438px; /* Divide equally for three steps */
     float: left;
     position: relative;
 }
