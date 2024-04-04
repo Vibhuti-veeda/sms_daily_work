@@ -2,6 +2,9 @@
     z-index: 0;
 }
 
+.card{
+    margin-bottom: 0 !important;
+}
 .card-body {
     white-space: nowrap; /* Prevent line breaks */
 }
@@ -9,7 +12,7 @@
 #progressbar-2 li {
     list-style-type: none;
     font-size: 13px;
-    width: 438px; /* Divide equally for three steps */
+    width: 250px; /* Divide equally for three steps */
     float: left;
     position: relative;
 }

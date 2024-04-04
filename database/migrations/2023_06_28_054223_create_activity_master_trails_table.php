@@ -31,6 +31,7 @@ return new class extends Migration
             $table->tinyInteger('is_dependent');
             $table->tinyInteger('is_group_specific');
             $table->tinyInteger('is_period_specific');
+            $table->tinyInteger('study_life_cycle')->default(0);
             $table->integer('created_by_user_id')->nullable();
             $table->integer('updated_by_user_id')->nullable();
             $table->tinyInteger('is_active')->default(1);

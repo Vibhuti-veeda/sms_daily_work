@@ -436,34 +436,25 @@ class AdminController extends GlobalController
                                        ->count();
         }
 
-        // get study no.
-        $studyLifeCycleIds = ActivityMaster::where('is_active', 1)->where('is_delete', 0)->where('study_life_cycle', 1)->pluck('id')->toArray();  
-                          
+        // selected All Activity Display in train chart
+        $studyLifeCycleTrain = ActivityMaster::select('id', 'activity_name', 'study_life_cycle', 'activity_type', 'is_active', 'is_delete')
+                                            ->where('is_active', 1)
+                                            ->where('is_delete', 0)
+                                            ->where('study_life_cycle', 1)
+                                            ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)")
+                                            ->get();
+        
+        // get study no. 
         $getStudies = Study::select('id', 'study_no', 'study_status')
                             ->where('is_active', 1)
                             ->where('is_delete', 0)
-                            ->where('study_status', 'ONGOING')
-                            ->with([
-                                'schedule' => function($q) use($studyLifeCycleIds){
-                                    $q->where('is_active', 1)
-                                    ->where('is_delete', 0)
-                                    ->whereIn('activity_id', $studyLifeCycleIds)
-                                    ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)");
-                                }
-                            ])
-                            ->whereHas('schedule', function($q) use($studyLifeCycleIds){
-                                $q->whereIn('activity_id', $studyLifeCycleIds)
+                            ->whereIn('study_status', ['ONGOING', 'COMPLETED'])
+                            ->whereHas('schedule', function($q) use($studyLifeCycleTrain){
+                                $q->whereIn('activity_id', $studyLifeCycleTrain->pluck('id'))
                                 ->whereNotNull('scheduled_end_date')
                                 ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)");
                             })
                             ->get();
-
-        // selected All Activity Display in train chart
-        $studyLifeCycleTrain = ActivityMaster::where('is_active', 1)
-                                                ->where('is_delete', 0)
-                                                ->where('study_life_cycle', 1)
-                                                ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)")
-                                                ->get();
 
         return view('admin.dashboard.dashboard', compact('totalCompletedStudy', 'totalOngoingStudy', 'totalUpcomingStudy', 'totalCompleted','totalPreCompleted', 'totalUpcoming','totalPreUpcoming', 'totalOngoing','totalPreOngoing', 'totalDelay', 'totalPreDelay', 'pmCount', 'graphName', 'graphDelay', 'studyLifeCycleTrain', 'getStudies'));
     }
@@ -846,10 +837,8 @@ class AdminController extends GlobalController
     public function changeStudyLifeCycleTrain(Request $request){ 
         
         if($request->id === 'ALL'){
-            
             return redirect()->route('admin.dashboard');
         } else {
-
             // Retrieve project manager's information from the study
             $study = Study::with('projectManager')->findOrFail($request->id); // Assuming 'Study' is your model for the studies table
 
@@ -859,23 +848,25 @@ class AdminController extends GlobalController
             $studyLifeCycleIds = ActivityMaster::where('is_active', 1)->where('is_delete', 0)->where('study_life_cycle', 1)->pluck('id')->toArray();
 
             // Retrieve activities with activity_id 2 and 3
-            $activityAsc = StudySchedule::where('study_id', $request->id)
-                ->where('is_active', 1)
-                ->where('is_delete', 0)
-                ->whereNotNull('scheduled_end_date')
-                ->whereIn('activity_id', [2, 3])
-                ->orderBy('period_no', 'asc')
-                ->get();
+            $activityAsc = StudySchedule::select('id', 'study_id', 'is_active', 'is_delete', 'scheduled_end_date', 'activity_id', 'activity_name', 'period_no', 'actual_end_date')
+                                        ->where('study_id', $request->id)
+                                        ->where('is_active', 1)
+                                        ->where('is_delete', 0)
+                                        ->whereNotNull('scheduled_end_date')
+                                        ->whereIn('activity_id', [2, 3])
+                                        ->orderBy('period_no', 'asc')
+                                        ->get();
 
             // Retrieve activities with activity_id not in [2, 3]
-            $otherActivities = StudySchedule::where('study_id', $request->id)
-                ->where('is_active', 1)
-                ->where('is_delete', 0)
-                ->whereNotNull('scheduled_end_date')
-                ->whereIn('activity_id', $studyLifeCycleIds)
-                ->whereNotIn('activity_id', [2, 3])
-                ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)")
-                ->get();
+            $otherActivities = StudySchedule::select('id', 'study_id', 'is_active', 'is_delete', 'scheduled_end_date', 'activity_id', 'activity_name', 'period_no', 'actual_end_date')
+                                            ->where('study_id', $request->id)
+                                            ->where('is_active', 1)
+                                            ->where('is_delete', 0)
+                                            ->whereNotNull('scheduled_end_date')
+                                            ->whereIn('activity_id', $studyLifeCycleIds)
+                                            ->whereNotIn('activity_id', [2, 3])
+                                            ->orderByRaw("FIELD(activity_type, 123, 113, 114, 116, 115)")
+                                            ->get();
 
             $getActivity = $activityAsc->merge($otherActivities);
 
@@ -892,39 +883,15 @@ class AdminController extends GlobalController
             // Determine the final width of the card (maximum of calculated width and minimum width)
             $finalWidth = max($totalWidth, $minWidth);
 
-            // Construct HTML with dynamic width and minimum width
-            $html = '<div class="col-lg-12" style="border: 2px solid; overflow-x: scroll;">
-                        <div class="card card-stepper text-black" style="border-radius: 16px; min-width: '.$minWidth.'px; width: '.$finalWidth.'px; height: 290px;">
-                            <div class="card-body p-5">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <h5 class="mb-3">' . $projectManagerName . ' (' . ($firstActivityDate ? date('d M Y', strtotime($firstActivityDate)) : 'N/A') . ' to ' . ($lastActivityDate ? date('d M Y', strtotime($lastActivityDate)) : 'N/A') . ')</h5>
-                                    </div>
-                                </div>
-                                <ul id="progressbar-2" class="d-flex">';
-
-            if(!is_null($getActivity)) {
-                foreach($getActivity as $gak => $gav) {
-                    $html .= '<li class="step0 text-center mt-5 ' . ($gav->actual_end_date != '' ? 'active' : '') . '">
-                                <div class="ps-2 mb-5 pb-5" style="position: relative; top: -115px; width: 305px; text-align: left;"> 
-                                    <p class="text-start fw-bold date" style="transform: skew(7deg, -22deg);">' . ($gav->actual_end_date != '' ? date('d M Y', strtotime($gav->actual_end_date)) : ($gav->scheduled_end_date != '' ? date('d M Y', strtotime($gav->scheduled_end_date)) : '')) . '</p>
-                                </div>
-                                <div class="pb-3" style="position: relative; top: -129px; width: 100%; text-align: left;">';
-
-                    $activityName = $gav->activity_name;
-                    $activityName = wordwrap($activityName, 15, "\n", true);
-                    $html .= '<p class="fw-bold activityName">' . nl2br($activityName) . '</p>
-                            </div>
-                        </li>';
-                }
-            }
-
-            $html .= '</ul>
-                    </div>
-                </div>
-            </div>';
-            
-            return response()->json(['html'=>$html]);
+            // Return data to JavaScript
+            return response()->json([
+                'projectManagerName' => $projectManagerName,
+                'firstActivityDate' => $firstActivityDate,
+                'lastActivityDate' => $lastActivityDate,
+                'minWidth' => $minWidth,
+                'finalWidth' => $finalWidth,
+                'getActivity' => $getActivity->toArray()
+            ]);
         }
     }
 }

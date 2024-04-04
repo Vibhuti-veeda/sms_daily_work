@@ -20,9 +20,9 @@ $(document).on('change', '.studyLifeCycleStatus', function(){
         success: function(data){
             if(data == 'true'){
                 if(study_life_cycle == 1){
-                    toastr.success('Activity activated');    
+                    toastr.success('Study life cycle activity is activated', 'Study Life Cycle');    
                 } else if(study_life_cycle == 0){
-                    toastr.success('Activity deactivated');    
+                    toastr.success('Study life cycle activity is deactivated', 'Study Life Cycle');    
                 } else {
                     toastr.error('Something Went Wrong!');    
                 }
@@ -33,4 +33,17 @@ $(document).on('change', '.studyLifeCycleStatus', function(){
     });
 });
 
+// open close according
 
+$(document).ready(function(){
+    // Collapse all accordion items except the first one
+    $('#accordionExample .accordion-collapse').collapse('hide');
+
+    // Handle accordion button clicks
+    $('.accordion-button').click(function(){
+        // Collapse all accordion items
+        $('#accordionExample .accordion-collapse').collapse('hide');
+        // Expand the clicked accordion item
+        $(this).parents('.accordion-item').find('.accordion-collapse').collapse('show');
+    });
+});

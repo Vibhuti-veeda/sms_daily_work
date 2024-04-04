@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title','Study Schedule Status')
+@section('title','Study Life Cycle')
 @section('content')
 
 <div class="page-content">
@@ -28,17 +28,16 @@
         @if(!is_null($activitySchedule))
             @foreach($activitySchedule as $ask => $asv)
                 <div class="accordion mb-3" id="accordionExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button fw-medium collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{$asv->para_value}}" aria-expanded="false" aria-controls="{{$asv->para_value}}">
+                    <div class="accordion-item mb-3">
+                        <h2 class="accordion-header" id="heading{{$ask}}">
+                            <button class="accordion-button fw-medium collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{$ask}}" aria-expanded="false" aria-controls="collapse{{$ask}}">
                                 {{$asv->para_value}} Activities
                             </button>
-                        </h2>
-                            
-                        <div id="{{$asv->para_value}}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        </h2>    
+                        <div id="collapse{{$ask}}" class="accordion-collapse collapse" aria-labelledby="heading{{$ask}}" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
-                                <form id="studyScheduleMonitoringForm" action="#" method="post">
-                                    <div class="row" id="hiii">
+                                <form id="studyScheduleMonitoringForm{{$ask}}" action="#" method="post">
+                                    <div class="row">
                                         <div class="col-12">
                                             <div class="card">
                                                 <div class="card-body">
@@ -53,7 +52,6 @@
                                                             </thead>
                                                             <tbody>
                                                                 @php $srNo = 1; @endphp
-                                                                <!-- @php $checked = ''; @endphp -->
                                                                 @if(!is_null($asv->activities))
                                                                     @foreach($asv->activities as $ack => $acv)
                                                                         <tr>
@@ -88,3 +86,4 @@
 </div>
 
 @endsection
+

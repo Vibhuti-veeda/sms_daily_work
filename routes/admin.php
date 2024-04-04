@@ -234,7 +234,11 @@
 		Route::match(['get', 'post'], '/view/all-studies-activity-metadata-list', 'Study\StudyActivityMetadataController@allStudiesActivityMetadataList')->name('admin.allStudiesActivityMetadataList');
 	});
 
+	// train chart
 	Route::group(['prefix' => 'study-life-cycle'], function () {
-		Route::match(['get', 'post'], '/view/studies-life-cycle-list', 'Study\studyLifeCycleController@studyLifeCycleList')->name('admin.studyLifeCycleList');
-		Route::post('/view/update-study-life-cycle', 'Study\studyLifeCycleController@updateStudyLifeCycle')->name('admin.updateStudyLifeCycle');
+		Route::match(['get', 'post'], '/view/studies-life-cycle-list', 'Study\StudyLifeCycleController@studyLifeCycleList')->name('admin.studyLifeCycleList');
+		Route::post('/view/update-study-life-cycle', 'Study\StudyLifeCycleController@updateStudyLifeCycle')->name('admin.updateStudyLifeCycle');
 	});
+
+	// br only Daily Mail
+	Route::match(['get', 'post'], '/mail/view/delay-mail-list', 'EmailController@delayMailList')->name('admin.delayMailList');

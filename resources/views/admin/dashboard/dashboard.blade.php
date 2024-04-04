@@ -681,9 +681,63 @@
                 &nbsp;
             </div>
 
+            <!-- train chart -->
+            @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 10 || Auth::guard('admin')->user()->role_id == 16)
+                <!-- display study No -->
+                <div class="row mt-2">
+                    <div class="col-md-12"> <!-- Adjust the column size and offset as needed -->
+                        <div class="page-title-left d-flex mb-2 justify-content-start"> <!-- Align content to the right -->
+                            <div class="form-group">
+                                <label>Studies</label>
+                                <select class="form-control select2 studiesView" name="studiesView" id="studiesView" data-placeholder="Select Studies">
+                                    <option value="ALL">All</option>
+                                    <!-- This part generates options dynamically based on data -->
+                                    @if(!is_null($getStudies))
+                                        @foreach($getStudies as $gsk => $gsv)
+                                            <option value="{{ $gsv->id }}">{{ $gsv->study_no }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- display activity name -->
+                <div class="row mt-1 displayActivity">
+                    <div class="col-lg-12" style="border: 2px solid; overflow-x: scroll;">
+                        <div class="card card-stepper text-black" style="border-radius: 16px; min-width: 1700px; width: 1050%; height: 222px;">
+                            <div class="card-body p-5">
+                                <ul id="progressbar-2" class="d-flex">
+                                    @if(!is_null($studyLifeCycleTrain))
+                                        @foreach($studyLifeCycleTrain as $sltk => $sltv)
+                                            <li class="step0 active text-center mt-5">
+                                                <div class="pb-1" style="position: relative; top: 6px; width: 400px; text-align: left;">
+                                                    @php
+                                                        $activityName = $sltv->activity_name;
+                                                        $activityName = wordwrap($activityName, 25, "\n", true);
+                                                    @endphp
+
+                                                    <p class="fw-bold activityName">{!! nl2br($activityName) !!}</p> 
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    @endif  
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-1 displayStudyActivity" style="display: none;">
+                </div>
+            @endif      
+
             <div class="row personalView" style="display: none;">
             </div>
             <br>
+
+
 
             @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 10)
                 <div class="row mb-2">
@@ -707,59 +761,7 @@
                 </div>
             @endif
 
-            <!-- train chart -->
-            @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 10 || Auth::guard('admin')->user()->role_id == 16)
-                <!-- display study No -->
-                <div class="row mt-2">
-                    <div class="col-md-6 offset-md-6"> <!-- Adjust the column size and offset as needed -->
-                        <div class="page-title-right d-flex mb-2 justify-content-end"> <!-- Align content to the right -->
-                            <div class="form-group">
-                                <label>Studies</label>
-                                <select class="form-control select2 studiesView" name="studiesView" id="studiesView" data-placeholder="Select Studies">
-                                    <option value="ALL">All</option>
-                                    <!-- This part generates options dynamically based on data -->
-                                    @if(!is_null($getStudies))
-                                        @foreach($getStudies as $gsk => $gsv)
-                                            <option value="{{ $gsv->id }}">{{ $gsv->study_no }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- display activity name -->
-                <div class="row mt-1 displayActivity">
-                    <div class="col-lg-12" style="border: 2px solid; overflow-x: scroll;">
-                        <div class="card card-stepper text-black" style="border-radius: 16px; width: 3000px; height: 270px;">
-                            <div class="card-body p-5">
-                                <ul id="progressbar-2" class="d-flex">
-                                    @if(!is_null($studyLifeCycleTrain))
-                                        @foreach($studyLifeCycleTrain as $sltk => $sltv)
-                                            <li class="step0 active text-center mt-5">
-                                                <div class="pb-3" style="position: absolute; top: 40px; width: 100%; text-align: left;">
-                                                    @php
-                                                        $activityName = $sltv->activity_name;
-                                                        $activityName = wordwrap($activityName, 15, "\n", true);
-                                                    @endphp
-
-                                                    <p class="fw-bold activityName">{!! nl2br($activityName) !!}</p> 
-                                                </div>
-                                            </li>
-                                        @endforeach
-                                    @endif  
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mt-1 displayStudyActivity" style="display: none;">
-                
-                </div>
-            @endif
+            
         </div>
     </div>
-
 @endsection

@@ -264,7 +264,7 @@
                                     </a>
                                 </li>
                             @endif
-                             @if(in_array('study-life-cycle',$module))
+                            @if(in_array('study-life-cycle',$module))
                                 <li>
                                     <a href="{{ route('admin.studyLifeCycleList')}}">
                                         Studies life Cycle
