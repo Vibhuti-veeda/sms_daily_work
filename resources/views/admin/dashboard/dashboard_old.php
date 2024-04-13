@@ -9,7 +9,7 @@
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                         <h4 class="mb-sm-0 font-size-18">Dashboard</h4>
-                        @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3)
+                        @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 16)
                             <div class="form-group">
                                 <label>Dashboard Access<span class="mandatory">*</span></label>
                                 <select class="form-control select2 dashboardView" name="role" id="role_modules" data-placeholder="Select Module(s)" required >
@@ -39,7 +39,7 @@
 
             <div class="row allView">
                 
-                @if((Auth::guard('admin')->user()->role_id == 1) || (Auth::guard('admin')->user()->role_id == 2) || (Auth::guard('admin')->user()->role_id == 3) || (Auth::guard('admin')->user()->role_id == 6) || (Auth::guard('admin')->user()->role_id == 16) || (Auth::guard('admin')->user()->role_id == 10) || (((Auth::guard('admin')->user()->role_id == 7) || (Auth::guard('admin')->user()->role_id == 8) || (Auth::guard('admin')->user()->role_id == 11) || (Auth::guard('admin')->user()->role_id == 15) || (Auth::guard('admin')->user()->role_id == 12)) && (Auth::guard('admin')->user()->is_hod == 1)))
+                @if((Auth::guard('admin')->user()->role_id == 1) || (Auth::guard('admin')->user()->role_id == 2) || (Auth::guard('admin')->user()->role_id == 3) || (Auth::guard('admin')->user()->role_id == 6) || (Auth::guard('admin')->user()->role_id == 10) || (((Auth::guard('admin')->user()->role_id == 7) || (Auth::guard('admin')->user()->role_id == 8) || (Auth::guard('admin')->user()->role_id == 11) || (Auth::guard('admin')->user()->role_id == 15) || (Auth::guard('admin')->user()->role_id == 12)) && (Auth::guard('admin')->user()->is_hod == 1)))
                     <div style="border: 2px solid;">
                         <h3 class="mt-2" style="margin-left: 10px;">
                             <b>
@@ -125,7 +125,7 @@
                     </div>&nbsp;
                 @endif
 
-                @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 4 || Auth::guard('admin')->user()->role_id == 5 || Auth::guard('admin')->user()->role_id == 6 || Auth::guard('admin')->user()->role_id == 10 || Auth::guard('admin')->user()->role_id == 14 || Auth::guard('admin')->user()->role_id == 16)
+                @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 4 || Auth::guard('admin')->user()->role_id == 5 || Auth::guard('admin')->user()->role_id == 6 || Auth::guard('admin')->user()->role_id == 10 || Auth::guard('admin')->user()->role_id == 14)
                     <div style="border: 2px solid;">
                         <h3 class="mt-2" style="margin-left: 10px;">
                             <b>
@@ -239,7 +239,7 @@
                     <div style="border: 2px solid;">
                         <h3 class="mt-2" style="margin-left: 10px;">
                             <b>
-                               Post Study Activity
+                                Post Study Activity
                             </b>
                         </h3>
                         <div class="col-xl-12">
@@ -553,7 +553,7 @@
                                                     </div>
 
                                                     <div class="flex-shrink-0 align-self-center ">
-                                                       <div class="avatar-sm rounded-circle bg-primary mini-stat-icon">
+                                                        <div class="avatar-sm rounded-circle bg-primary mini-stat-icon">
                                                             <span class="avatar-title rounded-circle bg-primary">
                                                                 <i class="bx bx-copy-alt font-size-24"></i>
                                                             </span>
@@ -681,6 +681,7 @@
                 &nbsp;
             </div>
 
+            <!-- train chart -->
             @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 10 || Auth::guard('admin')->user()->role_id == 16)
                 <!-- display study No -->
                 <div class="row mt-2">
@@ -704,9 +705,9 @@
 
                 <!-- display activity name -->
                 <div class="row mt-1 displayActivity">
-                    <div class="col-lg-12" style="border: 2px solid; overflow-x: scroll; overflow-y: hidden;">
-                        <div class="card card-stepper text-black study-train" style=" min-width: 1700px; width: 1050%; height: 222px;">
-                            <div class="card-body study-train-body pt-5">
+                    <div class="col-lg-12" style="border: 2px solid; overflow-x: scroll;">
+                        <div class="card card-stepper text-black" style="border-radius: 16px; min-width: 1700px; width: 1050%; height: 222px;">
+                            <div class="card-body p-5">
                                 <ul id="progressbar-2" class="d-flex">
                                     @if(!is_null($studyLifeCycleTrain))
                                         @foreach($studyLifeCycleTrain as $sltk => $sltv)
@@ -736,8 +737,10 @@
             </div>
             <br>
 
+
+
             @if(Auth::guard('admin')->user()->role_id == 1 || Auth::guard('admin')->user()->role_id == 2 || Auth::guard('admin')->user()->role_id == 3 || Auth::guard('admin')->user()->role_id == 10)
-                <div class="row">
+                <div class="row mb-2">
                     <div class="col-lg-12" style="border: 2px solid;">
                         <div class="card">
                             <div class="card-body">
@@ -757,7 +760,8 @@
                     </div>
                 </div>
             @endif
+
+            
         </div>
     </div>
-
 @endsection

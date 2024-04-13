@@ -1,7 +1,7 @@
 <div>
     
     <div class="form-group">
-        <p>Hello <?php echo $data['name']; ?>,</p>
+        <p>Hello <?php echo $name; ?>,</p>
     </div>
 
     <div class="form-group">
@@ -27,12 +27,12 @@
         
         <center>
             <tr style="border: 1px solid;">
-                <td style="border: 1px solid;"><?php echo $data['studyNo']; ?></td>
-                <td style="border: 1px solid;"><?php echo $data['projectManager']; ?></td>
-                <td style="border: 1px solid;"><?php echo $data['activityName']; ?></td>
-                <td style="border: 1px solid;"><?php echo date('d M Y', strtotime($data['scheduleStartDate'])); ?></td>
-                <td style="border: 1px solid;"><?php echo date('d M Y', strtotime($data['actualStartDate'])); ?></td>
-                <td style="border: 1px solid;"><?php echo date('d M Y H:i:s', strtotime($data['actualStartDateTime'])); ?></td>
+                <td style="border: 1px solid;"><?php echo $startMilestoneActivity->studyNo['study_no']; ?></td>
+                <td style="border: 1px solid;"><?php echo $startMilestoneActivity->studyNo->projectManager['name']; ?></td>
+                <td style="border: 1px solid;"><?php echo $startMilestoneActivity['activity_name']; ?></td>
+                <td style="border: 1px solid;"><?php echo date('d M Y', strtotime($startMilestoneActivity['scheduled_start_date'])); ?></td>
+                <td style="border: 1px solid;"><?php echo date('d M Y', strtotime($startMilestoneActivity['actual_start_date'])); ?></td>
+                <td style="border: 1px solid;"><?php echo date('d M Y H:i:s', strtotime($startMilestoneActivity['actual_start_date_time'])); ?></td>
             </tr>
         </center>
 

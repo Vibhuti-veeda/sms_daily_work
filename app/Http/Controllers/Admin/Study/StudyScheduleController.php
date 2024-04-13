@@ -22,6 +22,7 @@ use App\Models\ParaCode;
 use DB;
 use App\Jobs\SendEmailOnStudyScheduleCreated;
 use DateTime;
+use App\Models\EmailNotification;
 
 class StudyScheduleController extends GlobalController
 {
@@ -543,24 +544,59 @@ class StudyScheduleController extends GlobalController
             }
         }
 
-        /*if (!is_null($studyschedule)) {
+        if (!is_null($studyschedule)) {
             $bdUser = Admin::where('role_id', 14)->get();
             if (!is_null($bdUser)) {
                 foreach ($bdUser as $buk => $buv) {
-                    $newStudyScheduledCreated = StudySchedule::where('id', $studyschedule->id)
+                    $newStudyScheduledCreated = StudySchedule::select('id', 'study_id')
+                                                            ->where('is_active', 1)
+                                                            ->where('is_delete', 0)
+                                                            ->where('id', $studyschedule->id)
                                                              ->with([
                                                                     'studyNo' => function($q){
-                                                                        $q->with([
-                                                                            'projectManager'
+                                                                        $q->select('id', 'study_no', 'project_manager')
+                                                                        ->where('is_active', 1)
+                                                                        ->where('is_delete', 0)
+                                                                        ->with([
+                                                                            'projectManager' => function($q){
+                                                                                $q->select('id', 'name')
+                                                                                ->where('is_delete', 0)
+                                                                                ->where('is_active', 1);
+                                                                            }, 
                                                                         ]);
-                                                                    }
+                                                                    },
                                                                 ])
                                                              ->first();
-                    
-                    $this->dispatch((new SendEmailOnStudyScheduleCreated($buv->email_id,$buv->name,$newStudyScheduledCreated->studyNo->study_no,$newStudyScheduledCreated->studyNo->projectManager->name))->delay(10));
+                    $subject = 'Study Management System - Study Schedule Created';
+                    $name = $buv->name;    
+                    $toEmail = $buv->email;
+                    $bccEmail = ['chandresh.v2590@veedacr.com', 'sani.c2654@veedacr.com'];
+
+                    $html = view('admin.mail.study_schedule_created',compact('newStudyScheduledCreated', 'name'))->render();
+
+                    $email = new EmailNotification;
+                    $email->system = 'sms';
+                    $email->email_type = 'notification';
+                    $email->from_email = 'sms@veedacr.com';
+                    $email->to_email = $toEmail;
+                    $email->bcc = implode(',', $bccEmail);
+                    $email->subject = $subject;
+                    $email->body = $html;
+                    $email->flag = 'PENDING';
+                    $email->send_time = now();
+                    $email->save();
+
+                    /*$this->dispatch((new SendEmailOnStudyScheduleCreated($buv->email_id,$buv->name,$newStudyScheduledCreated->studyNo->study_no,$newStudyScheduledCreated->studyNo->projectManager->name))->delay(10));*/
                 }
+                return redirect(route('admin.dashboard'))->with('messages', [
+                    [
+                        'type' => 'success',
+                        'title' => 'Email',
+                        'message' => 'Email successfully inserted!',
+                    ],
+                ]);  
             }
-        }*/
+        }
 
         $route = $request->btn_submit == 'save_and_update' ? 'admin.addStudySchedule' : 'admin.studyScheduleList';
 

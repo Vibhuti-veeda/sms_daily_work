@@ -241,4 +241,5 @@
 	});
 
 	// br only Daily Mail
-	Route::match(['get', 'post'], '/mail/view/delay-mail-list', 'EmailController@delayMailList')->name('admin.delayMailList');
+	Route::match(['get', 'post'], '/mail/view/delay-mail-list', 'BrPmDelayActivitiesController@delayMailList')->name('admin.delayMailList');
+	Route::match(['get', 'post'], '/mail/view/daily-mail-list', 'BrPmDailyActivitiesController@dailyMailList')->name('admin.dailyMailList');

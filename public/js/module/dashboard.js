@@ -43,8 +43,8 @@ $(document).ready(function(){
                     $('.displayStudyActivity').show();
                     // Construct HTML dynamically using data received from the server
                     var html = '<div class="col-lg-12" style="border: 2px solid; overflow-x: scroll; overflow-y: hidden;">'+
-                                    '<div class="card card-stepper text-black" style="border-radius: 16px; min-width: '+ data.minWidth +'px; width: '+ data.finalWidth +'px; height: 222px;">'+
-                                        '<div class="card-body pt-3">'+
+                                    '<div class="card card-stepper text-black study-train" style="border-radius: 16px; min-width: '+ data.minWidth +'px; width: '+ data.finalWidth +'px; height: 222px;">'+
+                                        '<div class="card-body study-train-body pt-3">'+
                                             '<div class="d-flex justify-content-between align-items-center mb-3">'+
                                                 '<div>'+
                                                     '<h5 class="mb-3">' + data.projectManagerName + ' (' + formatDateString(data.firstActivityDate) + ' to ' + formatDateString(data.lastActivityDate) + ')</h5>'+

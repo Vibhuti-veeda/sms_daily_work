@@ -1,7 +1,7 @@
 <div>
     
     <div class="form-group">
-        <p>Hello <?php echo $data['name']; ?>,</p>
+        <p>Hello <?php echo $name; ?>,</p>
     </div>
 
     <div class="form-group">
@@ -24,17 +24,17 @@
                 <th style="border: 1px solid;">Actual End Date Filled Date-Time</th>
             </center>
         </tr>
-        
-        <center>
-            <tr style="border: 1px solid;">
-                <td style="border: 1px solid;"><?php echo $data['studyNo']; ?></td>
-                <td style="border: 1px solid;"><?php echo $data['projectManager']; ?></td>
-                <td style="border: 1px solid;"><?php echo $data['activityName']; ?></td>
-                <td style="border: 1px solid;"><?php echo date('d M Y', strtotime($data['scheduleEndDate'])); ?></td>
-                <td style="border: 1px solid;"><?php echo date('d M Y', strtotime($data['actualEndDate'])); ?></td>
-                <td style="border: 1px solid;"><?php echo date('d M Y H:i:s', strtotime($data['actualEndDateTime'])); ?></td>
-            </tr>
-        </center>
+
+        <tr style="border: 1px solid;">
+            <center>
+                <td style="border: 1px solid; text-align: center;"><?php echo $endMilestoneActivity->studyNo['study_no']; ?></td>
+                <td style="border: 1px solid; text-align: center;"><?php echo $endMilestoneActivity->studyNo->projectManager['name']; ?></td>
+                <td style="border: 1px solid; text-align: center;"><?php echo $endMilestoneActivity['activity_name']; ?></td>
+                <td style="border: 1px solid; text-align: center;"><?php echo date('d M Y', strtotime($endMilestoneActivity['scheduled_end_date'])); ?></td>
+                <td style="border: 1px solid; text-align: center;"><?php echo date('d M Y', strtotime($endMilestoneActivity['actual_end_date'])); ?></td>
+                <td style="border: 1px solid; text-align: center;"><?php echo date('d M Y H:i:s', strtotime($endMilestoneActivity['actual_end_date_time'])); ?></td>
+            </center>
+        </tr>
 
     </table>
 

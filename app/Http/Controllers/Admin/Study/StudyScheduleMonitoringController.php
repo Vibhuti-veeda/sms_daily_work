@@ -29,6 +29,7 @@ use App\Models\ActivityMetadata;
 use App\Models\ActivityMetadataTrail;
 use App\Models\StudyActivityMetadata;
 use App\Models\StudyActivityMetadataTrail;
+use App\Models\EmailNotification;
 
 class StudyScheduleMonitoringController extends GlobalController
 {
@@ -793,6 +794,7 @@ class StudyScheduleMonitoringController extends GlobalController
                 $bdUser = Admin::where('role_id', 14)->get();
                 if (!is_null($bdUser)) {
                     foreach ($bdUser as $buk => $buv) {
+                        
                         $this->dispatch((new SendStartMilestoneEmailToBdUser($buv->email_id,$buv->name,$startMilestoneActivity->studyNo->study_no,$startMilestoneActivity->activity_name,$startMilestoneActivity->scheduled_start_date,$startMilestoneActivity->actual_start_date,$startMilestoneActivity->actual_start_date_time,$startMilestoneActivity->studyNo->projectManager->name))->delay(10));
                     }
                 }
@@ -1905,7 +1907,8 @@ class StudyScheduleMonitoringController extends GlobalController
         }
 
         if ($saveStartDate->id != '') {
-
+            /*echo "Hi";
+            exit;*/
             $startMilestoneActivity = StudySchedule::where('id', $request->id)
                                                    ->where('is_milestone', 1)
                                                    ->where('is_start_milestone_activity', 1)
@@ -1917,12 +1920,31 @@ class StudyScheduleMonitoringController extends GlobalController
                                                         }
                                                     ])
                                                    ->first();
+                                                
 
             if (!is_null($startMilestoneActivity)) {
                 $bdUser = Admin::where('role_id', 14)->get();
                 if (!is_null($bdUser)) {
                     foreach ($bdUser as $buk => $buv) {
-                        $this->dispatch((new SendStartMilestoneEmailToBdUser($buv->email_id,$buv->name,$startMilestoneActivity->studyNo->study_no,$startMilestoneActivity->activity_name,$startMilestoneActivity->scheduled_start_date,$startMilestoneActivity->actual_start_date,$startMilestoneActivity->actual_start_date_time,$startMilestoneActivity->studyNo->projectManager->name))->delay(10));
+                        $subject = 'Study Management System - MileStone Activity Completed';
+                        $name = $buv->name;    
+                        $toEmail = $buv->email;
+                        $bccEmail = ['chandresh.v2590@veedacr.com', 'sani.c2654@veedacr.com'];
+
+                        $html = view('admin.mail.start_milestone_activity_completed',compact('startMilestoneActivity', 'name'))->render();
+
+                        $email = new EmailNotification;
+                        $email->system = 'sms';
+                        $email->email_type = 'notification';
+                        $email->from_email = 'sms@veedacr.com';
+                        $email->to_email = $toEmail;
+                        $email->bcc = implode(',', $bccEmail);
+                        $email->subject = $subject;
+                        $email->body = $html;
+                        $email->flag = 'PENDING';
+                        $email->send_time = now();
+                        $email->save();     
+                        /*$this->dispatch((new SendStartMilestoneEmailToBdUser($buv->email_id,$buv->name,$startMilestoneActivity->studyNo->study_no,$startMilestoneActivity->activity_name,$startMilestoneActivity->scheduled_start_date,$startMilestoneActivity->actual_start_date,$startMilestoneActivity->actual_start_date_time,$startMilestoneActivity->studyNo->projectManager->name))->delay(10));*/
                     }
                 }
 
@@ -2179,7 +2201,25 @@ class StudyScheduleMonitoringController extends GlobalController
                 $bdUser = Admin::where('role_id', 14)->get();
                 if (!is_null($bdUser)) {
                     foreach ($bdUser as $buk => $buv) {
-                        $this->dispatch((new SendEndMilestoneEmailToBdUser($buv->email_id,$buv->name,$endMilestoneActivity->studyNo->study_no,$endMilestoneActivity->activity_name,$endMilestoneActivity->scheduled_end_date,$endMilestoneActivity->actual_end_date,$endMilestoneActivity->actual_end_date_time,$endMilestoneActivity->studyNo->projectManager->name))->delay(10));
+                        $subject = 'Study Management System - MileStone Activity Completed';
+                        $name = $buv->name;    
+                        $toEmail = $buv->email;
+                        $bccEmail = ['chandresh.v2590@veedacr.com', 'sani.c2654@veedacr.com'];
+
+                        $html = view('admin.mail.end_milestone_activity_completed',compact('endMilestoneActivity', 'name'))->render();
+
+                        $email = new EmailNotification;
+                        $email->system = 'sms';
+                        $email->email_type = 'notification';
+                        $email->from_email = 'sms@veedacr.com';
+                        $email->to_email = $toEmail;
+                        $email->bcc = implode(',', $bccEmail);
+                        $email->subject = $subject;
+                        $email->body = $html;
+                        $email->flag = 'PENDING';
+                        $email->send_time = now();
+                        $email->save();                        
+                        /*$this->dispatch((new SendEndMilestoneEmailToBdUser($buv->email_id,$buv->name,$endMilestoneActivity->studyNo->study_no,$endMilestoneActivity->activity_name,$endMilestoneActivity->scheduled_end_date,$endMilestoneActivity->actual_end_date,$endMilestoneActivity->actual_end_date_time,$endMilestoneActivity->studyNo->projectManager->name))->delay(10));*/
                     }
                 }
 

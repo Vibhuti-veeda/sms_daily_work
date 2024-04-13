@@ -1,11 +1,10 @@
 .card-stepper {
     z-index: 0;
 }
-
-.card{
+.study-train{
     margin-bottom: 0 !important;
 }
-.card-body {
+.study-train-body {
     white-space: nowrap; /* Prevent line breaks */
 }
 

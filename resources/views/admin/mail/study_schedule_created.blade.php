@@ -1,7 +1,7 @@
 <div>
     
     <div class="form-group">
-        <p>Hello <?php echo $data['name']; ?>,</p>
+        <p>Hello <?php echo $name; ?>,</p>
     </div>
 
     <div class="form-group">
@@ -22,12 +22,12 @@
         </tr>
     
         
-        <center>
-            <tr style="border: 1px solid;">
-                <td style="border: 1px solid;"><?php echo $data['studyNo']; ?></td>
-                <td style="border: 1px solid;"><?php echo $data['projectManager']; ?></td>
-            </tr>
-        </center>
+        <tr style="border: 1px solid;">
+            <center>
+                <td style="border: 1px solid; text-align: center;"><?php echo $newStudyScheduledCreated->studyNo['study_no']; ?></td>
+                <td style="border: 1px solid; text-align: center;"><?php echo $newStudyScheduledCreated->studyNo->projectManager['name']; ?></td>
+            </center>
+        </tr>
 
     </table>
 
